@@ -1,6 +1,7 @@
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/Usuario");
+const Sucursal = require("../models/Sucursal");
 
 const generarToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -10,11 +11,18 @@ const generarToken = (id) => {
 
 const registrarUsuario = async (req, res) => {
   try {
-    const { nombre, email, password } = req.body;
+    const {
+      nombre,
+      email,
+      password,
+      rol = "admin",
+      nombreSucursal,
+      direccionSucursal
+    } = req.body;
 
-    if (!nombre || !email || !password) {
+    if (!nombre || !email || !password || !nombreSucursal) {
       return res.status(400).json({
-        mensaje: "Todos los campos son obligatorios"
+        mensaje: "Nombre, email, contraseña y sucursal son obligatorios"
       });
     }
 
@@ -26,19 +34,33 @@ const registrarUsuario = async (req, res) => {
       });
     }
 
+    const sucursal = await Sucursal.create({
+      nombre: nombreSucursal,
+      direccion: direccionSucursal || "",
+      empresa: "Carrefour"
+    });
+
     const salt = await bcrypt.genSalt(10);
     const passwordHasheado = await bcrypt.hash(password, salt);
 
     const usuario = await Usuario.create({
       nombre,
       email,
-      password: passwordHasheado
+      password: passwordHasheado,
+      rol,
+      sucursal: sucursal._id
     });
 
     res.status(201).json({
       _id: usuario._id,
       nombre: usuario.nombre,
       email: usuario.email,
+      rol: usuario.rol,
+      sucursal: {
+        _id: sucursal._id,
+        nombre: sucursal.nombre,
+        direccion: sucursal.direccion
+      },
       token: generarToken(usuario._id)
     });
   } catch (error) {
@@ -58,7 +80,7 @@ const loginUsuario = async (req, res) => {
       });
     }
 
-    const usuario = await Usuario.findOne({ email });
+    const usuario = await Usuario.findOne({ email }).populate("sucursal");
 
     if (!usuario) {
       return res.status(401).json({
@@ -78,6 +100,8 @@ const loginUsuario = async (req, res) => {
       _id: usuario._id,
       nombre: usuario.nombre,
       email: usuario.email,
+      rol: usuario.rol,
+      sucursal: usuario.sucursal,
       token: generarToken(usuario._id)
     });
   } catch (error) {
@@ -88,7 +112,11 @@ const loginUsuario = async (req, res) => {
 };
 
 const obtenerPerfil = async (req, res) => {
-  res.json(req.usuario);
+  const usuario = await Usuario.findById(req.usuario._id)
+    .select("-password")
+    .populate("sucursal");
+
+  res.json(usuario);
 };
 
 module.exports = {

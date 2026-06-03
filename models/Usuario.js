@@ -17,6 +17,16 @@ const usuarioSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true
+    },
+    rol: {
+      type: String,
+      enum: ["admin", "empleado"],
+      default: "empleado"
+    },
+    sucursal: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sucursal",
+      required: true
     }
   },
   {

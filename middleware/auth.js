@@ -13,7 +13,15 @@ const protegerRuta = async (req, res, next) => {
 
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.usuario = await Usuario.findById(decoded.id).select("-password");
+      req.usuario = await Usuario.findById(decoded.id)
+        .select("-password")
+        .populate("sucursal");
+
+      if (!req.usuario) {
+        return res.status(401).json({
+          mensaje: "Usuario no encontrado"
+        });
+      }
 
       next();
     } catch (error) {

@@ -3,7 +3,7 @@ const Producto = require("../models/Producto");
 const obtenerProductos = async (req, res) => {
   try {
     const productos = await Producto.find({
-      usuario: req.usuario._id
+      sucursal: req.usuario.sucursal._id
     }).sort({ createdAt: -1 });
 
     res.json(productos);
@@ -16,9 +16,22 @@ const obtenerProductos = async (req, res) => {
 
 const crearProducto = async (req, res) => {
   try {
-    const { nombre, categoria, stock, precio, vencimiento } = req.body;
+    const {
+      nombre,
+      categoria,
+      stock,
+      precio,
+      vencimiento,
+      codigoBarras
+    } = req.body;
 
-    if (!nombre || !categoria || stock === undefined || precio === undefined || !vencimiento) {
+    if (
+      !nombre ||
+      !categoria ||
+      stock === undefined ||
+      precio === undefined ||
+      !vencimiento
+    ) {
       return res.status(400).json({
         mensaje: "Todos los campos son obligatorios"
       });
@@ -30,7 +43,9 @@ const crearProducto = async (req, res) => {
       stock,
       precio,
       vencimiento,
-      usuario: req.usuario._id
+      codigoBarras: codigoBarras || "",
+      usuario: req.usuario._id,
+      sucursal: req.usuario.sucursal._id
     });
 
     res.status(201).json(producto);
@@ -51,9 +66,9 @@ const actualizarProducto = async (req, res) => {
       });
     }
 
-    if (producto.usuario.toString() !== req.usuario._id.toString()) {
+    if (producto.sucursal.toString() !== req.usuario.sucursal._id.toString()) {
       return res.status(403).json({
-        mensaje: "No autorizado"
+        mensaje: "No autorizado para editar este producto"
       });
     }
 
@@ -84,9 +99,9 @@ const eliminarProducto = async (req, res) => {
       });
     }
 
-    if (producto.usuario.toString() !== req.usuario._id.toString()) {
+    if (producto.sucursal.toString() !== req.usuario.sucursal._id.toString()) {
       return res.status(403).json({
-        mensaje: "No autorizado"
+        mensaje: "No autorizado para eliminar este producto"
       });
     }
 

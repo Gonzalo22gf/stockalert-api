@@ -25,9 +25,18 @@ const productoSchema = new mongoose.Schema(
       type: Date,
       required: true
     },
+    codigoBarras: {
+      type: String,
+      trim: true
+    },
     usuario: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",
+      required: true
+    },
+    sucursal: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Sucursal",
       required: true
     }
   },
