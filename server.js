@@ -9,7 +9,17 @@ const app = express();
 
 conectarDB();
 
-app.use(cors());
+app.use(
+  cors({
+    origin: [
+      "https://gonzalo22gf.github.io",
+      "http://localhost:5500",
+      "http://127.0.0.1:5500"
+    ],
+    credentials: true
+  })
+);
+
 app.use(express.json());
 
 app.get("/", (req, res) => {
