@@ -72,9 +72,25 @@ const actualizarProducto = async (req, res) => {
       });
     }
 
+    const {
+      nombre,
+      categoria,
+      stock,
+      precio,
+      vencimiento,
+      codigoBarras
+    } = req.body;
+
     const productoActualizado = await Producto.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      {
+        nombre,
+        categoria,
+        stock,
+        precio,
+        vencimiento,
+        codigoBarras
+      },
       {
         new: true,
         runValidators: true
