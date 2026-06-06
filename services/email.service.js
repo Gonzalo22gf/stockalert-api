@@ -11,6 +11,10 @@ const transporter = nodemailer.createTransport({
 });
 
 const enviarEmail = async ({ para, asunto, html }) => {
+  console.log("EMAIL_USER:", process.env.EMAIL_USER);
+  console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "OK" : "VACIO");
+  console.log("EMAIL_DESTINO:", para);
+
   await transporter.sendMail({
     from: `"StockAlert" <${process.env.EMAIL_USER}>`,
     to: para,
