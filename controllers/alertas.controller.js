@@ -67,9 +67,7 @@ const enviarAlertasDiarias = async (req, res) => {
         <ul>
           ${
             vencidos.length > 0
-              ? vencidos
-                  .map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`)
-                  .join("")
+              ? vencidos.map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`).join("")
               : "<li>No hay productos vencidos</li>"
           }
         </ul>
@@ -94,9 +92,7 @@ const enviarAlertasDiarias = async (req, res) => {
         <ul>
           ${
             stockCritico.length > 0
-              ? stockCritico
-                  .map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`)
-                  .join("")
+              ? stockCritico.map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`).join("")
               : "<li>No hay productos con stock crítico</li>"
           }
         </ul>
@@ -104,11 +100,12 @@ const enviarAlertasDiarias = async (req, res) => {
         <p>Este aviso fue generado automáticamente por StockAlert.</p>
       `;
 
-      console.log("EMAIL DESTINO:", usuario.email);
+      console.log("EMAIL DESTINO REAL:", process.env.EMAIL_ALERTAS);
+      console.log("USUARIO ORIGINAL:", usuario.email);
       console.log("SUCURSAL:", usuario.sucursal.nombre);
 
       await enviarEmail({
-        para: usuario.email,
+        para: process.env.EMAIL_ALERTAS,
         asunto: "StockAlert - Alerta diaria de productos",
         html
       });
