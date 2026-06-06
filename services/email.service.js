@@ -7,7 +7,10 @@ const transporter = nodemailer.createTransport({
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
-  }
+  },
+  connectionTimeout: 10000,
+  greetingTimeout: 10000,
+  socketTimeout: 10000
 });
 
 const enviarEmail = async ({ para, asunto, html }) => {
@@ -15,16 +18,21 @@ const enviarEmail = async ({ para, asunto, html }) => {
   console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "OK" : "VACIO");
   console.log("EMAIL_DESTINO:", para);
 
-  const info = await transporter.sendMail({
-    from: `"StockAlert" <${process.env.EMAIL_USER}>`,
-    to: para,
-    subject: asunto,
-    html
-  });
+  try {
+    const info = await transporter.sendMail({
+      from: `"StockAlert" <${process.env.EMAIL_USER}>`,
+      to: para,
+      subject: asunto,
+      html
+    });
 
-  console.log("EMAIL ENVIADO:", info.messageId);
+    console.log("EMAIL ENVIADO:", info.messageId);
 
-  return info;
+    return info;
+  } catch (error) {
+    console.error("ERROR EMAIL:", error.message);
+    throw error;
+  }
 };
 
 module.exports = enviarEmail;
