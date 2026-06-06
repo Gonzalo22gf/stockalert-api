@@ -9,7 +9,6 @@ const enviarAlertasDiarias = async (req, res) => {
     let emailsEnviados = 0;
 
     for (const usuario of usuarios) {
-
       if (!usuario.sucursal?._id) {
         console.log(`Usuario sin sucursal: ${usuario.email}`);
         continue;
@@ -69,9 +68,7 @@ const enviarAlertasDiarias = async (req, res) => {
           ${
             vencidos.length > 0
               ? vencidos
-                  .map(
-                    (p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`
-                  )
+                  .map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`)
                   .join("")
               : "<li>No hay productos vencidos</li>"
           }
@@ -93,20 +90,32 @@ const enviarAlertasDiarias = async (req, res) => {
           }
         </ul>
 
-        <p>
-          Este aviso fue generado automáticamente por StockAlert.
-        </p>
+        <h3>Detalle stock crítico</h3>
+        <ul>
+          ${
+            stockCritico.length > 0
+              ? stockCritico
+                  .map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`)
+                  .join("")
+              : "<li>No hay productos con stock crítico</li>"
+          }
+        </ul>
+
+        <p>Este aviso fue generado automáticamente por StockAlert.</p>
       `;
 
-   // await enviarEmail({
-   //   para: usuario.email,
-  //   asunto: "StockAlert - Alerta diaria de productos",
- //   html
- // });
-      console.log("Email simulado para:", usuario.email);
+      console.log("EMAIL DESTINO:", usuario.email);
+      console.log("SUCURSAL:", usuario.sucursal.nombre);
 
-emailsEnviados++;
+      await enviarEmail({
+        para: usuario.email,
+        asunto: "StockAlert - Alerta diaria de productos",
+        html
+      });
+
+      emailsEnviados++;
     }
+
     res.json({
       mensaje: "Alertas enviadas correctamente",
       emailsEnviados
@@ -115,7 +124,8 @@ emailsEnviados++;
     console.error(error);
 
     res.status(500).json({
-      mensaje: "Error al enviar alertas diarias"
+      mensaje: "Error al enviar alertas diarias",
+      error: error.message
     });
   }
 };
