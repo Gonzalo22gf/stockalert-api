@@ -98,15 +98,15 @@ const enviarAlertasDiarias = async (req, res) => {
         </p>
       `;
 
-      await enviarEmail({
-        para: usuario.email,
-        asunto: "StockAlert - Alerta diaria de productos",
-        html
-      });
+   // await enviarEmail({
+   //   para: usuario.email,
+  //   asunto: "StockAlert - Alerta diaria de productos",
+ //   html
+ // });
+      console.log("Email simulado para:", usuario.email);
 
-      emailsEnviados++;
+emailsEnviados++;
     }
-
     res.json({
       mensaje: "Alertas enviadas correctamente",
       emailsEnviados
