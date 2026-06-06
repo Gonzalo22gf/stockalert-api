@@ -15,12 +15,16 @@ const enviarEmail = async ({ para, asunto, html }) => {
   console.log("EMAIL_PASS:", process.env.EMAIL_PASS ? "OK" : "VACIO");
   console.log("EMAIL_DESTINO:", para);
 
-  await transporter.sendMail({
+  const info = await transporter.sendMail({
     from: `"StockAlert" <${process.env.EMAIL_USER}>`,
     to: para,
     subject: asunto,
     html
   });
+
+  console.log("EMAIL ENVIADO:", info.messageId);
+
+  return info;
 };
 
 module.exports = enviarEmail;
