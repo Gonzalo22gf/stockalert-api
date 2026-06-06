@@ -9,7 +9,14 @@ const enviarAlertasDiarias = async (req, res) => {
     let emailsEnviados = 0;
 
     for (const usuario of usuarios) {
+
+      if (!usuario.sucursal?._id) {
+        console.log(`Usuario sin sucursal: ${usuario.email}`);
+        continue;
+      }
+
       const hoy = new Date();
+
       const limite = new Date();
       limite.setDate(hoy.getDate() + 7);
 
@@ -46,28 +53,49 @@ const enviarAlertasDiarias = async (req, res) => {
       const html = `
         <h2>🚨 Alerta diaria StockAlert</h2>
 
-        <p><strong>Sucursal:</strong> ${usuario.sucursal?.nombre || "Sin sucursal"}</p>
+        <p><strong>Sucursal:</strong> ${usuario.sucursal.nombre}</p>
 
         <hr>
 
         <p>❌ <strong>Productos vencidos:</strong> ${vencidos.length}</p>
         <p>⚠️ <strong>Productos por vencer en 7 días:</strong> ${porVencer.length}</p>
         <p>📉 <strong>Stock crítico:</strong> ${stockCritico.length}</p>
-        <p>🚫 <strong>Agotados:</strong> ${agotados.length}</p>
+        <p>🚫 <strong>Productos agotados:</strong> ${agotados.length}</p>
 
         <hr>
 
         <h3>Detalle vencidos</h3>
         <ul>
-          ${vencidos.map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`).join("") || "<li>No hay</li>"}
+          ${
+            vencidos.length > 0
+              ? vencidos
+                  .map(
+                    (p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`
+                  )
+                  .join("")
+              : "<li>No hay productos vencidos</li>"
+          }
         </ul>
 
         <h3>Detalle por vencer</h3>
         <ul>
-          ${porVencer.map((p) => `<li>${p.nombre} - Vence: ${p.vencimiento.toISOString().split("T")[0]}</li>`).join("") || "<li>No hay</li>"}
+          ${
+            porVencer.length > 0
+              ? porVencer
+                  .map(
+                    (p) =>
+                      `<li>${p.nombre} - Vence: ${new Date(
+                        p.vencimiento
+                      ).toLocaleDateString("es-AR")}</li>`
+                  )
+                  .join("")
+              : "<li>No hay productos por vencer</li>"
+          }
         </ul>
 
-        <p>Este aviso fue generado automáticamente por StockAlert.</p>
+        <p>
+          Este aviso fue generado automáticamente por StockAlert.
+        </p>
       `;
 
       await enviarEmail({
