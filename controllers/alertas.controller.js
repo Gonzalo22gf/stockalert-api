@@ -106,7 +106,7 @@ const enviarAlertasDiarias = async (req, res) => {
 
       await enviarEmail({
         para: process.env.EMAIL_ALERTAS,
-        asunto: "StockAlert - Alerta diaria de productos",
+        asunto: "StockAlert - Resumen Diario",
         html
       });
 
