@@ -2,9 +2,19 @@ const Producto = require("../models/Producto");
 
 const obtenerProductos = async (req, res) => {
   try {
-    const productos = await Producto.find({
-      sucursal: req.usuario.sucursal._id
-    }).sort({ createdAt: -1 });
+    let filtro = {};
+
+    if (req.usuario.rol === "admin") {
+      if (req.query.sucursal) {
+        filtro.sucursal = req.query.sucursal;
+      }
+    } else {
+      filtro.sucursal = req.usuario.sucursal._id;
+    }
+
+    const productos = await Producto.find(filtro)
+      .populate("sucursal", "nombre direccion empresa")
+      .sort({ createdAt: -1 });
 
     res.json(productos);
   } catch (error) {
@@ -22,7 +32,8 @@ const crearProducto = async (req, res) => {
       stock,
       precio,
       vencimiento,
-      codigoBarras
+      codigoBarras,
+      sucursal
     } = req.body;
 
     if (
@@ -37,6 +48,12 @@ const crearProducto = async (req, res) => {
       });
     }
 
+    let sucursalProducto = req.usuario.sucursal._id;
+
+    if (req.usuario.rol === "admin" && sucursal) {
+      sucursalProducto = sucursal;
+    }
+
     const producto = await Producto.create({
       nombre,
       categoria,
@@ -45,7 +62,7 @@ const crearProducto = async (req, res) => {
       vencimiento,
       codigoBarras: codigoBarras || "",
       usuario: req.usuario._id,
-      sucursal: req.usuario.sucursal._id
+      sucursal: sucursalProducto
     });
 
     res.status(201).json(producto);
@@ -66,7 +83,12 @@ const actualizarProducto = async (req, res) => {
       });
     }
 
-    if (producto.sucursal.toString() !== req.usuario.sucursal._id.toString()) {
+    const esAdmin = req.usuario.rol === "admin";
+
+    if (
+      !esAdmin &&
+      producto.sucursal.toString() !== req.usuario.sucursal._id.toString()
+    ) {
       return res.status(403).json({
         mensaje: "No autorizado para editar este producto"
       });
@@ -115,7 +137,12 @@ const eliminarProducto = async (req, res) => {
       });
     }
 
-    if (producto.sucursal.toString() !== req.usuario.sucursal._id.toString()) {
+    const esAdmin = req.usuario.rol === "admin";
+
+    if (
+      !esAdmin &&
+      producto.sucursal.toString() !== req.usuario.sucursal._id.toString()
+    ) {
       return res.status(403).json({
         mensaje: "No autorizado para eliminar este producto"
       });

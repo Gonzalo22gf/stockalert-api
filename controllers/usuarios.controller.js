@@ -34,11 +34,17 @@ const registrarUsuario = async (req, res) => {
       });
     }
 
-    const sucursal = await Sucursal.create({
-      nombre: nombreSucursal,
-      direccion: direccionSucursal || "",
-      empresa: "Carrefour"
-    });
+    let sucursal = await Sucursal.findOne({
+  nombre: nombreSucursal.trim()
+});
+
+if (!sucursal) {
+  sucursal = await Sucursal.create({
+    nombre: nombreSucursal.trim(),
+    direccion: direccionSucursal || "",
+    empresa: "Carrefour"
+  });
+}
 
     const salt = await bcrypt.genSalt(10);
     const passwordHasheado = await bcrypt.hash(password, salt);
