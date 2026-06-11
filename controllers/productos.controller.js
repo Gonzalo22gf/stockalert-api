@@ -9,7 +9,7 @@ const obtenerProductos = async (req, res) => {
         filtro.sucursal = req.query.sucursal;
       }
     } else {
-      filtro.sucursal = req.usuario.sucursal._id;
+      filtro.sucursal = req.usuario.sucursal?._id || req.usuario.sucursal;
     }
 
     const productos = await Producto.find(filtro)
@@ -20,6 +20,8 @@ const obtenerProductos = async (req, res) => {
 
     res.json(productos);
   } catch (error) {
+    console.error("ERROR OBTENER PRODUCTOS:", error);
+
     res.status(500).json({
       mensaje: "Error al obtener productos"
     });
@@ -51,9 +53,17 @@ const crearProducto = async (req, res) => {
       });
     }
 
-    let sucursalProducto = req.usuario.sucursal._id;
+    const esAdmin = req.usuario.rol === "admin";
 
-    if (req.usuario.rol === "admin" && sucursal) {
+    let sucursalProducto = req.usuario.sucursal?._id || req.usuario.sucursal;
+
+    if (esAdmin) {
+      if (!sucursal) {
+        return res.status(400).json({
+          mensaje: "El administrador debe seleccionar una sucursal"
+        });
+      }
+
       sucursalProducto = sucursal;
     }
 
@@ -79,8 +89,10 @@ const crearProducto = async (req, res) => {
 
     res.status(201).json(productoCompleto);
   } catch (error) {
+    console.error("ERROR CREAR PRODUCTO:", error);
+
     res.status(500).json({
-      mensaje: "Error al crear producto"
+      mensaje: error.message || "Error al crear producto"
     });
   }
 };
@@ -96,11 +108,9 @@ const actualizarProducto = async (req, res) => {
     }
 
     const esAdmin = req.usuario.rol === "admin";
+    const sucursalUsuario = req.usuario.sucursal?._id || req.usuario.sucursal;
 
-    if (
-      !esAdmin &&
-      producto.sucursal.toString() !== req.usuario.sucursal._id.toString()
-    ) {
+    if (!esAdmin && producto.sucursal.toString() !== sucursalUsuario.toString()) {
       return res.status(403).json({
         mensaje: "No autorizado para editar este producto"
       });
@@ -124,7 +134,7 @@ const actualizarProducto = async (req, res) => {
         stock,
         precio,
         vencimiento,
-        codigoBarras,
+        codigoBarras: codigoBarras || "",
         lote: lote || "",
         actualizadoPor: req.usuario._id,
         fechaUltimaActualizacion: new Date()
@@ -140,8 +150,10 @@ const actualizarProducto = async (req, res) => {
 
     res.json(productoActualizado);
   } catch (error) {
+    console.error("ERROR ACTUALIZAR PRODUCTO:", error);
+
     res.status(500).json({
-      mensaje: "Error al actualizar producto"
+      mensaje: error.message || "Error al actualizar producto"
     });
   }
 };
@@ -157,11 +169,9 @@ const eliminarProducto = async (req, res) => {
     }
 
     const esAdmin = req.usuario.rol === "admin";
+    const sucursalUsuario = req.usuario.sucursal?._id || req.usuario.sucursal;
 
-    if (
-      !esAdmin &&
-      producto.sucursal.toString() !== req.usuario.sucursal._id.toString()
-    ) {
+    if (!esAdmin && producto.sucursal.toString() !== sucursalUsuario.toString()) {
       return res.status(403).json({
         mensaje: "No autorizado para eliminar este producto"
       });
@@ -178,8 +188,10 @@ const eliminarProducto = async (req, res) => {
       }
     });
   } catch (error) {
+    console.error("ERROR ELIMINAR PRODUCTO:", error);
+
     res.status(500).json({
-      mensaje: "Error al eliminar producto"
+      mensaje: error.message || "Error al eliminar producto"
     });
   }
 };
