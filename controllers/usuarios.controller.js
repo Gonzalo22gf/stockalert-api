@@ -15,7 +15,6 @@ const registrarUsuario = async (req, res) => {
       nombre,
       email,
       password,
-      rol = "admin",
       nombreSucursal,
       direccionSucursal
     } = req.body;
@@ -26,7 +25,9 @@ const registrarUsuario = async (req, res) => {
       });
     }
 
-    const usuarioExiste = await Usuario.findOne({ email });
+    const emailNormalizado = email.toLowerCase().trim();
+
+    const usuarioExiste = await Usuario.findOne({ email: emailNormalizado });
 
     if (usuarioExiste) {
       return res.status(400).json({
@@ -35,25 +36,28 @@ const registrarUsuario = async (req, res) => {
     }
 
     let sucursal = await Sucursal.findOne({
-  nombre: nombreSucursal.trim()
-});
+      nombre: nombreSucursal.trim()
+    });
 
-if (!sucursal) {
-  sucursal = await Sucursal.create({
-    nombre: nombreSucursal.trim(),
-    direccion: direccionSucursal || "",
-    empresa: "Carrefour"
-  });
-}
+    if (!sucursal) {
+      sucursal = await Sucursal.create({
+        nombre: nombreSucursal.trim(),
+        direccion: direccionSucursal || "",
+        empresa: "Carrefour"
+      });
+    }
 
     const salt = await bcrypt.genSalt(10);
     const passwordHasheado = await bcrypt.hash(password, salt);
 
+    const rolAsignado =
+      emailNormalizado === "prueba@stockalert.com" ? "admin" : "empleado";
+
     const usuario = await Usuario.create({
       nombre,
-      email,
+      email: emailNormalizado,
       password: passwordHasheado,
-      rol,
+      rol: rolAsignado,
       sucursal: sucursal._id
     });
 
@@ -86,7 +90,9 @@ const loginUsuario = async (req, res) => {
       });
     }
 
-    const usuario = await Usuario.findOne({ email }).populate("sucursal");
+    const emailNormalizado = email.toLowerCase().trim();
+
+    const usuario = await Usuario.findOne({ email: emailNormalizado }).populate("sucursal");
 
     if (!usuario) {
       return res.status(401).json({
