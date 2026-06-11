@@ -38,6 +38,18 @@ const productoSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Sucursal",
       required: true
+    },
+
+    creadoPor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Usuario"
+    },
+    actualizadoPor: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Usuario"
+    },
+    fechaUltimaActualizacion: {
+      type: Date
     }
   },
   {

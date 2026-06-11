@@ -14,6 +14,8 @@ const obtenerProductos = async (req, res) => {
 
     const productos = await Producto.find(filtro)
       .populate("sucursal", "nombre direccion empresa")
+      .populate("creadoPor", "nombre email rol")
+      .populate("actualizadoPor", "nombre email rol")
       .sort({ createdAt: -1 });
 
     res.json(productos);
@@ -62,10 +64,18 @@ const crearProducto = async (req, res) => {
       vencimiento,
       codigoBarras: codigoBarras || "",
       usuario: req.usuario._id,
-      sucursal: sucursalProducto
+      sucursal: sucursalProducto,
+      creadoPor: req.usuario._id,
+      actualizadoPor: req.usuario._id,
+      fechaUltimaActualizacion: new Date()
     });
 
-    res.status(201).json(producto);
+    const productoCompleto = await Producto.findById(producto._id)
+      .populate("sucursal", "nombre direccion empresa")
+      .populate("creadoPor", "nombre email rol")
+      .populate("actualizadoPor", "nombre email rol");
+
+    res.status(201).json(productoCompleto);
   } catch (error) {
     res.status(500).json({
       mensaje: "Error al crear producto"
@@ -111,13 +121,18 @@ const actualizarProducto = async (req, res) => {
         stock,
         precio,
         vencimiento,
-        codigoBarras
+        codigoBarras,
+        actualizadoPor: req.usuario._id,
+        fechaUltimaActualizacion: new Date()
       },
       {
         new: true,
         runValidators: true
       }
-    );
+    )
+      .populate("sucursal", "nombre direccion empresa")
+      .populate("creadoPor", "nombre email rol")
+      .populate("actualizadoPor", "nombre email rol");
 
     res.json(productoActualizado);
   } catch (error) {
@@ -151,7 +166,12 @@ const eliminarProducto = async (req, res) => {
     await Producto.findByIdAndDelete(req.params.id);
 
     res.json({
-      mensaje: "Producto eliminado correctamente"
+      mensaje: "Producto eliminado correctamente",
+      eliminadoPor: {
+        _id: req.usuario._id,
+        nombre: req.usuario.nombre,
+        email: req.usuario.email
+      }
     });
   } catch (error) {
     res.status(500).json({
