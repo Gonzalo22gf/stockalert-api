@@ -35,6 +35,7 @@ const crearProducto = async (req, res) => {
       precio,
       vencimiento,
       codigoBarras,
+      lote,
       sucursal
     } = req.body;
 
@@ -63,6 +64,7 @@ const crearProducto = async (req, res) => {
       precio,
       vencimiento,
       codigoBarras: codigoBarras || "",
+      lote: lote || "",
       usuario: req.usuario._id,
       sucursal: sucursalProducto,
       creadoPor: req.usuario._id,
@@ -110,7 +112,8 @@ const actualizarProducto = async (req, res) => {
       stock,
       precio,
       vencimiento,
-      codigoBarras
+      codigoBarras,
+      lote
     } = req.body;
 
     const productoActualizado = await Producto.findByIdAndUpdate(
@@ -122,6 +125,7 @@ const actualizarProducto = async (req, res) => {
         precio,
         vencimiento,
         codigoBarras,
+        lote: lote || "",
         actualizadoPor: req.usuario._id,
         fechaUltimaActualizacion: new Date()
       },

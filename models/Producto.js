@@ -29,6 +29,12 @@ const productoSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+
+    lote: {
+      type: String,
+      trim: true
+    },
+
     usuario: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",
