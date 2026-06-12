@@ -1,4 +1,5 @@
 const Producto = require("../models/Producto");
+const Movimiento = require("../models/Movimiento");
 
 const obtenerProductos = async (req, res) => {
   try {
@@ -82,6 +83,25 @@ const crearProducto = async (req, res) => {
       fechaUltimaActualizacion: new Date()
     });
 
+    await Movimiento.create({
+      producto: producto._id,
+      nombreProducto: producto.nombre,
+      lote: producto.lote || "",
+      accion: "CREAR",
+      usuario: req.usuario._id,
+      sucursal: sucursalProducto,
+      detalle: `Producto creado por ${req.usuario.nombre}`,
+      cambios: {
+        nombre: producto.nombre,
+        categoria: producto.categoria,
+        stock: producto.stock,
+        precio: producto.precio,
+        vencimiento: producto.vencimiento,
+        codigoBarras: producto.codigoBarras || "",
+        lote: producto.lote || ""
+      }
+    });
+
     const productoCompleto = await Producto.findById(producto._id)
       .populate("sucursal", "nombre direccion empresa")
       .populate("creadoPor", "nombre email rol")
@@ -116,6 +136,16 @@ const actualizarProducto = async (req, res) => {
       });
     }
 
+    const datosAnteriores = {
+      nombre: producto.nombre,
+      categoria: producto.categoria,
+      stock: producto.stock,
+      precio: producto.precio,
+      vencimiento: producto.vencimiento,
+      codigoBarras: producto.codigoBarras || "",
+      lote: producto.lote || ""
+    };
+
     const {
       nombre,
       categoria,
@@ -148,6 +178,31 @@ const actualizarProducto = async (req, res) => {
       .populate("creadoPor", "nombre email rol")
       .populate("actualizadoPor", "nombre email rol");
 
+    await Movimiento.create({
+      producto: producto._id,
+      nombreProducto: productoActualizado.nombre,
+      lote: productoActualizado.lote || "",
+      accion: "EDITAR",
+      usuario: req.usuario._id,
+      sucursal:
+        productoActualizado.sucursal?._id ||
+        productoActualizado.sucursal ||
+        producto.sucursal,
+      detalle: `Producto editado por ${req.usuario.nombre}`,
+      cambios: {
+        antes: datosAnteriores,
+        despues: {
+          nombre: productoActualizado.nombre,
+          categoria: productoActualizado.categoria,
+          stock: productoActualizado.stock,
+          precio: productoActualizado.precio,
+          vencimiento: productoActualizado.vencimiento,
+          codigoBarras: productoActualizado.codigoBarras || "",
+          lote: productoActualizado.lote || ""
+        }
+      }
+    });
+
     res.json(productoActualizado);
   } catch (error) {
     console.error("ERROR ACTUALIZAR PRODUCTO:", error);
@@ -176,6 +231,25 @@ const eliminarProducto = async (req, res) => {
         mensaje: "No autorizado para eliminar este producto"
       });
     }
+
+    await Movimiento.create({
+      producto: producto._id,
+      nombreProducto: producto.nombre,
+      lote: producto.lote || "",
+      accion: "ELIMINAR",
+      usuario: req.usuario._id,
+      sucursal: producto.sucursal,
+      detalle: `Producto eliminado por ${req.usuario.nombre}`,
+      cambios: {
+        nombre: producto.nombre,
+        categoria: producto.categoria,
+        stock: producto.stock,
+        precio: producto.precio,
+        vencimiento: producto.vencimiento,
+        codigoBarras: producto.codigoBarras || "",
+        lote: producto.lote || ""
+      }
+    });
 
     await Producto.findByIdAndDelete(req.params.id);
 
