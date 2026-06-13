@@ -1,6 +1,52 @@
 const Producto = require("../models/Producto");
 const Movimiento = require("../models/Movimiento");
 
+function prepararLotes({ lotes, lote, stock, vencimiento }) {
+  if (Array.isArray(lotes) && lotes.length > 0) {
+    return lotes.map((item) => ({
+      numero: item.numero || item.lote || "",
+      stock: Number(item.stock || 0),
+      vencimiento: item.vencimiento
+    }));
+  }
+
+  return [
+    {
+      numero: lote || "",
+      stock: Number(stock || 0),
+      vencimiento
+    }
+  ];
+}
+
+function calcularStockTotal(lotes) {
+  if (!Array.isArray(lotes) || lotes.length === 0) return 0;
+
+  return lotes.reduce((total, lote) => {
+    return total + Number(lote.stock || 0);
+  }, 0);
+}
+
+function obtenerProximoVencimiento(lotes, vencimientoFallback) {
+  if (!Array.isArray(lotes) || lotes.length === 0) {
+    return vencimientoFallback;
+  }
+
+  const lotesOrdenados = [...lotes]
+    .filter((lote) => lote.vencimiento)
+    .sort((a, b) => new Date(a.vencimiento) - new Date(b.vencimiento));
+
+  return lotesOrdenados[0]?.vencimiento || vencimientoFallback;
+}
+
+function obtenerLotePrincipal(lotes, loteFallback) {
+  if (!Array.isArray(lotes) || lotes.length === 0) {
+    return loteFallback || "";
+  }
+
+  return lotes[0].numero || "";
+}
+
 const obtenerProductos = async (req, res) => {
   try {
     let filtro = {};
@@ -39,18 +85,38 @@ const crearProducto = async (req, res) => {
       vencimiento,
       codigoBarras,
       lote,
+      lotes,
       sucursal
     } = req.body;
 
     if (
       !nombre ||
       !categoria ||
-      stock === undefined ||
       precio === undefined ||
-      !vencimiento
+      (!vencimiento && (!Array.isArray(lotes) || lotes.length === 0))
     ) {
       return res.status(400).json({
         mensaje: "Todos los campos son obligatorios"
+      });
+    }
+
+    const lotesProducto = prepararLotes({
+      lotes,
+      lote,
+      stock,
+      vencimiento
+    });
+
+    const stockTotal = calcularStockTotal(lotesProducto);
+    const vencimientoPrincipal = obtenerProximoVencimiento(
+      lotesProducto,
+      vencimiento
+    );
+    const lotePrincipal = obtenerLotePrincipal(lotesProducto, lote);
+
+    if (stockTotal < 0 || !vencimientoPrincipal) {
+      return res.status(400).json({
+        mensaje: "Los datos de lote, stock y vencimiento no son válidos"
       });
     }
 
@@ -71,11 +137,12 @@ const crearProducto = async (req, res) => {
     const producto = await Producto.create({
       nombre,
       categoria,
-      stock,
+      stock: stockTotal,
       precio,
-      vencimiento,
+      vencimiento: vencimientoPrincipal,
       codigoBarras: codigoBarras || "",
-      lote: lote || "",
+      lote: lotePrincipal,
+      lotes: lotesProducto,
       usuario: req.usuario._id,
       sucursal: sucursalProducto,
       creadoPor: req.usuario._id,
@@ -98,7 +165,8 @@ const crearProducto = async (req, res) => {
         precio: producto.precio,
         vencimiento: producto.vencimiento,
         codigoBarras: producto.codigoBarras || "",
-        lote: producto.lote || ""
+        lote: producto.lote || "",
+        lotes: producto.lotes || []
       }
     });
 
@@ -143,7 +211,8 @@ const actualizarProducto = async (req, res) => {
       precio: producto.precio,
       vencimiento: producto.vencimiento,
       codigoBarras: producto.codigoBarras || "",
-      lote: producto.lote || ""
+      lote: producto.lote || "",
+      lotes: producto.lotes || []
     };
 
     const {
@@ -153,19 +222,35 @@ const actualizarProducto = async (req, res) => {
       precio,
       vencimiento,
       codigoBarras,
-      lote
+      lote,
+      lotes
     } = req.body;
+
+    const lotesProducto = prepararLotes({
+      lotes,
+      lote,
+      stock,
+      vencimiento
+    });
+
+    const stockTotal = calcularStockTotal(lotesProducto);
+    const vencimientoPrincipal = obtenerProximoVencimiento(
+      lotesProducto,
+      vencimiento
+    );
+    const lotePrincipal = obtenerLotePrincipal(lotesProducto, lote);
 
     const productoActualizado = await Producto.findByIdAndUpdate(
       req.params.id,
       {
         nombre,
         categoria,
-        stock,
+        stock: stockTotal,
         precio,
-        vencimiento,
+        vencimiento: vencimientoPrincipal,
         codigoBarras: codigoBarras || "",
-        lote: lote || "",
+        lote: lotePrincipal,
+        lotes: lotesProducto,
         actualizadoPor: req.usuario._id,
         fechaUltimaActualizacion: new Date()
       },
@@ -198,7 +283,8 @@ const actualizarProducto = async (req, res) => {
           precio: productoActualizado.precio,
           vencimiento: productoActualizado.vencimiento,
           codigoBarras: productoActualizado.codigoBarras || "",
-          lote: productoActualizado.lote || ""
+          lote: productoActualizado.lote || "",
+          lotes: productoActualizado.lotes || []
         }
       }
     });
@@ -247,7 +333,8 @@ const eliminarProducto = async (req, res) => {
         precio: producto.precio,
         vencimiento: producto.vencimiento,
         codigoBarras: producto.codigoBarras || "",
-        lote: producto.lote || ""
+        lote: producto.lote || "",
+        lotes: producto.lotes || []
       }
     });
 

@@ -1,5 +1,27 @@
 const mongoose = require("mongoose");
 
+const loteSchema = new mongoose.Schema(
+  {
+    numero: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    stock: {
+      type: Number,
+      required: true,
+      min: 0
+    },
+    vencimiento: {
+      type: Date,
+      required: true
+    }
+  },
+  {
+    _id: true
+  }
+);
+
 const productoSchema = new mongoose.Schema(
   {
     nombre: {
@@ -14,7 +36,8 @@ const productoSchema = new mongoose.Schema(
     stock: {
       type: Number,
       required: true,
-      min: 0
+      min: 0,
+      default: 0
     },
     precio: {
       type: Number,
@@ -32,7 +55,13 @@ const productoSchema = new mongoose.Schema(
 
     lote: {
       type: String,
-      trim: true
+      trim: true,
+      default: ""
+    },
+
+    lotes: {
+      type: [loteSchema],
+      default: []
     },
 
     usuario: {
@@ -62,5 +91,25 @@ const productoSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+productoSchema.pre("validate", function (next) {
+  if (this.lotes && this.lotes.length > 0) {
+    this.stock = this.lotes.reduce((total, lote) => {
+      return total + Number(lote.stock || 0);
+    }, 0);
+
+    const lotesConFecha = this.lotes
+      .filter((lote) => lote.vencimiento)
+      .sort((a, b) => new Date(a.vencimiento) - new Date(b.vencimiento));
+
+    if (lotesConFecha.length > 0) {
+      this.vencimiento = lotesConFecha[0].vencimiento;
+    }
+
+    this.lote = this.lotes[0].numero || "";
+  }
+
+  next();
+});
 
 module.exports = mongoose.model("Producto", productoSchema);
