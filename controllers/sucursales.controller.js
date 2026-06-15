@@ -1,24 +1,21 @@
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
 
+// LISTAR TODAS
 const obtenerSucursales = async (req, res) => {
   try {
     const sucursales = await Sucursal.find().sort({ nombre: 1 });
-
     res.json(sucursales);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener sucursales"
-    });
+    res.status(500).json({ mensaje: "Error al obtener sucursales" });
   }
 };
 
+// RESUMEN (solo admin)
 const obtenerResumenSucursales = async (req, res) => {
   try {
     if (req.usuario.rol !== "admin") {
-      return res.status(403).json({
-        mensaje: "No autorizado"
-      });
+      return res.status(403).json({ mensaje: "No autorizado" });
     }
 
     const sucursales = await Sucursal.find().sort({ nombre: 1 });
@@ -26,44 +23,28 @@ const obtenerResumenSucursales = async (req, res) => {
 
     const resumen = await Promise.all(
       sucursales.map(async (sucursal) => {
-        const productos = await Producto.find({
-          sucursal: sucursal._id
-        });
+        const productos = await Producto.find({ sucursal: sucursal._id });
 
         const totalProductos = productos.length;
 
-        const vencidos = productos.filter((producto) => {
-          return new Date(producto.vencimiento) < hoy;
+        const vencidos = productos.filter((p) => new Date(p.vencimiento) < hoy).length;
+
+        const porVencer = productos.filter((p) => {
+          const diff = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
+          return diff >= 0 && diff <= 7;
         }).length;
 
-        const porVencer = productos.filter((producto) => {
-          const vencimiento = new Date(producto.vencimiento);
-          const diferenciaTiempo = vencimiento - hoy;
-          const diferenciaDias = Math.ceil(
-            diferenciaTiempo / (1000 * 60 * 60 * 24)
-          );
-
-          return diferenciaDias >= 0 && diferenciaDias <= 7;
-        }).length;
-
-        const stockCritico = productos.filter((producto) => {
-          return producto.stock > 0 && producto.stock <= 5;
-        }).length;
-
-        const agotados = productos.filter((producto) => {
-          return producto.stock === 0;
-        }).length;
-
-        const valorInventario = productos.reduce((total, producto) => {
-          return total + producto.stock * producto.precio;
-        }, 0);
+        const stockCritico = productos.filter((p) => p.stock > 0 && p.stock <= 5).length;
+        const agotados     = productos.filter((p) => p.stock === 0).length;
+        const valorInventario = productos.reduce((t, p) => t + p.stock * p.precio, 0);
 
         return {
           sucursal: {
-            _id: sucursal._id,
-            nombre: sucursal.nombre,
-            direccion: sucursal.direccion,
-            empresa: sucursal.empresa
+            _id:      sucursal._id,
+            nombre:   sucursal.nombre,
+            direccion:sucursal.direccion,
+            numero:   sucursal.numero,
+            empresa:  sucursal.empresa
           },
           totalProductos,
           vencidos,
@@ -77,13 +58,42 @@ const obtenerResumenSucursales = async (req, res) => {
 
     res.json(resumen);
   } catch (error) {
-    res.status(500).json({
-      mensaje: "Error al obtener resumen de sucursales"
-    });
+    res.status(500).json({ mensaje: "Error al obtener resumen de sucursales" });
+  }
+};
+
+// EDITAR SUCURSAL (solo admin)
+const editarSucursal = async (req, res) => {
+  try {
+    const { nombre, direccion, numero } = req.body;
+
+    if (!nombre || nombre.trim() === "") {
+      return res.status(400).json({ mensaje: "El nombre es obligatorio" });
+    }
+
+    const sucursal = await Sucursal.findByIdAndUpdate(
+      req.params.id,
+      {
+        nombre:    nombre.trim(),
+        direccion: direccion?.trim() || "",
+        ...(numero !== undefined && { numero: Number(numero) })
+      },
+      { new: true, runValidators: true }
+    );
+
+    if (!sucursal) {
+      return res.status(404).json({ mensaje: "Sucursal no encontrada" });
+    }
+
+    res.json({ mensaje: "Sucursal actualizada", sucursal });
+  } catch (error) {
+    console.error("ERROR EDITAR SUCURSAL:", error);
+    res.status(500).json({ mensaje: "Error al editar sucursal" });
   }
 };
 
 module.exports = {
   obtenerSucursales,
-  obtenerResumenSucursales
+  obtenerResumenSucursales,
+  editarSucursal
 };

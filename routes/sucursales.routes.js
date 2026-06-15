@@ -3,17 +3,14 @@ const router = express.Router();
 
 const {
   obtenerSucursales,
-  obtenerResumenSucursales
+  obtenerResumenSucursales,
+  editarSucursal
 } = require("../controllers/sucursales.controller");
 
-const protegerRuta = require("../middleware/auth");
+const { protegerRuta, soloAdmin } = require("../middleware/auth");
 
-router.get("/", protegerRuta, obtenerSucursales);
-
-router.get(
-  "/resumen",
-  protegerRuta,
-  obtenerResumenSucursales
-);
+router.get("/",        protegerRuta, obtenerSucursales);
+router.get("/resumen", protegerRuta, obtenerResumenSucursales);
+router.put("/:id",     protegerRuta, soloAdmin, editarSucursal);
 
 module.exports = router;

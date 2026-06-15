@@ -8,10 +8,10 @@ const {
   eliminarProducto
 } = require("../controllers/productos.controller");
 
-const protegerRuta = require("../middleware/auth");
+const { protegerRuta } = require("../middleware/auth");
 
-router.get("/", protegerRuta, obtenerProductos);
-router.post("/", protegerRuta, crearProducto);
+router.get("/",    protegerRuta, obtenerProductos);
+router.post("/",   protegerRuta, crearProducto);
 router.put("/:id", protegerRuta, actualizarProducto);
 router.delete("/:id", protegerRuta, eliminarProducto);
 

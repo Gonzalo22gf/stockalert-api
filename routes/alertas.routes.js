@@ -1,10 +1,11 @@
 const express = require("express");
 const router = express.Router();
 
-const {
-  enviarAlertasDiarias
-} = require("../controllers/alertas.controller");
+const { protegerRuta } = require("../middleware/auth");
 
-router.get("/enviar-diarias", enviarAlertasDiarias);
+// Importá tu controller de alertas si existe
+// const { ... } = require("../controllers/alertas.controller");
+
+// router.get("/", protegerRuta, ...);
 
 module.exports = router;

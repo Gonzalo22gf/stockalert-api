@@ -4,13 +4,24 @@ const router = express.Router();
 const {
   registrarUsuario,
   loginUsuario,
-  obtenerPerfil
+  obtenerPerfil,
+  listarUsuarios,
+  cambiarRol,
+  cambiarEstado
 } = require("../controllers/usuarios.controller");
 
-const protegerRuta = require("../middleware/auth");
+const { protegerRuta, soloAdmin } = require("../middleware/auth");
 
+// Públicas
 router.post("/registro", registrarUsuario);
-router.post("/login", loginUsuario);
+router.post("/login",    loginUsuario);
+
+// Protegidas
 router.get("/perfil", protegerRuta, obtenerPerfil);
+
+// Solo admin
+router.get("/",           protegerRuta, soloAdmin, listarUsuarios);
+router.put("/:id/rol",    protegerRuta, soloAdmin, cambiarRol);
+router.put("/:id/estado", protegerRuta, soloAdmin, cambiarEstado);
 
 module.exports = router;
