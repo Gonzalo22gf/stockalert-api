@@ -215,6 +215,60 @@ const cambiarSucursal = async (req, res) => {
   }
 };
 
+// EDITAR DATOS DE USUARIO: nombre, email, password (solo admin)
+const editarUsuarioAdmin = async (req, res) => {
+  try {
+    const { nombre, email, password } = req.body;
+    const camposUpdate = {};
+
+    if (nombre !== undefined) {
+      if (!nombre.trim()) {
+        return res.status(400).json({ mensaje: "El nombre no puede estar vacío" });
+      }
+      camposUpdate.nombre = nombre.trim();
+    }
+
+    if (email !== undefined) {
+      const emailNormalizado = email.toLowerCase().trim();
+      if (!emailNormalizado) {
+        return res.status(400).json({ mensaje: "El email no puede estar vacío" });
+      }
+      const emailEnUso = await Usuario.findOne({ email: emailNormalizado, _id: { $ne: req.params.id } });
+      if (emailEnUso) {
+        return res.status(400).json({ mensaje: "Ese email ya está en uso por otro usuario" });
+      }
+      camposUpdate.email = emailNormalizado;
+    }
+
+    if (password !== undefined && password !== "") {
+      if (password.length < 6) {
+        return res.status(400).json({ mensaje: "La contraseña debe tener al menos 6 caracteres" });
+      }
+      const salt = await bcrypt.genSalt(10);
+      camposUpdate.password = await bcrypt.hash(password, salt);
+    }
+
+    if (Object.keys(camposUpdate).length === 0) {
+      return res.status(400).json({ mensaje: "No se enviaron campos para actualizar" });
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(
+      req.params.id,
+      camposUpdate,
+      { new: true, runValidators: true }
+    ).select("-password").populate("sucursal", "zona numero direccion");
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.json({ mensaje: "Usuario actualizado", usuario });
+  } catch (error) {
+    console.error("ERROR EDITAR USUARIO:", error);
+    res.status(500).json({ mensaje: "Error al editar usuario" });
+  }
+};
+
 module.exports = {
   registrarUsuario,
   loginUsuario,
@@ -222,5 +276,6 @@ module.exports = {
   listarUsuarios,
   cambiarRol,
   cambiarEstado,
-  cambiarSucursal
+  cambiarSucursal,
+  editarUsuarioAdmin
 };

@@ -8,7 +8,8 @@ const {
   listarUsuarios,
   cambiarRol,
   cambiarEstado,
-  cambiarSucursal
+  cambiarSucursal,
+  editarUsuarioAdmin
 } = require("../controllers/usuarios.controller");
 
 const { protegerRuta, soloAdmin } = require("../middleware/auth");
@@ -25,5 +26,6 @@ router.get("/",               protegerRuta, soloAdmin, listarUsuarios);
 router.put("/:id/rol",        protegerRuta, soloAdmin, cambiarRol);
 router.put("/:id/estado",     protegerRuta, soloAdmin, cambiarEstado);
 router.put("/:id/sucursal",   protegerRuta, soloAdmin, cambiarSucursal);
+router.put("/:id",            protegerRuta, soloAdmin, editarUsuarioAdmin);
 
 module.exports = router;

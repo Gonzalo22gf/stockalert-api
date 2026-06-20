@@ -21,8 +21,14 @@ const sucursalSchema = new mongoose.Schema(
     }
   },
   {
-    timestamps: true
+    timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true }
   }
 );
+
+sucursalSchema.virtual("nombre").get(function () {
+  return `Zona ${this.zona}, ${this.numero}`;
+});
 
 module.exports = mongoose.model("Sucursal", sucursalSchema);
