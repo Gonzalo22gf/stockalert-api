@@ -2,10 +2,14 @@ const mongoose = require("mongoose");
 
 const sucursalSchema = new mongoose.Schema(
   {
-    nombre: {
-      type: String,
+    zona: {
+      type: Number,
+      required: true
+    },
+    numero: {
+      type: Number,
       required: true,
-      trim: true
+      unique: true
     },
     direccion: {
       type: String,

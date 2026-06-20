@@ -20,13 +20,17 @@ const usuarioSchema = new mongoose.Schema(
     },
     rol: {
       type: String,
-      enum: ["admin", "empleado"],
-      default: "empleado"
+      enum: ["admin", "jefe"],
+      default: "jefe"
     },
     sucursal: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Sucursal",
       required: true
+    },
+    activo: {
+      type: Boolean,
+      default: true
     }
   },
   {

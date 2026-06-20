@@ -7,7 +7,8 @@ const {
   obtenerPerfil,
   listarUsuarios,
   cambiarRol,
-  cambiarEstado
+  cambiarEstado,
+  cambiarSucursal
 } = require("../controllers/usuarios.controller");
 
 const { protegerRuta, soloAdmin } = require("../middleware/auth");
@@ -20,8 +21,9 @@ router.post("/login",    loginUsuario);
 router.get("/perfil", protegerRuta, obtenerPerfil);
 
 // Solo admin
-router.get("/",           protegerRuta, soloAdmin, listarUsuarios);
-router.put("/:id/rol",    protegerRuta, soloAdmin, cambiarRol);
-router.put("/:id/estado", protegerRuta, soloAdmin, cambiarEstado);
+router.get("/",               protegerRuta, soloAdmin, listarUsuarios);
+router.put("/:id/rol",        protegerRuta, soloAdmin, cambiarRol);
+router.put("/:id/estado",     protegerRuta, soloAdmin, cambiarEstado);
+router.put("/:id/sucursal",   protegerRuta, soloAdmin, cambiarSucursal);
 
 module.exports = router;

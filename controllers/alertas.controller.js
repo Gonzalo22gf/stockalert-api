@@ -50,55 +50,55 @@ const enviarAlertasDiarias = async (req, res) => {
       }
 
       const html = `
-        <h2>🚨 Alerta diaria StockAlert</h2>
+  <h2>🚨 Alerta diaria StockAlert</h2>
 
-        <p><strong>Sucursal:</strong> ${usuario.sucursal.nombre}</p>
+  <p><strong>Sucursal:</strong> Zona ${usuario.sucursal.zona}, ${usuario.sucursal.numero}</p>
 
-        <hr>
+  <hr>
 
-        <p>❌ <strong>Productos vencidos:</strong> ${vencidos.length}</p>
-        <p>⚠️ <strong>Productos por vencer en 7 días:</strong> ${porVencer.length}</p>
-        <p>📉 <strong>Stock crítico:</strong> ${stockCritico.length}</p>
-        <p>🚫 <strong>Productos agotados:</strong> ${agotados.length}</p>
+  <p>❌ <strong>Productos vencidos:</strong> ${vencidos.length}</p>
+  <p>⚠️ <strong>Productos por vencer en 7 días:</strong> ${porVencer.length}</p>
+  <p>📉 <strong>Stock crítico:</strong> ${stockCritico.length}</p>
+  <p>🚫 <strong>Productos agotados:</strong> ${agotados.length}</p>
 
-        <hr>
+  <hr>
 
-        <h3>Detalle vencidos</h3>
-        <ul>
-          ${
-            vencidos.length > 0
-              ? vencidos.map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`).join("")
-              : "<li>No hay productos vencidos</li>"
-          }
-        </ul>
+  <h3>Detalle vencidos</h3>
+  <ul>
+    ${
+      vencidos.length > 0
+        ? vencidos.map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`).join("")
+        : "<li>No hay productos vencidos</li>"
+    }
+  </ul>
 
-        <h3>Detalle por vencer</h3>
-        <ul>
-          ${
-            porVencer.length > 0
-              ? porVencer
-                  .map(
-                    (p) =>
-                      `<li>${p.nombre} - Vence: ${new Date(
-                        p.vencimiento
-                      ).toLocaleDateString("es-AR")}</li>`
-                  )
-                  .join("")
-              : "<li>No hay productos por vencer</li>"
-          }
-        </ul>
+  <h3>Detalle por vencer</h3>
+  <ul>
+    ${
+      porVencer.length > 0
+        ? porVencer
+            .map(
+              (p) =>
+                `<li>${p.nombre} - Vence: ${new Date(
+                  p.vencimiento
+                ).toLocaleDateString("es-AR")}</li>`
+            )
+            .join("")
+        : "<li>No hay productos por vencer</li>"
+    }
+  </ul>
 
-        <h3>Detalle stock crítico</h3>
-        <ul>
-          ${
-            stockCritico.length > 0
-              ? stockCritico.map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`).join("")
-              : "<li>No hay productos con stock crítico</li>"
-          }
-        </ul>
+  <h3>Detalle stock crítico</h3>
+  <ul>
+    ${
+      stockCritico.length > 0
+        ? stockCritico.map((p) => `<li>${p.nombre} - Stock: ${p.stock}</li>`).join("")
+        : "<li>No hay productos con stock crítico</li>"
+    }
+  </ul>
 
-        <p>Este aviso fue generado automáticamente por StockAlert.</p>
-      `;
+  <p>Este aviso fue generado automáticamente por StockAlert.</p>
+`;
 
       console.log("EMAIL DESTINO REAL:", process.env.EMAIL_ALERTAS);
       console.log("USUARIO ORIGINAL:", usuario.email);

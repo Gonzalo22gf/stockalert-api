@@ -43,10 +43,10 @@ const obtenerProductos = async (req, res) => {
     }
 
     const productos = await Producto.find(filtro)
-      .populate("sucursal", "nombre direccion empresa")
-      .populate("creadoPor", "nombre email rol")
-      .populate("actualizadoPor", "nombre email rol")
-      .sort({ createdAt: -1 });
+  .populate("sucursal", "zona numero direccion empresa")
+  .populate("creadoPor", "nombre email rol")
+  .populate("actualizadoPor", "nombre email rol")
+  .sort({ createdAt: -1 });
 
     res.json(productos);
   } catch (error) {
@@ -108,9 +108,9 @@ const crearProducto = async (req, res) => {
     });
 
     const productoCompleto = await Producto.findById(producto._id)
-      .populate("sucursal", "nombre direccion empresa")
-      .populate("creadoPor", "nombre email rol")
-      .populate("actualizadoPor", "nombre email rol");
+  .populate("sucursal", "zona numero direccion empresa")
+  .populate("creadoPor", "nombre email rol")
+  .populate("actualizadoPor", "nombre email rol");
 
     res.status(201).json(productoCompleto);
   } catch (error) {
@@ -168,13 +168,13 @@ const actualizarProducto = async (req, res) => {
     }
 
     const productoActualizado = await Producto.findByIdAndUpdate(
-      req.params.id,
-      camposUpdate,
-      { new: true, runValidators: true }
-    )
-      .populate("sucursal", "nombre direccion empresa")
-      .populate("creadoPor", "nombre email rol")
-      .populate("actualizadoPor", "nombre email rol");
+  req.params.id,
+  camposUpdate,
+  { new: true, runValidators: true }
+)
+  .populate("sucursal", "zona numero direccion empresa")
+  .populate("creadoPor", "nombre email rol")
+  .populate("actualizadoPor", "nombre email rol");
 
     // Detectar si fue una transferencia
     const fueTransferencia = sucursal && esAdmin &&

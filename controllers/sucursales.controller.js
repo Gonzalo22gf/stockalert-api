@@ -4,7 +4,7 @@ const Producto = require("../models/Producto");
 // LISTAR TODAS
 const obtenerSucursales = async (req, res) => {
   try {
-    const sucursales = await Sucursal.find().sort({ nombre: 1 });
+    const sucursales = await Sucursal.find().sort({ numero: 1 });
     res.json(sucursales);
   } catch (error) {
     res.status(500).json({ mensaje: "Error al obtener sucursales" });
@@ -18,7 +18,7 @@ const obtenerResumenSucursales = async (req, res) => {
       return res.status(403).json({ mensaje: "No autorizado" });
     }
 
-    const sucursales = await Sucursal.find().sort({ nombre: 1 });
+    const sucursales = await Sucursal.find().sort({ numero: 1 });
     const hoy = new Date();
 
     const resumen = await Promise.all(
@@ -40,11 +40,11 @@ const obtenerResumenSucursales = async (req, res) => {
 
         return {
           sucursal: {
-            _id:      sucursal._id,
-            nombre:   sucursal.nombre,
-            direccion:sucursal.direccion,
-            numero:   sucursal.numero,
-            empresa:  sucursal.empresa
+            _id:       sucursal._id,
+            zona:      sucursal.zona,
+            numero:    sucursal.numero,
+            direccion: sucursal.direccion,
+            empresa:   sucursal.empresa
           },
           totalProductos,
           vencidos,
@@ -62,21 +62,49 @@ const obtenerResumenSucursales = async (req, res) => {
   }
 };
 
+// CREAR SUCURSAL (solo admin)
+const crearSucursal = async (req, res) => {
+  try {
+    const { zona, numero, direccion, empresa } = req.body;
+
+    if (zona === undefined || zona === null || numero === undefined || numero === null) {
+      return res.status(400).json({ mensaje: "Zona y número son obligatorios" });
+    }
+
+    const yaExiste = await Sucursal.findOne({ numero: Number(numero) });
+    if (yaExiste) {
+      return res.status(400).json({ mensaje: "Ya existe una sucursal con ese número" });
+    }
+
+    const sucursal = await Sucursal.create({
+      zona: Number(zona),
+      numero: Number(numero),
+      direccion: direccion?.trim() || "",
+      empresa: empresa?.trim() || "Carrefour"
+    });
+
+    res.status(201).json({ mensaje: "Sucursal creada", sucursal });
+  } catch (error) {
+    console.error("ERROR CREAR SUCURSAL:", error);
+    res.status(500).json({ mensaje: error.message || "Error al crear sucursal" });
+  }
+};
+
 // EDITAR SUCURSAL (solo admin)
 const editarSucursal = async (req, res) => {
   try {
-    const { nombre, direccion, numero } = req.body;
+    const { zona, numero, direccion } = req.body;
 
-    if (!nombre || nombre.trim() === "") {
-      return res.status(400).json({ mensaje: "El nombre es obligatorio" });
+    if (zona === undefined || zona === null || numero === undefined || numero === null) {
+      return res.status(400).json({ mensaje: "Zona y número son obligatorios" });
     }
 
     const sucursal = await Sucursal.findByIdAndUpdate(
       req.params.id,
       {
-        nombre:    nombre.trim(),
-        direccion: direccion?.trim() || "",
-        ...(numero !== undefined && { numero: Number(numero) })
+        zona: Number(zona),
+        numero: Number(numero),
+        direccion: direccion?.trim() || ""
       },
       { new: true, runValidators: true }
     );
@@ -95,5 +123,6 @@ const editarSucursal = async (req, res) => {
 module.exports = {
   obtenerSucursales,
   obtenerResumenSucursales,
+  crearSucursal,
   editarSucursal
 };

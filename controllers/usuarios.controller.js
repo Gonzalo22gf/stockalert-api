@@ -10,10 +10,10 @@ const generarToken = (id) => {
 // REGISTRO
 const registrarUsuario = async (req, res) => {
   try {
-    const { nombre, email, password, nombreSucursal, direccionSucursal } = req.body;
+    const { nombre, email, password, numeroSucursal } = req.body;
 
-    if (!nombre || !email || !password || !nombreSucursal) {
-      return res.status(400).json({ mensaje: "Nombre, email, contraseña y sucursal son obligatorios" });
+    if (!nombre || !email || !password || numeroSucursal === undefined || numeroSucursal === null) {
+      return res.status(400).json({ mensaje: "Nombre, email, contraseña y número de sucursal son obligatorios" });
     }
 
     const emailNormalizado = email.toLowerCase().trim();
@@ -23,19 +23,15 @@ const registrarUsuario = async (req, res) => {
       return res.status(400).json({ mensaje: "El usuario ya existe" });
     }
 
-    let sucursal = await Sucursal.findOne({ nombre: nombreSucursal.trim() });
+    const sucursal = await Sucursal.findOne({ numero: Number(numeroSucursal) });
 
     if (!sucursal) {
-      sucursal = await Sucursal.create({
-        nombre: nombreSucursal.trim(),
-        direccion: direccionSucursal || "",
-        empresa: "Carrefour"
-      });
+      return res.status(400).json({ mensaje: "La sucursal indicada no existe. Contactá al administrador." });
     }
 
     const salt = await bcrypt.genSalt(10);
     const passwordHasheado = await bcrypt.hash(password, salt);
-    const rolAsignado = emailNormalizado === "prueba@stockalert.com" ? "admin" : "empleado";
+    const rolAsignado = "jefe";
 
     const usuario = await Usuario.create({
       nombre,
@@ -51,7 +47,7 @@ const registrarUsuario = async (req, res) => {
       nombre: usuario.nombre,
       email: usuario.email,
       rol: usuario.rol,
-      sucursal: { _id: sucursal._id, nombre: sucursal.nombre, direccion: sucursal.direccion },
+      sucursal: { _id: sucursal._id, zona: sucursal.zona, numero: sucursal.numero, direccion: sucursal.direccion },
       token: generarToken(usuario._id)
     });
   } catch (error) {
@@ -116,7 +112,7 @@ const listarUsuarios = async (req, res) => {
   try {
     const usuarios = await Usuario.find()
       .select("-password")
-      .populate("sucursal", "nombre direccion numero")
+      .populate("sucursal", "zona numero direccion")
       .sort({ createdAt: -1 });
 
     res.json(usuarios);
@@ -130,7 +126,7 @@ const listarUsuarios = async (req, res) => {
 const cambiarRol = async (req, res) => {
   try {
     const { rol } = req.body;
-    const rolesValidos = ["admin", "jefe", "usuario", "empleado"];
+    const rolesValidos = ["admin", "jefe"];
 
     if (!rolesValidos.includes(rol)) {
       return res.status(400).json({ mensaje: "Rol inválido" });
@@ -143,8 +139,8 @@ const cambiarRol = async (req, res) => {
     const usuario = await Usuario.findByIdAndUpdate(
       req.params.id,
       { rol },
-      { new: true }
-    ).select("-password").populate("sucursal", "nombre");
+      { new: true, runValidators: true }
+    ).select("-password").populate("sucursal", "zona numero");
 
     if (!usuario) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
@@ -174,7 +170,7 @@ const cambiarEstado = async (req, res) => {
       req.params.id,
       { activo },
       { new: true }
-    ).select("-password").populate("sucursal", "nombre");
+    ).select("-password").populate("sucursal", "zona numero");
 
     if (!usuario) {
       return res.status(404).json({ mensaje: "Usuario no encontrado" });
@@ -187,11 +183,44 @@ const cambiarEstado = async (req, res) => {
   }
 };
 
+// CAMBIAR SUCURSAL (solo admin)
+const cambiarSucursal = async (req, res) => {
+  try {
+    const { numeroSucursal } = req.body;
+
+    if (numeroSucursal === undefined || numeroSucursal === null) {
+      return res.status(400).json({ mensaje: "El número de sucursal es obligatorio" });
+    }
+
+    const sucursal = await Sucursal.findOne({ numero: Number(numeroSucursal) });
+
+    if (!sucursal) {
+      return res.status(404).json({ mensaje: "No existe una sucursal con ese número" });
+    }
+
+    const usuario = await Usuario.findByIdAndUpdate(
+      req.params.id,
+      { sucursal: sucursal._id },
+      { new: true, runValidators: true }
+    ).select("-password").populate("sucursal", "zona numero direccion");
+
+    if (!usuario) {
+      return res.status(404).json({ mensaje: "Usuario no encontrado" });
+    }
+
+    res.json({ mensaje: "Sucursal del usuario actualizada", usuario });
+  } catch (error) {
+    console.error("ERROR CAMBIAR SUCURSAL:", error);
+    res.status(500).json({ mensaje: "Error al cambiar sucursal del usuario" });
+  }
+};
+
 module.exports = {
   registrarUsuario,
   loginUsuario,
   obtenerPerfil,
   listarUsuarios,
   cambiarRol,
-  cambiarEstado
+  cambiarEstado,
+  cambiarSucursal
 };

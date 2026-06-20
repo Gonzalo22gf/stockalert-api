@@ -14,7 +14,7 @@ const obtenerMovimientos = async (req, res) => {
 
     const movimientos = await Movimiento.find(filtro)
       .populate("usuario", "nombre email rol")
-      .populate("sucursal", "nombre direccion empresa")
+      .populate("sucursal", "zona numero direccion empresa")
       .sort({ createdAt: -1 })
       .limit(100);
 
