@@ -43,6 +43,7 @@ const obtenerResumenSucursales = async (req, res) => {
             _id:       sucursal._id,
             zona:      sucursal.zona,
             numero:    sucursal.numero,
+            nombre:    sucursal.nombre,
             direccion: sucursal.direccion,
             empresa:   sucursal.empresa
           },
