@@ -14,7 +14,15 @@ const loteSchema = new mongoose.Schema(
     },
     vencimiento: {
       type: Date,
-      required: true
+      required: true,
+      validate: {
+        validator: function (valor) {
+          const limite = new Date();
+          limite.setFullYear(limite.getFullYear() + 5);
+          return valor <= limite;
+        },
+        message: "La fecha de vencimiento no puede ser mayor a 5 años desde hoy"
+      }
     }
   },
   {
@@ -46,7 +54,15 @@ const productoSchema = new mongoose.Schema(
     },
     vencimiento: {
       type: Date,
-      required: true
+      required: true,
+      validate: {
+        validator: function (valor) {
+          const limite = new Date();
+          limite.setFullYear(limite.getFullYear() + 5);
+          return valor <= limite;
+        },
+        message: "La fecha de vencimiento no puede ser mayor a 5 años desde hoy"
+      }
     },
     codigoBarras: {
       type: String,
