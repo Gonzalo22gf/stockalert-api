@@ -1,4 +1,4 @@
-import { apiGet, apiPut } from "./client";
+import { apiGet, apiPut, apiDelete } from "./client";
 
 export const listarUsuarios = () => apiGet("/api/usuarios");
 
@@ -10,3 +10,5 @@ export const cambiarSucursalUsuario = (id, numeroSucursal) =>
   apiPut(`/api/usuarios/${id}/sucursal`, { numeroSucursal });
 
 export const editarUsuario = (id, datos) => apiPut(`/api/usuarios/${id}`, datos);
+
+export const eliminarUsuario = (id) => apiDelete(`/api/usuarios/${id}`);

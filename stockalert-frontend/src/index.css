@@ -1,3 +1,47 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --bg-base: #0a0b0f;
+  --bg-panel: #13151c;
+  --bg-panel-hover: #1a1d26;
+  --border-soft: #1c1f29;
+  --border: #232733;
+}
+
+html {
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+  letter-spacing: -0.011em;
+}
+
+body {
+  background: var(--bg-base);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar oscuro y fino */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: #232733; border-radius: 5px; }
+::-webkit-scrollbar-thumb:hover { background: #2e3340; }
+/* Opciones de los <select> legibles en dark mode */
+/* Campos de formulario legibles en dark mode */
+select,
+input[type="date"],
+input[type="number"],
+input[type="text"],
+input[type="email"],
+input[type="password"] {
+  background-color: #13151c;
+  color: #f1f3f8;
+}
+option {
+  background-color: #13151c;
+  color: #f1f3f8;
+}
+/* Ícono del calendario en inputs de fecha, visible en dark */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.7);
+  cursor: pointer;
+}

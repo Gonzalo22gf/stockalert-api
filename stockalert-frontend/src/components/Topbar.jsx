@@ -24,13 +24,16 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
     navigate(ruta);
   }
 
+  const chipClase =
+    "flex items-center gap-1.5 rounded-[9px] border border-border bg-panel px-3 py-[7px] text-[12.5px] font-medium text-slate-400 transition-all hover:bg-panel-hover hover:border-slate-700";
+
   return (
-    <header className="relative flex items-center justify-between border-b border-slate-800 bg-slate-950 px-6 py-4">
+    <header className="relative flex items-center justify-between border-b border-border-soft bg-base/80 px-7 py-4 backdrop-blur-xl">
       <div className="flex items-center gap-3">
         <button
           onClick={onToggleSidebar}
           title="Mostrar/ocultar menú"
-          className="rounded-lg border border-slate-800 bg-slate-900 p-2 text-slate-300 hover:bg-slate-800"
+          className="rounded-lg border border-border bg-panel p-2 text-slate-400 transition-all hover:bg-panel-hover hover:text-white"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="3" y1="12" x2="21" y2="12" />
@@ -39,17 +42,16 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
           </svg>
         </button>
         <div>
-          <h1 className="text-lg font-bold text-white">{titulo}</h1>
-          {subtitulo && <p className="text-xs text-slate-500">{subtitulo}</p>}
+          <h1 className="text-[19px] font-bold text-white">{titulo}</h1>
+          {subtitulo && <p className="text-[12.5px] text-slate-600">{subtitulo}</p>}
         </div>
       </div>
 
-      <div className="flex items-center gap-3">
-        {/* Accesos rápidos */}
+      <div className="flex items-center gap-2.5">
         <div className="relative">
           <button
             onClick={() => setMenuAbierto((v) => !v)}
-            className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+            className="flex items-center gap-1.5 rounded-[9px] border border-brand/25 bg-brand/10 px-3 py-[7px] text-[12.5px] font-semibold text-brand-400 transition-all hover:bg-brand/20"
           >
             ⚡ Accesos rápidos
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -60,14 +62,15 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
           {menuAbierto && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
-              <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-lg border border-slate-800 bg-slate-900 shadow-xl">
+              <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60 animate-fade" style={{ backgroundColor: "#13151c" }}>
                 {accesos
                   .filter((a) => !a.soloAdmin || esAdmin)
                   .map((a) => (
                     <button
                       key={a.ruta}
                       onClick={() => ir(a.ruta)}
-                      className="block w-full px-4 py-2 text-left text-sm text-slate-300 hover:bg-slate-800 hover:text-white"
+                      className="block w-full px-4 py-2.5 text-left text-[13px] font-medium transition-colors hover:bg-[#1a1d26]"
+                      style={{ color: "#cbd1e0" }}
                     >
                       {a.label}
                     </button>
@@ -77,13 +80,13 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
           )}
         </div>
 
-        <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-400">
+        <div className={chipClase}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
           </svg>
           {nombreSucursal}
         </div>
-        <div className="flex items-center gap-1.5 rounded-lg border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-400">
+        <div className={chipClase}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <rect x="3" y="4" width="18" height="18" rx="2" />
             <line x1="16" y1="2" x2="16" y2="6" />

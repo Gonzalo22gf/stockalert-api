@@ -19,7 +19,8 @@ export function exportarProductosExcel(productos) {
     Lote: p.lote || "",
     Vencimiento: new Date(p.vencimiento).toLocaleDateString("es-AR"),
     Estado: estadoVencimiento(p.vencimiento),
-    Sucursal: p.sucursal?.nombre || ""
+    Zona: p.sucursal?.zona ?? "",
+    Sucursal: p.sucursal?.numero ?? ""
   }));
 
   const hoja = XLSX.utils.json_to_sheet(filas);
@@ -59,4 +60,60 @@ export function leerArchivoProductos(archivo) {
     lector.onerror = () => reject(new Error("No se pudo leer el archivo"));
     lector.readAsArrayBuffer(archivo);
   });
+}
+
+export function descargarBackupSucursal(sucursal, productos) {
+  const libro = XLSX.utils.book_new();
+
+  // Hoja 1: datos de la sucursal
+  const datosSucursal = [{
+    Zona: sucursal.zona,
+    Sucursal: sucursal.numero,
+    Direccion: sucursal.direccion || "",
+    Empresa: sucursal.empresa || "",
+    "Total productos": productos.length
+  }];
+  const hojaSucursal = XLSX.utils.json_to_sheet(datosSucursal);
+  XLSX.utils.book_append_sheet(libro, hojaSucursal, "Sucursal");
+
+  // Hoja 2: productos (formato compatible para reimportar)
+  const filasProductos = productos.map((p) => ({
+    Nombre: p.nombre,
+    Categoría: p.categoria,
+    Precio: p.precio,
+    Stock: p.stock,
+    Lote: p.lote || "",
+    Vencimiento: new Date(p.vencimiento).toLocaleDateString("es-AR"),
+    "Código de barras": p.codigoBarras || "",
+    Zona: p.sucursal?.zona ?? sucursal.zona,
+    Sucursal: p.sucursal?.numero ?? sucursal.numero
+  }));
+  const hojaProductos = XLSX.utils.json_to_sheet(
+    filasProductos.length > 0
+      ? filasProductos
+      : [{ Nombre: "", Categoría: "", Precio: "", Stock: "", Lote: "", Vencimiento: "", "Código de barras": "", Zona: "", Sucursal: "" }]
+  );
+  XLSX.utils.book_append_sheet(libro, hojaProductos, "Productos");
+
+  const fecha = new Date().toLocaleDateString("es-AR").replace(/\//g, "-");
+  const nombreArchivo = `backup-zona${sucursal.zona}-suc${sucursal.numero}-${fecha}.xlsx`;
+  XLSX.writeFile(libro, nombreArchivo);
+}
+
+export function descargarBackupUsuario(usuario) {
+  const libro = XLSX.utils.book_new();
+  const datos = [{
+    Nombre: usuario.nombre,
+    Email: usuario.email,
+    Rol: usuario.rol,
+    Zona: usuario.sucursal?.zona ?? "",
+    Sucursal: usuario.sucursal?.numero ?? "",
+    Estado: usuario.activo ? "Activo" : "Inactivo"
+  }];
+  const hoja = XLSX.utils.json_to_sheet(datos);
+  XLSX.utils.book_append_sheet(libro, hoja, "Usuario");
+
+  const fecha = new Date().toLocaleDateString("es-AR").replace(/\//g, "-");
+  const nombreArchivo = `backup-usuario-${usuario.nombre.replace(/[^a-zA-Z0-9]/g, "_")}-${fecha}.xlsx`;
+  XLSX.writeFile(libro, nombreArchivo);
 }

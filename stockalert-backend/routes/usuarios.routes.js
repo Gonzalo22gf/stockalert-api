@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const rateLimit = require("express-rate-limit");
 
 const {
   registrarUsuario,
@@ -15,9 +16,18 @@ const {
 
 const { protegerRuta, soloAdmin } = require("../middleware/auth");
 
-// Públicas
-router.post("/registro", registrarUsuario);
-router.post("/login",    loginUsuario);
+// Rate limit estricto SOLO para login/registro (anti fuerza bruta)
+const limiteAuth = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { mensaje: "Demasiados intentos de acceso. Esperá 15 minutos." }
+});
+
+// Públicas (con límite anti fuerza bruta)
+router.post("/registro", limiteAuth, registrarUsuario);
+router.post("/login",    limiteAuth, loginUsuario);
 
 // Protegidas
 router.get("/perfil", protegerRuta, obtenerPerfil);

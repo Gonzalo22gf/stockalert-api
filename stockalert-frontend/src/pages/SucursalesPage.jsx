@@ -1,7 +1,12 @@
+import EmptyState from "../components/EmptyState";
+import { SkeletonTabla } from "../components/Skeleton";
 import { useState } from "react";
 import { Navigate, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import { useAuthStore } from "../store/authStore";
-import { useResumenSucursales } from "../hooks/useSucursales";
+import { useResumenSucursales, useEliminarSucursal } from "../hooks/useSucursales";
+import { obtenerProductos } from "../api/productos";
+import { descargarBackupSucursal } from "../utils/exportar";
 import ModalSucursal from "../components/ModalSucursal";
 
 export default function SucursalesPage() {
@@ -10,6 +15,7 @@ export default function SucursalesPage() {
   const navigate = useNavigate();
 
   const { data: resumen, isLoading, isError } = useResumenSucursales(esAdmin);
+  const eliminarSucursal = useEliminarSucursal();
   const [modalAbierto, setModalAbierto] = useState(false);
   const [sucursalEditando, setSucursalEditando] = useState(null);
   const [filtroZona, setFiltroZona] = useState("");
@@ -38,9 +44,51 @@ export default function SucursalesPage() {
     navigate(`/productos?sucursal=${sucursalId}`);
   }
 
+  async function manejarEliminar(item) {
+    const sucursal = item.sucursal;
+    const cantProductos = item.totalProductos;
+
+    const resultado = await Swal.fire({
+      title: "⚠️ Eliminar sucursal",
+      html: `
+        <div style="text-align:left;font-size:14px">
+          Vas a eliminar <b>${sucursal.nombre}</b>.<br><br>
+          Esto borrará también sus <b>${cantProductos} producto(s)</b>.<br><br>
+          <span style="color:#f87171">Esta acción <b>no se puede deshacer</b>.</span><br><br>
+          Antes de borrar se descargará automáticamente un <b>backup en Excel</b> con todos los datos.
+        </div>
+      `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, descargar backup y eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#dc2626"
+    });
+
+    if (!resultado.isConfirmed) return;
+
+    try {
+      // 1. Traer los productos de la sucursal para el backup
+      const productos = await obtenerProductos(sucursal._id);
+
+      // 2. Descargar backup ANTES de borrar
+      descargarBackupSucursal(sucursal, productos || []);
+
+      // 3. Borrar
+      const respuesta = await eliminarSucursal.mutateAsync(sucursal._id);
+
+      Swal.fire({
+        icon: "success",
+        title: "Sucursal eliminada",
+        text: `Se eliminó "${sucursal.nombre}" y ${respuesta.productosEliminados || 0} producto(s). El backup quedó descargado.`
+      });
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Error", text: error.message });
+    }
+  }
+
   const formatoMoneda = (v) => Number(v).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
 
-  // Zonas únicas para el filtro
   const zonas = [...new Set((resumen || []).map((r) => r.sucursal.zona))].sort((a, b) => a - b);
 
   const resumenFiltrado = (resumen || []).filter((r) => {
@@ -54,7 +102,6 @@ export default function SucursalesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Filtros + botón crear */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
           <select value={filtroZona} onChange={(e) => setFiltroZona(e.target.value)} className={inputClase}>
@@ -78,7 +125,7 @@ export default function SucursalesPage() {
         </button>
       </div>
 
-      {isLoading && <p className="text-sm text-slate-400">Cargando sucursales...</p>}
+      {isLoading && <SkeletonTabla filas={4} />}
       {isError && <p className="text-sm text-red-400">No se pudieron cargar las sucursales.</p>}
 
       {!isLoading && !isError && (
@@ -114,19 +161,29 @@ export default function SucursalesPage() {
                   <td className="px-4 py-3 text-center text-white">{r.vencidos}</td>
                   <td className={`px-4 py-3 text-center ${r.stockCritico > 0 ? "text-orange-400" : "text-white"}`}>{r.stockCritico}</td>
                   <td className="px-4 py-3 text-right text-white">{formatoMoneda(r.valorInventario)}</td>
-                  <td className="px-4 py-3 text-right">
-                    <button
-                      onClick={() => abrirEditar(r.sucursal)}
-                      className="rounded-lg bg-brand/15 px-3 py-1 text-xs font-semibold text-brand hover:bg-brand/25"
-                    >
-                      ✏️ Editar
-                    </button>
+                  <td className="px-4 py-3">
+                    <div className="flex justify-end gap-1.5">
+                      <button
+                        onClick={() => abrirEditar(r.sucursal)}
+                        className="rounded-lg bg-brand/15 px-3 py-1 text-xs font-semibold text-brand hover:bg-brand/25"
+                      >
+                        ✏️ Editar
+                      </button>
+                      <button
+                        onClick={() => manejarEliminar(r)}
+                        className="rounded-lg bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400 hover:bg-red-500/25"
+                      >
+                        🗑️ Eliminar
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
             </tbody>
           </table>
-          {resumenFiltrado.length === 0 && <p className="p-4 text-sm text-slate-500">No hay sucursales para mostrar.</p>}
+          {resumenFiltrado.length === 0 && (
+            <EmptyState icono="🏪" titulo="No hay sucursales" descripcion="Creá una nueva sucursal con el botón de arriba a la derecha." />
+          )}
         </div>
       )}
 

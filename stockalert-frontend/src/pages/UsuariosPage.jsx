@@ -1,8 +1,11 @@
+import EmptyState from "../components/EmptyState";
+import { SkeletonTabla } from "../components/Skeleton";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../store/authStore";
-import { useUsuarios, useCambiarRol, useCambiarEstado } from "../hooks/useUsuarios";
+import { useUsuarios, useCambiarRol, useCambiarEstado, useEliminarUsuario } from "../hooks/useUsuarios";
+import { descargarBackupUsuario } from "../utils/exportar";
 import ModalEditarUsuario from "../components/ModalEditarUsuario";
 
 export default function UsuariosPage() {
@@ -12,6 +15,7 @@ export default function UsuariosPage() {
   const { data: usuarios, isLoading, isError } = useUsuarios(esAdmin);
   const cambiarRol = useCambiarRol();
   const cambiarEstado = useCambiarEstado();
+  const eliminarUsuario = useEliminarUsuario();
 
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [filtroZona, setFiltroZona] = useState("");
@@ -52,7 +56,40 @@ export default function UsuariosPage() {
     }
   }
 
-  // Zonas únicas (de las sucursales de los usuarios)
+  async function manejarEliminar(usuario) {
+    const resultado = await Swal.fire({
+      title: "⚠️ Eliminar usuario",
+      html: `
+        <div style="text-align:left;font-size:14px">
+          Vas a eliminar al usuario <b>${usuario.nombre}</b> (${usuario.email}).<br><br>
+          <span style="color:#f87171">Esta acción <b>no se puede deshacer</b>.</span><br><br>
+          Antes de borrar se descargará un <b>backup en Excel</b> con sus datos.
+        </div>
+      `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, descargar backup y eliminar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#dc2626"
+    });
+
+    if (!resultado.isConfirmed) return;
+
+    try {
+      descargarBackupUsuario(usuario);
+
+      await eliminarUsuario.mutateAsync(usuario._id);
+
+      Swal.fire({
+        icon: "success",
+        title: "Usuario eliminado",
+        text: `Se eliminó "${usuario.nombre}". El backup quedó descargado.`
+      });
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Error", text: error.message });
+    }
+  }
+
   const zonas = [...new Set((usuarios || []).map((u) => u.sucursal?.zona).filter((z) => z !== undefined))].sort((a, b) => a - b);
 
   const usuariosFiltrados = (usuarios || []).filter((u) => {
@@ -68,7 +105,6 @@ export default function UsuariosPage() {
 
   return (
     <div className="space-y-6">
-      {/* Filtros */}
       <div className="flex flex-wrap items-center gap-3">
         <input
           type="text"
@@ -94,7 +130,7 @@ export default function UsuariosPage() {
         />
       </div>
 
-      {isLoading && <p className="text-sm text-slate-400">Cargando usuarios...</p>}
+      {isLoading && <SkeletonTabla filas={5} />}
       {isError && <p className="text-sm text-red-400">No se pudieron cargar los usuarios.</p>}
 
       {!isLoading && !isError && (
@@ -138,13 +174,19 @@ export default function UsuariosPage() {
                         onClick={() => manejarCambiarRol(u)}
                         className="rounded-lg bg-slate-700 px-2.5 py-1 text-xs font-semibold text-slate-200 hover:bg-slate-600"
                       >
-                        Cambiar rol
+                        Rol
                       </button>
                       <button
                         onClick={() => manejarCambiarEstado(u)}
-                        className={`rounded-lg px-2.5 py-1 text-xs font-semibold ${u.activo ? "bg-red-500/15 text-red-400 hover:bg-red-500/25" : "bg-green-500/15 text-green-400 hover:bg-green-500/25"}`}
+                        className={`rounded-lg px-2.5 py-1 text-xs font-semibold ${u.activo ? "bg-orange-500/15 text-orange-400 hover:bg-orange-500/25" : "bg-green-500/15 text-green-400 hover:bg-green-500/25"}`}
                       >
                         {u.activo ? "Desactivar" : "Activar"}
+                      </button>
+                      <button
+                        onClick={() => manejarEliminar(u)}
+                        className="rounded-lg bg-red-500/15 px-2.5 py-1 text-xs font-semibold text-red-400 hover:bg-red-500/25"
+                      >
+                        Eliminar
                       </button>
                     </div>
                   </td>
@@ -152,7 +194,9 @@ export default function UsuariosPage() {
               ))}
             </tbody>
           </table>
-          {usuariosFiltrados.length === 0 && <p className="p-4 text-sm text-slate-500">No hay usuarios para mostrar.</p>}
+          {usuariosFiltrados.length === 0 && (
+            <EmptyState icono="👥" titulo="No hay usuarios" descripcion="Probá ajustar los filtros de búsqueda." />
+          )}
         </div>
       )}
 

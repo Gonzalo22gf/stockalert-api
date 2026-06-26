@@ -1,3 +1,5 @@
+import EmptyState from "../components/EmptyState";
+import { SkeletonCards } from "../components/Skeleton";
 import { useState, useRef, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -214,7 +216,7 @@ export default function ProductosPage() {
         </div>
       </div>
 
-      {isLoading && <p className="text-sm text-slate-400">Cargando productos...</p>}
+      {isLoading && <SkeletonCards cantidad={8} />}
       {isError && <p className="text-sm text-red-400">No se pudieron cargar los productos.</p>}
 
       {!isLoading && !isError && (
@@ -225,7 +227,13 @@ export default function ProductosPage() {
               <ProductoCard key={producto._id} producto={producto} esAdmin={esAdmin} onEditar={manejarEditar} onEliminar={manejarEliminar} />
             ))}
           </div>
-          {productosFiltrados.length === 0 && <p className="text-sm text-slate-500">No hay productos para mostrar.</p>}
+          {productosFiltrados.length === 0 && (
+            <EmptyState
+              icono="📦"
+              titulo="No hay productos para mostrar"
+              descripcion="Probá ajustar los filtros, o agregá un producto nuevo con el formulario de arriba."
+            />
+          )}
         </>
       )}
 

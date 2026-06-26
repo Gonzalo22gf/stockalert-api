@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { obtenerSucursales, obtenerResumenSucursales, crearSucursal, editarSucursal } from "../api/sucursales";
+import { obtenerSucursales, obtenerResumenSucursales, crearSucursal, editarSucursal, eliminarSucursal } from "../api/sucursales";
 
 export function useSucursales(habilitado = true) {
   return useQuery({
@@ -33,6 +33,17 @@ export function useEditarSucursal() {
     mutationFn: ({ id, datos }) => editarSucursal(id, datos),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["sucursales"] });
+    }
+  });
+}
+
+export function useEliminarSucursal() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: eliminarSucursal,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["sucursales"] });
+      queryClient.invalidateQueries({ queryKey: ["productos"] });
     }
   });
 }

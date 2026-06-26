@@ -25,7 +25,8 @@ export default function MovimientoCard({ movimiento }) {
           <span className="truncate font-semibold text-white">{movimiento.nombreProducto || "Producto"}</span>
         </div>
         <p className="text-xs text-slate-500">
-          {movimiento.usuario?.nombre || "Usuario"} · {movimiento.sucursal?.nombre || "Sucursal"}
+          {movimiento.usuario?.nombre || "Usuario"}
+          {movimiento.sucursal?.nombre ? ` · ${movimiento.sucursal.nombre}` : ""}
         </p>
       </div>
       <p className="shrink-0 text-xs text-slate-400">{formatearFechaHora(movimiento.createdAt)}</p>

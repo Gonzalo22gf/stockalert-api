@@ -1,11 +1,12 @@
-import PanelRiesgo from "../components/PanelRiesgo";
-import { useProductos } from "../hooks/useProductos";
-import GraficosDashboard from "../components/GraficosDashboard";
+import { SkeletonKpis } from "../components/Skeleton";
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import { useResumenSucursales } from "../hooks/useSucursales";
+import { useProductos } from "../hooks/useProductos";
 import { useAuthStore } from "../store/authStore";
 import KpiCard from "../components/KpiCard";
+import PanelRiesgo from "../components/PanelRiesgo";
+import GraficosDashboard from "../components/GraficosDashboard";
 
 export default function DashboardPage() {
   const usuario = useAuthStore((s) => s.usuario);
@@ -20,7 +21,11 @@ export default function DashboardPage() {
   }
 
   if (isLoading) {
-    return <p className="text-sm text-slate-400">Cargando dashboard...</p>;
+    return (
+      <div className="space-y-6">
+        <SkeletonKpis />
+      </div>
+    );
   }
 
   if (isError || !resumen) {
@@ -51,8 +56,6 @@ export default function DashboardPage() {
     };
   }
 
-  const formatoMoneda = (v) => v.toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
-
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -60,7 +63,7 @@ export default function DashboardPage() {
         <select
           value={sucursalSeleccionada}
           onChange={(e) => setSucursalSeleccionada(e.target.value)}
-          className="rounded-lg border border-slate-700 bg-slate-800 px-3 py-1.5 text-sm text-white focus:border-brand focus:outline-none"
+          className="rounded-lg border border-border bg-panel px-3 py-1.5 text-sm text-white transition-colors focus:border-brand focus:outline-none"
         >
           <option value="">Todas las sucursales</option>
           {resumen.map((r) => (
@@ -74,13 +77,13 @@ export default function DashboardPage() {
       {totales && (
         <div>
           <h2 className="mb-3 text-sm font-semibold text-slate-300">🏪 {totales.nombre}</h2>
-          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-            <KpiCard etiqueta="Productos" valor={totales.totalProductos} color="blue" />
-            <KpiCard etiqueta="Por vencer" valor={totales.porVencer} color="yellow" />
-            <KpiCard etiqueta="Vencidos" valor={totales.vencidos} color="red" />
-            <KpiCard etiqueta="Stock crítico" valor={totales.stockCritico} color="purple" />
-            <KpiCard etiqueta="Valor inventario" valor={formatoMoneda(totales.valorInventario)} color="green" />
-        </div>
+          <div className="grid grid-cols-2 gap-3.5 md:grid-cols-3 lg:grid-cols-5">
+            <KpiCard etiqueta="Productos" valor={totales.totalProductos} color="indigo" descripcion="en inventario" delay={0.04} />
+            <KpiCard etiqueta="Por vencer" valor={totales.porVencer} color="amber" descripcion="próximos 7 días" delay={0.08} />
+            <KpiCard etiqueta="Vencidos" valor={totales.vencidos} color="red" descripcion="requieren acción" delay={0.12} />
+            <KpiCard etiqueta="Stock crítico" valor={totales.stockCritico} color="purple" descripcion="bajo umbral" delay={0.16} />
+            <KpiCard etiqueta="Valor inventario" valor={totales.valorInventario} prefijo="$ " color="emerald" descripcion="total en stock" delay={0.2} />
+          </div>
         </div>
       )}
 

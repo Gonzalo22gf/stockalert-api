@@ -11,50 +11,54 @@ import {
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
 
-const opcionesBase = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    legend: { labels: { color: "#cbd5e1", font: { size: 11 } } }
-  },
-  scales: {
-    x: { ticks: { color: "#94a3b8", font: { size: 10 } }, grid: { color: "#1e293b" } },
-    y: { ticks: { color: "#94a3b8", font: { size: 10 } }, grid: { color: "#1e293b" } }
-  }
-};
+const PALETA = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4", "#ec4899"];
 
-const opcionesDona = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: { legend: { position: "bottom", labels: { color: "#cbd5e1", font: { size: 11 } } } }
-};
-
-function Tarjeta({ titulo, children }) {
+function Tarjeta({ titulo, subtitulo, children, className = "" }) {
   return (
-    <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-      <h3 className="mb-3 text-center text-xs font-semibold uppercase tracking-wide text-slate-400">{titulo}</h3>
-      <div className="h-56">{children}</div>
+    <div className={`rounded-2xl border border-border-soft bg-panel p-5 animate-fade ${className}`}>
+      <div className="mb-4">
+        <h3 className="text-sm font-bold text-white">{titulo}</h3>
+        {subtitulo && <p className="text-[11px] text-slate-500">{subtitulo}</p>}
+      </div>
+      {children}
     </div>
   );
 }
 
+const tooltipEstilo = {
+  backgroundColor: "#1a1d26",
+  titleColor: "#f1f3f8",
+  bodyColor: "#cbd1e0",
+  borderColor: "#2a2e3a",
+  borderWidth: 1,
+  padding: 10,
+  cornerRadius: 8,
+  displayColors: true,
+  boxPadding: 4
+};
+
 export default function GraficosDashboard({ productos }) {
   if (!productos || productos.length === 0) {
-    return <p className="text-sm text-slate-500">No hay datos suficientes para mostrar gráficos.</p>;
+    return (
+      <div className="rounded-2xl border border-dashed border-border bg-panel/50 px-6 py-14 text-center">
+        <p className="text-sm text-slate-500">No hay datos suficientes para mostrar gráficos.</p>
+      </div>
+    );
   }
 
   const hoy = new Date();
 
-  let enBuenEstado = 0;
-  let porVencer = 0;
-  let vencidos = 0;
+  // Estado de productos
+  let enBuenEstado = 0, porVencer = 0, vencidos = 0;
   productos.forEach((p) => {
     const dias = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
     if (dias < 0) vencidos++;
     else if (dias <= 7) porVencer++;
     else enBuenEstado++;
   });
+  const total = productos.length;
 
+  // Por categoría
   const porCategoria = {};
   const stockPorCategoria = {};
   const valorPorCategoria = {};
@@ -66,48 +70,127 @@ export default function GraficosDashboard({ productos }) {
 
   const categorias = Object.keys(porCategoria);
 
+  // Dona de estado
   const datosEstado = {
-    labels: ["En buen estado", "Por vencer", "Vencidos"],
-    datasets: [
-      {
-        data: [enBuenEstado, porVencer, vencidos],
-        backgroundColor: ["#22c55e", "#eab308", "#ef4444"],
-        borderColor: "#0f172a",
-        borderWidth: 2
+    labels: ["En buen estado", "Por vencer", "Vencido"],
+    datasets: [{
+      data: [enBuenEstado, porVencer, vencidos],
+      backgroundColor: ["#10b981", "#f59e0b", "#ef4444"],
+      borderColor: "#13151c",
+      borderWidth: 3,
+      hoverOffset: 6
+    }]
+  };
+
+  const opcionesDona = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: "70%",
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { color: "#cbd1e0", font: { size: 12, family: "Inter" }, padding: 14, usePointStyle: true, pointStyle: "circle" }
+      },
+      tooltip: {
+        ...tooltipEstilo,
+        callbacks: {
+          label: (ctx) => {
+            const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(0) : 0;
+            return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+          }
+        }
       }
-    ]
+    }
   };
 
-  const datosCategoria = {
-    labels: categorias,
-    datasets: [{ label: "Productos", data: categorias.map((c) => porCategoria[c]), backgroundColor: "#6366f1" }]
+  // Plugin para texto central de la dona
+  const textoCentral = {
+    id: "textoCentral",
+    afterDraw(chart) {
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return;
+      const x = (chartArea.left + chartArea.right) / 2;
+      const y = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillStyle = "#ffffff";
+      ctx.font = "800 26px Inter, sans-serif";
+      ctx.fillText(String(total), x, y - 8);
+      ctx.fillStyle = "#8b90a0";
+      ctx.font = "500 11px Inter, sans-serif";
+      ctx.fillText("productos", x, y + 14);
+      ctx.restore();
+    }
   };
 
-  const datosStock = {
-    labels: categorias,
-    datasets: [{ label: "Stock", data: categorias.map((c) => stockPorCategoria[c]), backgroundColor: "#06b6d4" }]
-  };
+  // Barras horizontales reutilizable
+  function barrasH(data, colorIdx, formato) {
+    return {
+      labels: categorias,
+      datasets: [{
+        data: categorias.map((c) => data[c]),
+        backgroundColor: PALETA[colorIdx],
+        borderRadius: 6,
+        barThickness: 18
+      }]
+    };
+  }
 
-  const datosValor = {
-    labels: categorias,
-    datasets: [{ label: "Valor inventario", data: categorias.map((c) => valorPorCategoria[c]), backgroundColor: "#22c55e" }]
-  };
+  function opcionesBarrasH(formato) {
+    return {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          ...tooltipEstilo,
+          callbacks: {
+            label: (ctx) => formato ? ` ${formato(ctx.raw)}` : ` ${ctx.raw}`
+          }
+        }
+      },
+      scales: {
+        x: { ticks: { color: "#6b7280", font: { size: 10 } }, grid: { color: "#1c1f29" }, border: { display: false } },
+        y: { ticks: { color: "#cbd1e0", font: { size: 11, family: "Inter" } }, grid: { display: false }, border: { display: false } }
+      }
+    };
+  }
+
+  const fmtMoneda = (v) => "$ " + Number(v).toLocaleString("es-AR");
 
   return (
-    <div>
-      <h2 className="mb-4 text-sm font-semibold text-white">📊 Dashboard Ejecutivo</h2>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <Tarjeta titulo="Estado de productos">
-          <Doughnut data={datosEstado} options={opcionesDona} />
+    <div className="space-y-3.5">
+      <h2 className="text-sm font-bold text-white">📊 Análisis del inventario</h2>
+
+      {/* Fila 1: Dona protagonista + Productos por categoría */}
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
+        <Tarjeta titulo="Estado general" subtitulo="Distribución por vencimiento">
+          <div className="h-64">
+            <Doughnut data={datosEstado} options={opcionesDona} plugins={[textoCentral]} />
+          </div>
         </Tarjeta>
-        <Tarjeta titulo="Productos por categoría">
-          <Bar data={datosCategoria} options={opcionesBase} />
+
+        <Tarjeta titulo="Productos por categoría" subtitulo="Cantidad de ítems distintos">
+          <div className="h-64">
+            <Bar data={barrasH(porCategoria, 0)} options={opcionesBarrasH()} />
+          </div>
         </Tarjeta>
-        <Tarjeta titulo="Stock por categoría">
-          <Bar data={datosStock} options={opcionesBase} />
+      </div>
+
+      {/* Fila 2: Valor + Stock */}
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
+        <Tarjeta titulo="Valor por categoría" subtitulo="Dónde está concentrado el capital">
+          <div className="h-56">
+            <Bar data={barrasH(valorPorCategoria, 1)} options={opcionesBarrasH(fmtMoneda)} />
+          </div>
         </Tarjeta>
-        <Tarjeta titulo="Valor de inventario">
-          <Bar data={datosValor} options={opcionesBase} />
+
+        <Tarjeta titulo="Unidades en stock" subtitulo="Cantidad total por categoría">
+          <div className="h-56">
+            <Bar data={barrasH(stockPorCategoria, 5)} options={opcionesBarrasH()} />
+          </div>
         </Tarjeta>
       </div>
     </div>
