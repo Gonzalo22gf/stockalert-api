@@ -9,6 +9,8 @@ const conectarDB = require("./config/db");
 dotenv.config();
 
 const app = express();
+// Render usa un proxy: confiar en él para que el rate-limit lea bien la IP
+app.set("trust proxy", 1);
 
 conectarDB();
 
