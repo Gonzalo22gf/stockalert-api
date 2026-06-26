@@ -28,11 +28,12 @@ const origenesPermitidos = [
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Permite requests sin origin (ej: Postman, apps móviles) y los de la lista
+      // Permite requests sin origin (Postman, apps móviles, health checks) y los de la lista
       if (!origin || origenesPermitidos.includes(origin)) {
         callback(null, true);
       } else {
-        callback(new Error("Origen no permitido por CORS"));
+        // No autoriza, pero sin tirar error que rompa la cadena
+        callback(null, false);
       }
     },
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
