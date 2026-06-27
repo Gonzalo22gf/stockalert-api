@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
@@ -15,14 +15,23 @@ const TITULOS = {
 export default function Layout() {
   const location = useLocation();
   const { titulo, subtitulo } = TITULOS[location.pathname] || { titulo: "StockAlert", subtitulo: "" };
-  const [sidebarAbierto, setSidebarAbierto] = useState(true);
+
+  const [sidebarAbierto, setSidebarAbierto] = useState(() => window.innerWidth >= 768);
+
+  useEffect(() => {
+    const alCambiarTamano = () => {
+      setSidebarAbierto(window.innerWidth >= 768);
+    };
+    window.addEventListener("resize", alCambiarTamano);
+    return () => window.removeEventListener("resize", alCambiarTamano);
+  }, []);
 
   return (
     <div className="flex h-screen bg-base">
-      <Sidebar abierto={sidebarAbierto} />
+      <Sidebar abierto={sidebarAbierto} onCerrar={() => setSidebarAbierto(false)} />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar titulo={titulo} subtitulo={subtitulo} onToggleSidebar={() => setSidebarAbierto((v) => !v)} />
-        <main className="flex-1 overflow-y-auto px-7 py-6">
+        <main className="flex-1 overflow-y-auto px-4 py-5 md:px-7 md:py-6">
           <Outlet />
         </main>
       </div>
