@@ -18,7 +18,7 @@ const queryClient = new QueryClient({
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
-      <BrowserRouter basename="/stock">
+      <BrowserRouter basename="/stockalert-api">
         <App />
       </BrowserRouter>
     </QueryClientProvider>
