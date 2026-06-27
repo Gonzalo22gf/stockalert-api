@@ -24,16 +24,17 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
     navigate(ruta);
   }
 
+  // Estos chips (sucursal y fecha) se ocultan en pantallas chicas y solo aparecen en lg+
   const chipClase =
-    "flex items-center gap-1.5 rounded-[9px] border border-border bg-panel px-3 py-[7px] text-[12.5px] font-medium text-slate-400 transition-all hover:bg-panel-hover hover:border-slate-700";
+    "hidden lg:flex items-center gap-1.5 rounded-[9px] border border-border bg-panel px-3 py-[7px] text-[12.5px] font-medium text-slate-400 transition-all hover:bg-panel-hover hover:border-slate-700";
 
   return (
-    <header className="relative flex items-center justify-between border-b border-border-soft bg-base/80 px-7 py-4 backdrop-blur-xl">
-      <div className="flex items-center gap-3">
+    <header className="relative flex items-center justify-between gap-2 border-b border-border-soft bg-base/80 px-4 py-3 backdrop-blur-xl md:px-7 md:py-4">
+      <div className="flex min-w-0 items-center gap-3">
         <button
           onClick={onToggleSidebar}
           title="Mostrar/ocultar menú"
-          className="rounded-lg border border-border bg-panel p-2 text-slate-400 transition-all hover:bg-panel-hover hover:text-white"
+          className="shrink-0 rounded-lg border border-border bg-panel p-2 text-slate-400 transition-all hover:bg-panel-hover hover:text-white"
         >
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <line x1="3" y1="12" x2="21" y2="12" />
@@ -41,19 +42,19 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
             <line x1="3" y1="18" x2="21" y2="18" />
           </svg>
         </button>
-        <div>
-          <h1 className="text-[19px] font-bold text-white">{titulo}</h1>
-          {subtitulo && <p className="text-[12.5px] text-slate-600">{subtitulo}</p>}
+        <div className="min-w-0">
+          <h1 className="truncate text-base font-bold text-white md:text-[19px]">{titulo}</h1>
+          {subtitulo && <p className="hidden truncate text-[12.5px] text-slate-600 sm:block">{subtitulo}</p>}
         </div>
       </div>
 
-      <div className="flex items-center gap-2.5">
+      <div className="flex shrink-0 items-center gap-2 md:gap-2.5">
         <div className="relative">
           <button
             onClick={() => setMenuAbierto((v) => !v)}
             className="flex items-center gap-1.5 rounded-[9px] border border-brand/25 bg-brand/10 px-3 py-[7px] text-[12.5px] font-semibold text-brand-400 transition-all hover:bg-brand/20"
           >
-            ⚡ Accesos rápidos
+            ⚡ <span className="hidden sm:inline">Accesos rápidos</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <polyline points="6 9 12 15 18 9" />
             </svg>
