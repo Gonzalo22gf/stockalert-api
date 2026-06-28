@@ -78,7 +78,7 @@ export default function FormularioProducto({ esAdmin }) {
     <form onSubmit={manejarSubmit} className="rounded-xl border border-slate-800 bg-slate-900 p-4">
       <h2 className="mb-3 text-sm font-semibold text-white">Agregar producto</h2>
 
-      <div className="mb-3 flex gap-2">
+      <div className="mb-3 flex flex-col gap-2 sm:flex-row">
         <input
           className={`flex-1 ${inputClase}`}
           placeholder="EAN / Código de barras"
