@@ -1,52 +1,89 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
 
+const HIDDEN_ID = "__ean_scanner_hidden__";
+
 export default function EscanerEAN({ onDetectado, onCerrar }) {
-  const scannerRef = useRef(null);
-  const onDetectadoRef = useRef(onDetectado);
-  const contenedorId = "lector-ean";
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+  const intervaloRef = useRef(null);
+  const activoRef = useRef(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    onDetectadoRef.current = onDetectado;
-  }, [onDetectado]);
+    activoRef.current = true;
 
-  useEffect(() => {
-    const scanner = new Html5Qrcode(contenedorId);
-    scannerRef.current = scanner;
-    let activo = true;
-
-    const iniciar = () => {
-      scanner
-        .start(
-          { facingMode: "environment" },
-          { fps: 10, qrbox: { width: 250, height: 150 } },
-          (textoDecodificado) => {
-            if (!activo) return;
-            activo = false;
-            onDetectadoRef.current(textoDecodificado);
-            scanner.stop().then(() => scanner.clear()).catch(() => {});
-          },
-          () => {}
-        )
-        .catch((err) => {
-          console.error("Error al iniciar el escáner:", err);
+    const iniciar = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: "environment" } },
         });
-    };
 
-    // pequeño delay para que el DOM esté listo antes de montar el video
-    const timer = setTimeout(iniciar, 100);
+        if (!activoRef.current) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
 
-    return () => {
-      clearTimeout(timer);
-      activo = false;
-      if (scannerRef.current) {
-        scannerRef.current
-          .stop()
-          .then(() => scannerRef.current.clear())
-          .catch(() => {});
+        streamRef.current = stream;
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+
+        if ("BarcodeDetector" in window) {
+          // Chrome Android — detección nativa
+          const detector = new window.BarcodeDetector({
+            formats: ["ean_13", "ean_8", "code_128", "code_39", "upc_a", "upc_e"],
+          });
+          intervaloRef.current = setInterval(async () => {
+            if (!activoRef.current) return;
+            try {
+              const codes = await detector.detect(videoRef.current);
+              if (codes.length > 0 && activoRef.current) {
+                activoRef.current = false;
+                clearInterval(intervaloRef.current);
+                onDetectado(codes[0].rawValue);
+              }
+            } catch {}
+          }, 300);
+        } else {
+          // iOS Safari — fallback con canvas + html5-qrcode scanFile
+          const qr = new Html5Qrcode(HIDDEN_ID);
+          const canvas = canvasRef.current;
+
+          intervaloRef.current = setInterval(async () => {
+            if (!activoRef.current || !videoRef.current?.videoWidth) return;
+            canvas.width = videoRef.current.videoWidth;
+            canvas.height = videoRef.current.videoHeight;
+            canvas.getContext("2d").drawImage(videoRef.current, 0, 0);
+            canvas.toBlob(async (blob) => {
+              if (!blob || !activoRef.current) return;
+              const file = new File([blob], "frame.jpg", { type: "image/jpeg" });
+              try {
+                const resultado = await qr.scanFile(file, false);
+                if (activoRef.current) {
+                  activoRef.current = false;
+                  clearInterval(intervaloRef.current);
+                  onDetectado(resultado);
+                }
+              } catch {}
+            }, "image/jpeg", 0.8);
+          }, 500);
+        }
+      } catch {
+        if (activoRef.current) {
+          setError("No se pudo acceder a la cámara. Verificá los permisos.");
+        }
       }
     };
-  }, []);
+
+    iniciar();
+
+    return () => {
+      activoRef.current = false;
+      clearInterval(intervaloRef.current);
+      streamRef.current?.getTracks().forEach((t) => t.stop());
+    };
+  }, [onDetectado]);
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onCerrar}>
@@ -54,7 +91,26 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
         <h2 className="mb-3 text-base font-bold text-white">📷 Escanear código de barras</h2>
         <p className="mb-3 text-xs text-slate-400">Apuntá la cámara al código de barras del producto.</p>
 
-        <div id={contenedorId} className="overflow-hidden rounded-lg border border-slate-700" style={{ minHeight: "250px", width: "100%" }} />
+        {error ? (
+          <div className="flex min-h-[200px] items-center justify-center rounded-lg border border-red-800 bg-red-900/20 p-4 text-center text-sm text-red-300">
+            {error}
+          </div>
+        ) : (
+          <div className="relative overflow-hidden rounded-lg border border-slate-700 bg-black">
+            <video
+              ref={videoRef}
+              playsInline
+              muted
+              style={{ width: "100%", display: "block", minHeight: "220px" }}
+            />
+            <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+              <div className="h-14 w-60 rounded border-2 border-green-400/80" />
+            </div>
+          </div>
+        )}
+
+        <div id={HIDDEN_ID} style={{ display: "none" }} />
+        <canvas ref={canvasRef} style={{ display: "none" }} />
 
         <button
           onClick={onCerrar}
