@@ -8,6 +8,7 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const intervaloRef = useRef(null);
+  const wakeLockRef = useRef(null);
   const activoRef = useRef(true);
   const [error, setError] = useState(null);
 
@@ -16,6 +17,11 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
 
     const iniciar = async () => {
       try {
+        // evita que la pantalla se apague mientras escanea
+        if ("wakeLock" in navigator) {
+          try { wakeLockRef.current = await navigator.wakeLock.request("screen"); } catch {}
+        }
+
         const stream = await navigator.mediaDevices.getUserMedia({
           video: { facingMode: { ideal: "environment" } },
         });
@@ -82,6 +88,7 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
       activoRef.current = false;
       clearInterval(intervaloRef.current);
       streamRef.current?.getTracks().forEach((t) => t.stop());
+      wakeLockRef.current?.release().catch(() => {});
     };
   }, [onDetectado]);
 
