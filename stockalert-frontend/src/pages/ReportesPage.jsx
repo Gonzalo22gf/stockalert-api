@@ -19,7 +19,6 @@ import EmptyState from "../components/EmptyState";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
-// Períodos: cuántos días hacia atrás traer
 const PERIODOS = {
   diario: { label: "Diario", dias: 14, titulo: "Últimos 14 días" },
   semanal: { label: "Semanal", dias: 84, titulo: "Últimas 12 semanas" },
@@ -27,12 +26,19 @@ const PERIODOS = {
   anual: { label: "Anual", dias: 1825, titulo: "Últimos 5 años" }
 };
 
+const CATS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados", "Otros"];
+
 function formatearFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 function fmtMoneda(v) {
   return "$ " + Number(v || 0).toLocaleString("es-AR");
+}
+
+// Devuelve el conteo de una categoría de forma segura (soporta snapshots viejos sin categorías)
+function cat(obj, nombre) {
+  return (obj && obj.categorias && obj.categorias[nombre]) || 0;
 }
 
 export default function ReportesPage() {
@@ -56,7 +62,6 @@ export default function ReportesPage() {
 
   const hayDatos = snapshots && snapshots.length > 0;
 
-  // Gráfico de evolución de totales
   const datosGrafico = {
     labels: (snapshots || []).map((s) => formatearFecha(s.fecha)),
     datasets: [
@@ -111,42 +116,46 @@ export default function ReportesPage() {
     }
   };
 
-  // Descargar Excel con varias hojas: Resumen general + una hoja por tienda
   function descargarExcel() {
     if (!hayDatos) return;
     const libro = XLSX.utils.book_new();
 
-    // Hoja 1: Resumen general (evolución de totales por fecha)
-    const filasResumen = snapshots.map((s) => ({
-      Fecha: formatearFecha(s.fecha),
-      Tiendas: s.totales.tiendas,
-      "Total productos": s.totales.totalProductos,
-      Vencidos: s.totales.vencidos,
-      "Por vencer": s.totales.porVencer,
-      "Stock crítico": s.totales.stockCritico,
-      Agotados: s.totales.agotados,
-      "Valor inventario": s.totales.valorInventario
-    }));
+    // Hoja 1: Resumen general (totales + categorías por fecha)
+    const filasResumen = snapshots.map((s) => {
+      const fila = {
+        Fecha: formatearFecha(s.fecha),
+        Tiendas: s.totales.tiendas,
+        "Total productos": s.totales.totalProductos,
+        Vencidos: s.totales.vencidos,
+        "Por vencer": s.totales.porVencer,
+        "Stock crítico": s.totales.stockCritico,
+        Agotados: s.totales.agotados,
+        "Valor inventario": s.totales.valorInventario
+      };
+      CATS.forEach((c) => { fila[c] = cat(s.totales, c); });
+      return fila;
+    });
     const hojaResumen = XLSX.utils.json_to_sheet(filasResumen);
     XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen general");
 
-    // Una hoja por cada tienda (usando las tiendas del snapshot más reciente)
+    // Una hoja por cada tienda (totales + categorías por fecha)
     const ultimoSnapshot = snapshots[snapshots.length - 1];
     (ultimoSnapshot.sucursales || []).forEach((suc) => {
       const filasTienda = snapshots.map((s) => {
-        const datosTienda = (s.sucursales || []).find((x) => String(x.sucursalId) === String(suc.sucursalId)) || {};
-        return {
+        const dt = (s.sucursales || []).find((x) => String(x.sucursalId) === String(suc.sucursalId)) || {};
+        const fila = {
           Fecha: formatearFecha(s.fecha),
-          "Total productos": datosTienda.totalProductos ?? 0,
-          Vencidos: datosTienda.vencidos ?? 0,
-          "Por vencer": datosTienda.porVencer ?? 0,
-          "Stock crítico": datosTienda.stockCritico ?? 0,
-          Agotados: datosTienda.agotados ?? 0,
-          "Valor inventario": datosTienda.valorInventario ?? 0
+          "Total productos": dt.totalProductos ?? 0,
+          Vencidos: dt.vencidos ?? 0,
+          "Por vencer": dt.porVencer ?? 0,
+          "Stock crítico": dt.stockCritico ?? 0,
+          Agotados: dt.agotados ?? 0,
+          "Valor inventario": dt.valorInventario ?? 0
         };
+        CATS.forEach((c) => { fila[c] = cat(dt, c); });
+        return fila;
       });
       const hoja = XLSX.utils.json_to_sheet(filasTienda);
-      // Nombre de hoja: máx 31 chars, sin caracteres inválidos
       const nombreHoja = ("T" + suc.numero + " " + suc.nombre).slice(0, 31).replace(/[:\\/?*[\]]/g, "");
       XLSX.utils.book_append_sheet(libro, hoja, nombreHoja);
     });
@@ -157,7 +166,6 @@ export default function ReportesPage() {
 
   return (
     <div className="space-y-6">
-      {/* Selector de período + descarga */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap gap-2">
           {Object.entries(PERIODOS).map(([clave, cfg]) => (
@@ -204,7 +212,6 @@ export default function ReportesPage() {
 
       {!isLoading && !isError && hayDatos && (
         <>
-          {/* Gráfico de evolución */}
           <div className="rounded-2xl border border-border-soft bg-panel p-5">
             <h3 className="mb-4 text-sm font-bold text-white">📈 Evolución de riesgos</h3>
             <div className="h-72">
@@ -218,7 +225,6 @@ export default function ReportesPage() {
               <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
                 <tr>
                   <th className="px-4 py-3">Fecha</th>
-                  <th className="px-4 py-3 text-center">Tiendas</th>
                   <th className="px-4 py-3 text-center">Productos</th>
                   <th className="px-4 py-3 text-center">Vencidos</th>
                   <th className="px-4 py-3 text-center">Por vencer</th>
@@ -230,7 +236,6 @@ export default function ReportesPage() {
                 {[...snapshots].reverse().map((s) => (
                   <tr key={s._id} className="bg-slate-950/50">
                     <td className="px-4 py-2.5 font-semibold text-white">{formatearFecha(s.fecha)}</td>
-                    <td className="px-4 py-2.5 text-center text-slate-300">{s.totales.tiendas}</td>
                     <td className="px-4 py-2.5 text-center text-slate-300">{s.totales.totalProductos}</td>
                     <td className="px-4 py-2.5 text-center text-red-400">{s.totales.vencidos}</td>
                     <td className="px-4 py-2.5 text-center text-amber-400">{s.totales.porVencer}</td>
@@ -240,6 +245,33 @@ export default function ReportesPage() {
                 ))}
               </tbody>
             </table>
+          </div>
+
+          {/* Tabla de categorías por fecha */}
+          <div>
+            <h3 className="mb-3 text-sm font-bold text-white">📦 Productos por categoría</h3>
+            <div className="overflow-x-auto rounded-xl border border-slate-800">
+              <table className="w-full text-sm">
+                <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
+                  <tr>
+                    <th className="px-4 py-3">Fecha</th>
+                    {CATS.map((c) => (
+                      <th key={c} className="px-4 py-3 text-center">{c}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {[...snapshots].reverse().map((s) => (
+                    <tr key={s._id} className="bg-slate-950/50">
+                      <td className="px-4 py-2.5 font-semibold text-white">{formatearFecha(s.fecha)}</td>
+                      {CATS.map((c) => (
+                        <td key={c} className="px-4 py-2.5 text-center text-slate-300">{cat(s.totales, c)}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </>
       )}
