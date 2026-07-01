@@ -11,6 +11,8 @@ import ProductoCard from "../components/ProductoCard";
 import ModalEditarProducto from "../components/ModalEditarProducto";
 import { exportarProductosExcel, leerArchivoProductos } from "../utils/exportar";
 
+const CATEGORIAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
+
 function estadoVencimiento(vencimiento) {
   const dias = Math.ceil((new Date(vencimiento) - new Date()) / (1000 * 60 * 60 * 24));
   if (dias < 0) return "vencido";
@@ -27,6 +29,7 @@ export default function ProductosPage() {
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
   const [busqueda, setBusqueda] = useState("");
   const [filtroEstado, setFiltroEstado] = useState("");
+  const [filtroCategoria, setFiltroCategoria] = useState("");
   const [orden, setOrden] = useState("");
   const [productoEditando, setProductoEditando] = useState(null);
 
@@ -46,7 +49,7 @@ export default function ProductosPage() {
   async function manejarEliminar(producto) {
     const resultado = await Swal.fire({
       title: "¿Eliminar producto?",
-      text: `"${producto.nombre}" se va a eliminar permanentemente.`,
+      text: "\"" + producto.nombre + "\" se va a eliminar permanentemente.",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar",
@@ -87,7 +90,7 @@ export default function ProductosPage() {
       }
 
       const confirmacion = await Swal.fire({
-        title: `¿Importar ${validos.length} productos?`,
+        title: "¿Importar " + validos.length + " productos?",
         icon: "question",
         showCancelButton: true,
         confirmButtonText: "Sí, importar",
@@ -116,7 +119,7 @@ export default function ProductosPage() {
       Swal.fire({
         icon: "success",
         title: "Importación completada",
-        text: `${exitosos} productos importados${fallidos > 0 ? `, ${fallidos} fallaron` : ""}.`
+        text: exitosos + " productos importados" + (fallidos > 0 ? ", " + fallidos + " fallaron" : "") + "."
       });
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
@@ -124,6 +127,9 @@ export default function ProductosPage() {
       e.target.value = "";
     }
   }
+
+  // Categorías presentes en los productos (para el filtro), combinadas con las fijas
+  const categoriasDisponibles = [...new Set([...CATEGORIAS, ...(productos || []).map((p) => p.categoria).filter(Boolean)])];
 
   // Filtrado
   let productosFiltrados = (productos || []).filter((p) => {
@@ -133,6 +139,8 @@ export default function ProductosPage() {
       (p.lote || "").toLowerCase().includes(texto) ||
       (p.sucursal?.nombre || "").toLowerCase().includes(texto);
 
+    const coincideCategoria = filtroCategoria ? p.categoria === filtroCategoria : true;
+
     let coincideEstado = true;
     if (filtroEstado === "vencido") coincideEstado = estadoVencimiento(p.vencimiento) === "vencido";
     else if (filtroEstado === "por-vencer") coincideEstado = estadoVencimiento(p.vencimiento) === "por-vencer";
@@ -140,16 +148,35 @@ export default function ProductosPage() {
     else if (filtroEstado === "stock-bajo") coincideEstado = Number(p.stock) > 0 && Number(p.stock) <= 10;
     else if (filtroEstado === "agotado") coincideEstado = Number(p.stock) <= 0;
 
-    return coincideBusqueda && coincideEstado;
+    return coincideBusqueda && coincideCategoria && coincideEstado;
   });
 
   // Ordenamiento
   if (orden === "alfabetico") {
     productosFiltrados = [...productosFiltrados].sort((a, b) => a.nombre.localeCompare(b.nombre));
+  } else if (orden === "alfabetico-desc") {
+    productosFiltrados = [...productosFiltrados].sort((a, b) => b.nombre.localeCompare(a.nombre));
   } else if (orden === "fecha") {
     productosFiltrados = [...productosFiltrados].sort((a, b) => new Date(a.vencimiento) - new Date(b.vencimiento));
+  } else if (orden === "fecha-lejana") {
+    productosFiltrados = [...productosFiltrados].sort((a, b) => new Date(b.vencimiento) - new Date(a.vencimiento));
   } else if (orden === "stock") {
     productosFiltrados = [...productosFiltrados].sort((a, b) => Number(a.stock) - Number(b.stock));
+  } else if (orden === "stock-alto") {
+    productosFiltrados = [...productosFiltrados].sort((a, b) => Number(b.stock) - Number(a.stock));
+  } else if (orden === "precio") {
+    productosFiltrados = [...productosFiltrados].sort((a, b) => Number(a.precio) - Number(b.precio));
+  } else if (orden === "precio-alto") {
+    productosFiltrados = [...productosFiltrados].sort((a, b) => Number(b.precio) - Number(a.precio));
+  }
+
+  const hayFiltrosActivos = busqueda || filtroEstado || filtroCategoria || orden;
+
+  function limpiarFiltros() {
+    setBusqueda("");
+    setFiltroEstado("");
+    setFiltroCategoria("");
+    setOrden("");
   }
 
   const inputClase =
@@ -181,9 +208,15 @@ export default function ProductosPage() {
             placeholder="🔍 Buscar por nombre, lote o sucursal..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className={`md:col-span-5 ${inputClase}`}
+            className={"md:col-span-4 " + inputClase}
           />
-          <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} className={`md:col-span-3 ${inputClase}`}>
+          <select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className={"md:col-span-3 " + inputClase}>
+            <option value="">Todas las categorías</option>
+            {categoriasDisponibles.map((c) => (
+              <option key={c} value={c}>{c}</option>
+            ))}
+          </select>
+          <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} className={"md:col-span-3 " + inputClase}>
             <option value="">Todos los estados</option>
             <option value="buen-estado">En buen estado</option>
             <option value="por-vencer">Por vencer</option>
@@ -191,26 +224,39 @@ export default function ProductosPage() {
             <option value="stock-bajo">Stock bajo</option>
             <option value="agotado">Agotado</option>
           </select>
-          <select value={orden} onChange={(e) => setOrden(e.target.value)} className={`md:col-span-2 ${inputClase}`}>
+          <select value={orden} onChange={(e) => setOrden(e.target.value)} className={"md:col-span-2 " + inputClase}>
             <option value="">Ordenar por...</option>
             <option value="alfabetico">Nombre (A-Z)</option>
-            <option value="fecha">Vencimiento</option>
+            <option value="alfabetico-desc">Nombre (Z-A)</option>
+            <option value="fecha">Vence primero</option>
+            <option value="fecha-lejana">Vence último</option>
             <option value="stock">Stock (menor)</option>
+            <option value="stock-alto">Stock (mayor)</option>
+            <option value="precio">Precio (menor)</option>
+            <option value="precio-alto">Precio (mayor)</option>
           </select>
-          <div className="flex gap-2 md:col-span-2">
+          <div className="flex gap-2 md:col-span-12">
             <button
               onClick={() => exportarProductosExcel(productosFiltrados)}
               disabled={!productosFiltrados || productosFiltrados.length === 0}
-              className="flex-1 rounded-lg bg-green-600 px-3 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50"
+              className="rounded-lg bg-green-600 px-3 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50"
             >
               ↓ Excel
             </button>
             <button
               onClick={() => inputArchivoRef.current?.click()}
-              className="flex-1 rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800"
+              className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800"
             >
               ↑ Importar
             </button>
+            {hayFiltrosActivos && (
+              <button
+                onClick={limpiarFiltros}
+                className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-800"
+              >
+                ✕ Limpiar filtros
+              </button>
+            )}
             <input ref={inputArchivoRef} type="file" accept=".csv,.xlsx,.xls" onChange={manejarImportar} className="hidden" />
           </div>
         </div>
