@@ -8,12 +8,10 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
   const canvasRef = useRef(null);
   const streamRef = useRef(null);
   const intervaloRef = useRef(null);
-  const wakeLockRef = useRef(null);
   const activoRef = useRef(true);
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(true);
 
-  // Apaga la cámara, el intervalo y el wakeLock. Se llama antes de cerrar.
   const detener = () => {
     activoRef.current = false;
     clearInterval(intervaloRef.current);
@@ -24,16 +22,6 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
     if (videoRef.current) {
       videoRef.current.srcObject = null;
     }
-    if (wakeLockRef.current) {
-      wakeLockRef.current.release().catch(() => {});
-      wakeLockRef.current = null;
-    }
-  };
-
-  // Detiene todo y recién ahí avisa el código detectado
-  const finalizarCon = (codigo) => {
-    detener();
-    onDetectado(codigo);
   };
 
   useEffect(() => {
@@ -41,10 +29,6 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
 
     const iniciar = async () => {
       try {
-        if ("wakeLock" in navigator) {
-          try { wakeLockRef.current = await navigator.wakeLock.request("screen"); } catch {}
-        }
-
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: { ideal: "environment" },
@@ -92,7 +76,9 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
             try {
               const codes = await detector.detect(video);
               if (codes.length > 0 && activoRef.current) {
-                finalizarCon(codes[0].rawValue);
+                const codigo = codes[0].rawValue;
+                detener();
+                onDetectado(codigo);
               }
             } catch {}
           }, 300);
@@ -110,7 +96,8 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
               try {
                 const resultado = await qr.scanFile(file, false);
                 if (activoRef.current) {
-                  finalizarCon(resultado);
+                  detener();
+                  onDetectado(resultado);
                 }
               } catch {}
             }, "image/jpeg", 0.8);
