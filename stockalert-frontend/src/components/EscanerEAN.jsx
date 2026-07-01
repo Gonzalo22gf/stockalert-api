@@ -11,19 +11,24 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
   const wakeLockRef = useRef(null);
   const activoRef = useRef(true);
   const [error, setError] = useState(null);
+  const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
     activoRef.current = true;
 
     const iniciar = async () => {
       try {
-        // evita que la pantalla se apague mientras escanea
         if ("wakeLock" in navigator) {
           try { wakeLockRef.current = await navigator.wakeLock.request("screen"); } catch {}
         }
 
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: { ideal: "environment" } },
+          video: {
+            facingMode: { ideal: "environment" },
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
         });
 
         if (!activoRef.current) {
@@ -32,18 +37,39 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
         }
 
         streamRef.current = stream;
-        videoRef.current.srcObject = stream;
-        await videoRef.current.play();
+        const video = videoRef.current;
+        if (!video) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+
+        video.srcObject = stream;
+        video.setAttribute("playsinline", "true");
+        video.setAttribute("muted", "true");
+
+        // Espera a que el video tenga datos antes de reproducir (clave en móvil)
+        await new Promise((resolve) => {
+          if (video.readyState >= 1) return resolve();
+          video.onloadedmetadata = () => resolve();
+        });
+
+        try {
+          await video.play();
+        } catch (e) {
+          // algunos navegadores rechazan play() la primera vez; reintenta
+          setTimeout(() => video.play().catch(() => {}), 300);
+        }
+
+        setCargando(false);
 
         if ("BarcodeDetector" in window) {
-          // Chrome Android — detección nativa
           const detector = new window.BarcodeDetector({
             formats: ["ean_13", "ean_8", "code_128", "code_39", "upc_a", "upc_e"],
           });
           intervaloRef.current = setInterval(async () => {
             if (!activoRef.current) return;
             try {
-              const codes = await detector.detect(videoRef.current);
+              const codes = await detector.detect(video);
               if (codes.length > 0 && activoRef.current) {
                 activoRef.current = false;
                 clearInterval(intervaloRef.current);
@@ -52,15 +78,13 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
             } catch {}
           }, 300);
         } else {
-          // iOS Safari — fallback con canvas + html5-qrcode scanFile
           const qr = new Html5Qrcode(HIDDEN_ID);
           const canvas = canvasRef.current;
-
           intervaloRef.current = setInterval(async () => {
-            if (!activoRef.current || !videoRef.current?.videoWidth) return;
-            canvas.width = videoRef.current.videoWidth;
-            canvas.height = videoRef.current.videoHeight;
-            canvas.getContext("2d").drawImage(videoRef.current, 0, 0);
+            if (!activoRef.current || !video.videoWidth) return;
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0);
             canvas.toBlob(async (blob) => {
               if (!blob || !activoRef.current) return;
               const file = new File([blob], "frame.jpg", { type: "image/jpeg" });
@@ -75,9 +99,10 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
             }, "image/jpeg", 0.8);
           }, 500);
         }
-      } catch {
+      } catch (e) {
         if (activoRef.current) {
-          setError("No se pudo acceder a la cámara. Verificá los permisos.");
+          setError("No se pudo acceder a la cámara. Verificá que le diste permiso a la cámara en el navegador.");
+          setCargando(false);
         }
       }
     };
@@ -104,11 +129,17 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
           </div>
         ) : (
           <div className="relative overflow-hidden rounded-lg border border-slate-700 bg-black">
+            {cargando && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center text-sm text-slate-400">
+                Iniciando cámara...
+              </div>
+            )}
             <video
               ref={videoRef}
               playsInline
               muted
-              style={{ width: "100%", display: "block", minHeight: "220px" }}
+              autoPlay
+              style={{ width: "100%", display: "block", minHeight: "260px", objectFit: "cover" }}
             />
             <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
               <div className="h-14 w-60 rounded border-2 border-green-400/80" />
