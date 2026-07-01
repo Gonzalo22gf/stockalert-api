@@ -20,8 +20,8 @@ export default function FabEscaner() {
   const { data: productos } = useProductos(undefined);
 
   const scannerRef = useRef(null);
+  const yaDetectadoRef = useRef(false);
 
-  // Campos del formulario rápido
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
   const [precio, setPrecio] = useState("");
@@ -37,43 +37,60 @@ export default function FabEscaner() {
     setLote("");
     setStock("");
     setVencimiento("");
-    // sucursalId se mantiene para escanear varios de la misma sucursal
   }
 
-  // Iniciar / detener cámara
+  // Detiene el scanner de forma segura (fuera del callback, para evitar el crash conocido de stop())
+  async function detenerScanner() {
+    const s = scannerRef.current;
+    scannerRef.current = null;
+    if (!s) return;
+    try {
+      if (s.isScanning) {
+        await s.stop();
+      }
+      await s.clear();
+    } catch (e) {
+      // ignorar errores de stop/clear (conocidos en Android)
+    }
+  }
+
   useEffect(() => {
     if (!abierto || mostrarForm) return;
 
-    const scanner = new Html5Qrcode("fab-lector");
+    yaDetectadoRef.current = false;
+    const scanner = new Html5Qrcode("fab-lector", {
+      // usa el detector nativo de Chrome si existe (mucho más estable en Android)
+      experimentalFeatures: { useBarCodeDetectorIfSupported: true },
+      verbose: false
+    });
     scannerRef.current = scanner;
-    let activo = true;
 
     scanner
       .start(
         { facingMode: "environment" },
         { fps: 10, qrbox: { width: 250, height: 150 } },
         (texto) => {
-          if (!activo) return;
-          activo = false;
-          manejarDetectado(texto);
-          scanner.stop().then(() => scanner.clear()).catch(() => {});
+          // NO llamamos stop() acá adentro (eso crashea en Android).
+          // Solo marcamos y agendamos el cierre para el próximo tick.
+          if (yaDetectadoRef.current) return;
+          yaDetectadoRef.current = true;
+          const codigo = texto;
+          setTimeout(async () => {
+            await detenerScanner();
+            manejarDetectado(codigo);
+          }, 0);
         },
         () => {}
       )
       .catch((err) => console.error("Error cámara:", err));
 
     return () => {
-      activo = false;
-      if (scannerRef.current) {
-        scannerRef.current.stop().then(() => scannerRef.current.clear()).catch(() => {});
-      }
+      detenerScanner();
     };
   }, [abierto, mostrarForm]);
 
   function manejarDetectado(codigo) {
     setEanDetectado(codigo);
-
-    // Buscar si ya existe un producto con ese EAN para autocompletar
     const existente = (productos || []).find((p) => p.codigoBarras === codigo);
     if (existente) {
       setNombre(existente.nombre);
@@ -112,13 +129,14 @@ export default function FabEscaner() {
 
       limpiarCampos();
       setEanDetectado("");
-      setMostrarForm(false); // vuelve a la cámara
+      setMostrarForm(false);
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
     }
   }
 
-  function cerrarTodo() {
+  async function cerrarTodo() {
+    await detenerScanner();
     setMostrarForm(false);
     setAbierto(false);
     setEanDetectado("");
@@ -131,7 +149,6 @@ export default function FabEscaner() {
 
   return (
     <>
-      {/* Botón flotante */}
       <button
         onClick={() => setAbierto(true)}
         title="Escanear producto"
