@@ -1,3 +1,5 @@
+import * as XLSX from "xlsx";
+
 function diasParaVencer(vencimiento) {
   return Math.ceil((new Date(vencimiento) - new Date()) / (1000 * 60 * 60 * 24));
 }
@@ -26,6 +28,33 @@ function formatearFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
+function descargarExcel(filas, nombreArchivo, nombreHoja) {
+  if (!filas || filas.length === 0) return;
+  const hoja = XLSX.utils.json_to_sheet(filas);
+  const libro = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(libro, hoja, nombreHoja);
+  const fecha = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(libro, nombreArchivo + "_" + fecha + ".xlsx");
+}
+
+function BotonDescarga({ onClick, disabled }) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled}
+      title="Descargar en Excel"
+      className="flex items-center gap-1 rounded-lg bg-green-600/15 px-2.5 py-1 text-[11px] font-semibold text-green-400 transition-colors hover:bg-green-600/25 disabled:opacity-40"
+    >
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="7 10 12 15 17 10" />
+        <line x1="12" y1="15" x2="12" y2="3" />
+      </svg>
+      Excel
+    </button>
+  );
+}
+
 export default function PanelRiesgo({ productos }) {
   const conRiesgo = (productos || [])
     .map((p) => ({ ...p, ...calcularRiesgo(p) }))
@@ -38,11 +67,40 @@ export default function PanelRiesgo({ productos }) {
     return dias < 0 || dias <= 7 || Number(p.stock) <= 5;
   });
 
+  function descargarUrgentes() {
+    const filas = urgentes.map((p) => ({
+      Producto: p.nombre,
+      Lote: p.lote || "",
+      Sucursal: p.sucursal?.nombre || "",
+      Vence: formatearFecha(p.vencimiento),
+      Stock: p.stock,
+      Prioridad: p.motivoPrincipal.texto
+    }));
+    descargarExcel(filas, "acciones_urgentes", "Urgentes");
+  }
+
+  function descargarTop10() {
+    const filas = top10.map((p, i) => ({
+      Puesto: i + 1,
+      Producto: p.nombre,
+      Lote: p.lote || "",
+      Sucursal: p.sucursal?.nombre || "",
+      Vence: formatearFecha(p.vencimiento),
+      Stock: p.stock,
+      Riesgo: p.motivoPrincipal.texto,
+      Puntaje: Math.round(p.puntaje)
+    }));
+    descargarExcel(filas, "top10_en_riesgo", "Top10");
+  }
+
   return (
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
       {/* Acciones urgentes */}
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4 lg:col-span-2">
-        <h2 className="mb-3 text-sm font-semibold text-white">🚨 Acciones urgentes</h2>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-white">🚨 Acciones urgentes</h2>
+          <BotonDescarga onClick={descargarUrgentes} disabled={urgentes.length === 0} />
+        </div>
         {urgentes.length === 0 ? (
           <p className="text-sm text-slate-500">No hay acciones urgentes. Todo en orden.</p>
         ) : (
@@ -69,7 +127,7 @@ export default function PanelRiesgo({ productos }) {
                     <td className="px-2 py-2">
                       <span
                         className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                        style={{ backgroundColor: `${p.motivoPrincipal.color}1a`, color: p.motivoPrincipal.color }}
+                        style={{ backgroundColor: p.motivoPrincipal.color + "1a", color: p.motivoPrincipal.color }}
                       >
                         {p.motivoPrincipal.texto}
                       </span>
@@ -84,7 +142,10 @@ export default function PanelRiesgo({ productos }) {
 
       {/* Top 10 en riesgo */}
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <h2 className="mb-3 text-sm font-semibold text-white">🏆 Top 10 en riesgo</h2>
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h2 className="text-sm font-semibold text-white">🏆 Top 10 en riesgo</h2>
+          <BotonDescarga onClick={descargarTop10} disabled={top10.length === 0} />
+        </div>
         {top10.length === 0 ? (
           <p className="text-sm text-slate-500">No hay productos riesgosos.</p>
         ) : (
@@ -102,7 +163,7 @@ export default function PanelRiesgo({ productos }) {
                 </div>
                 <span
                   className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                  style={{ backgroundColor: `${p.motivoPrincipal.color}1a`, color: p.motivoPrincipal.color }}
+                  style={{ backgroundColor: p.motivoPrincipal.color + "1a", color: p.motivoPrincipal.color }}
                 >
                   {p.motivoPrincipal.texto}
                 </span>
