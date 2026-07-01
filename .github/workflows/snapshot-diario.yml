@@ -1,0 +1,21 @@
+name: Snapshot diario de tiendas
+
+on:
+  schedule:
+    # Todos los días a las 06:00 UTC (03:00 en Argentina)
+    - cron: "0 6 * * *"
+  workflow_dispatch: {}   # permite dispararlo a mano desde la pestaña Actions
+
+jobs:
+  generar-snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Disparar snapshot en el backend
+        run: |
+          echo "Generando snapshot del dia..."
+          curl -s -X POST https://stockalert-api.onrender.com/api/snapshots/generar \
+            -H "x-cron-secret: ${{ secrets.CRON_SECRET }}" \
+            --fail --max-time 120 \
+            || (echo "Fallo el snapshot" && exit 1)
+          echo ""
+          echo "Snapshot solicitado correctamente."
