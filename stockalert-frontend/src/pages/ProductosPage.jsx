@@ -32,6 +32,7 @@ export default function ProductosPage() {
   const [filtroCategoria, setFiltroCategoria] = useState("");
   const [orden, setOrden] = useState("");
   const [productoEditando, setProductoEditando] = useState(null);
+  const [formAbierto, setFormAbierto] = useState(false);
 
   useEffect(() => {
     const sucursalUrl = searchParams.get("sucursal");
@@ -128,10 +129,8 @@ export default function ProductosPage() {
     }
   }
 
-  // Categorías presentes en los productos (para el filtro), combinadas con las fijas
   const categoriasDisponibles = [...new Set([...CATEGORIAS, ...(productos || []).map((p) => p.categoria).filter(Boolean)])];
 
-  // Filtrado
   let productosFiltrados = (productos || []).filter((p) => {
     const texto = busqueda.toLowerCase();
     const coincideBusqueda =
@@ -151,7 +150,6 @@ export default function ProductosPage() {
     return coincideBusqueda && coincideCategoria && coincideEstado;
   });
 
-  // Ordenamiento
   if (orden === "alfabetico") {
     productosFiltrados = [...productosFiltrados].sort((a, b) => a.nombre.localeCompare(b.nombre));
   } else if (orden === "alfabetico-desc") {
@@ -184,21 +182,37 @@ export default function ProductosPage() {
 
   return (
     <div className="space-y-6">
-      {esAdmin && (
-        <div className="flex items-center gap-3">
-          <label className="text-sm text-slate-400">🏪 Sucursal</label>
-          <select value={sucursalSeleccionada} onChange={(e) => setSucursalSeleccionada(e.target.value)} className={inputClase}>
-            <option value="">Todas las sucursales</option>
-            {(sucursales || []).map((s) => (
-              <option key={s._id} value={s._id}>
-                {s.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
-      )}
+      {/* Encabezado: sucursal (admin) + botón agregar producto */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        {esAdmin ? (
+          <div className="flex items-center gap-3">
+            <label className="text-sm text-slate-400">🏪 Sucursal</label>
+            <select value={sucursalSeleccionada} onChange={(e) => setSucursalSeleccionada(e.target.value)} className={inputClase}>
+              <option value="">Todas las sucursales</option>
+              {(sucursales || []).map((s) => (
+                <option key={s._id} value={s._id}>
+                  {s.nombre}
+                </option>
+              ))}
+            </select>
+          </div>
+        ) : (
+          <div />
+        )}
+        <button
+          onClick={() => setFormAbierto((v) => !v)}
+          className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90"
+        >
+          {formAbierto ? (
+            <>✕ Cerrar formulario</>
+          ) : (
+            <>+ Agregar producto</>
+          )}
+        </button>
+      </div>
 
-      <FormularioProducto esAdmin={esAdmin} />
+      {/* Formulario colapsable */}
+      {formAbierto && <FormularioProducto esAdmin={esAdmin} />}
 
       {/* Barra de filtros */}
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
@@ -277,7 +291,7 @@ export default function ProductosPage() {
             <EmptyState
               icono="📦"
               titulo="No hay productos para mostrar"
-              descripcion="Probá ajustar los filtros, o agregá un producto nuevo con el formulario de arriba."
+              descripcion="Probá ajustar los filtros, o agregá un producto nuevo con el botón de arriba."
             />
           )}
         </>
