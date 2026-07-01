@@ -13,6 +13,29 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
   const [error, setError] = useState(null);
   const [cargando, setCargando] = useState(true);
 
+  // Apaga la cámara, el intervalo y el wakeLock. Se llama antes de cerrar.
+  const detener = () => {
+    activoRef.current = false;
+    clearInterval(intervaloRef.current);
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((t) => t.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    if (wakeLockRef.current) {
+      wakeLockRef.current.release().catch(() => {});
+      wakeLockRef.current = null;
+    }
+  };
+
+  // Detiene todo y recién ahí avisa el código detectado
+  const finalizarCon = (codigo) => {
+    detener();
+    onDetectado(codigo);
+  };
+
   useEffect(() => {
     activoRef.current = true;
 
@@ -47,7 +70,6 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
         video.setAttribute("playsinline", "true");
         video.setAttribute("muted", "true");
 
-        // Espera a que el video tenga datos antes de reproducir (clave en móvil)
         await new Promise((resolve) => {
           if (video.readyState >= 1) return resolve();
           video.onloadedmetadata = () => resolve();
@@ -56,7 +78,6 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
         try {
           await video.play();
         } catch (e) {
-          // algunos navegadores rechazan play() la primera vez; reintenta
           setTimeout(() => video.play().catch(() => {}), 300);
         }
 
@@ -71,9 +92,7 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
             try {
               const codes = await detector.detect(video);
               if (codes.length > 0 && activoRef.current) {
-                activoRef.current = false;
-                clearInterval(intervaloRef.current);
-                onDetectado(codes[0].rawValue);
+                finalizarCon(codes[0].rawValue);
               }
             } catch {}
           }, 300);
@@ -91,9 +110,7 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
               try {
                 const resultado = await qr.scanFile(file, false);
                 if (activoRef.current) {
-                  activoRef.current = false;
-                  clearInterval(intervaloRef.current);
-                  onDetectado(resultado);
+                  finalizarCon(resultado);
                 }
               } catch {}
             }, "image/jpeg", 0.8);
@@ -110,15 +127,17 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
     iniciar();
 
     return () => {
-      activoRef.current = false;
-      clearInterval(intervaloRef.current);
-      streamRef.current?.getTracks().forEach((t) => t.stop());
-      wakeLockRef.current?.release().catch(() => {});
+      detener();
     };
   }, [onDetectado]);
 
+  const cerrar = () => {
+    detener();
+    onCerrar();
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={onCerrar}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={cerrar}>
       <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6" onClick={(e) => e.stopPropagation()}>
         <h2 className="mb-3 text-base font-bold text-white">📷 Escanear código de barras</h2>
         <p className="mb-3 text-xs text-slate-400">Apuntá la cámara al código de barras del producto.</p>
@@ -151,7 +170,7 @@ export default function EscanerEAN({ onDetectado, onCerrar }) {
         <canvas ref={canvasRef} style={{ display: "none" }} />
 
         <button
-          onClick={onCerrar}
+          onClick={cerrar}
           className="mt-4 w-full rounded-lg border border-slate-700 py-2 text-sm font-semibold text-slate-300 hover:bg-slate-800"
         >
           Cancelar
