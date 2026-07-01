@@ -58,7 +58,6 @@ export default function DashboardPage() {
     };
   }
 
-  // Muestra la card de tiendas solo cuando se ven todas las sucursales
   const verTodas = !sucursalSeleccionada;
 
   return (
@@ -97,7 +96,7 @@ export default function DashboardPage() {
 
       <PanelRiesgo productos={productos} />
 
-      <GraficosDashboard productos={productos} />
+      <GraficosDashboard productos={productos} resumenSucursales={verTodas ? resumen : null} />
     </div>
   );
 }

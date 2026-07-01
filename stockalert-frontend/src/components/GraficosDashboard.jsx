@@ -15,7 +15,7 @@ const PALETA = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4"
 
 function Tarjeta({ titulo, subtitulo, children, className = "" }) {
   return (
-    <div className={`rounded-2xl border border-border-soft bg-panel p-5 animate-fade ${className}`}>
+    <div className={"rounded-2xl border border-border-soft bg-panel p-5 animate-fade " + className}>
       <div className="mb-4">
         <h3 className="text-sm font-bold text-white">{titulo}</h3>
         {subtitulo && <p className="text-[11px] text-slate-500">{subtitulo}</p>}
@@ -37,7 +37,7 @@ const tooltipEstilo = {
   boxPadding: 4
 };
 
-export default function GraficosDashboard({ productos }) {
+export default function GraficosDashboard({ productos, resumenSucursales }) {
   if (!productos || productos.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-panel/50 px-6 py-14 text-center">
@@ -96,14 +96,13 @@ export default function GraficosDashboard({ productos }) {
         callbacks: {
           label: (ctx) => {
             const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(0) : 0;
-            return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+            return " " + ctx.label + ": " + ctx.raw + " (" + pct + "%)";
           }
         }
       }
     }
   };
 
-  // Plugin para texto central de la dona
   const textoCentral = {
     id: "textoCentral",
     afterDraw(chart) {
@@ -124,8 +123,7 @@ export default function GraficosDashboard({ productos }) {
     }
   };
 
-  // Barras horizontales reutilizable
-  function barrasH(data, colorIdx, formato) {
+  function barrasH(data, colorIdx) {
     return {
       labels: categorias,
       datasets: [{
@@ -133,6 +131,19 @@ export default function GraficosDashboard({ productos }) {
         backgroundColor: PALETA[colorIdx],
         borderRadius: 6,
         barThickness: 18
+      }]
+    };
+  }
+
+  // Barras horizontales para rankings (labels y valores explícitos)
+  function barrasRanking(labels, valores, color) {
+    return {
+      labels,
+      datasets: [{
+        data: valores,
+        backgroundColor: color,
+        borderRadius: 6,
+        barThickness: 16
       }]
     };
   }
@@ -147,7 +158,7 @@ export default function GraficosDashboard({ productos }) {
         tooltip: {
           ...tooltipEstilo,
           callbacks: {
-            label: (ctx) => formato ? ` ${formato(ctx.raw)}` : ` ${ctx.raw}`
+            label: (ctx) => formato ? " " + formato(ctx.raw) : " " + ctx.raw
           }
         }
       },
@@ -160,11 +171,65 @@ export default function GraficosDashboard({ productos }) {
 
   const fmtMoneda = (v) => "$ " + Number(v).toLocaleString("es-AR");
 
+  // ===== DATOS PARA GRÁFICOS POR TIENDA (#7, #8, #10) =====
+  const hayResumen = resumenSucursales && resumenSucursales.length > 0;
+
+  // #7: Top 10 tiendas con más vencidos
+  const topVencidos = hayResumen
+    ? [...resumenSucursales].filter((r) => r.vencidos > 0).sort((a, b) => b.vencidos - a.vencidos).slice(0, 10)
+    : [];
+
+  // #8: Top 10 tiendas con más por vencer
+  const topPorVencer = hayResumen
+    ? [...resumenSucursales].filter((r) => r.porVencer > 0).sort((a, b) => b.porVencer - a.porVencer).slice(0, 10)
+    : [];
+
+  // #10: Top 10 tiendas con más riesgo (vencidos + por vencer + stock crítico)
+  const topRiesgo = hayResumen
+    ? [...resumenSucursales]
+        .map((r) => ({ nombre: r.sucursal.nombre, riesgo: r.vencidos + r.porVencer + r.stockCritico }))
+        .filter((r) => r.riesgo > 0)
+        .sort((a, b) => b.riesgo - a.riesgo)
+        .slice(0, 10)
+    : [];
+
+  // #9: Top 10 productos con stock más bajo (por producto, siempre disponible)
+  const topStockBajo = [...productos]
+    .sort((a, b) => Number(a.stock || 0) - Number(b.stock || 0))
+    .slice(0, 10);
+
+  const datosDonaRiesgo = {
+    labels: topRiesgo.map((r) => r.nombre),
+    datasets: [{
+      data: topRiesgo.map((r) => r.riesgo),
+      backgroundColor: PALETA.concat(["#f97316", "#14b8a6", "#8b5cf6"]),
+      borderColor: "#13151c",
+      borderWidth: 3,
+      hoverOffset: 6
+    }]
+  };
+
+  const opcionesDonaRiesgo = {
+    responsive: true,
+    maintainAspectRatio: false,
+    cutout: "60%",
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { color: "#cbd1e0", font: { size: 11, family: "Inter" }, padding: 10, usePointStyle: true, pointStyle: "circle" }
+      },
+      tooltip: {
+        ...tooltipEstilo,
+        callbacks: { label: (ctx) => " " + ctx.label + ": " + ctx.raw + " ítems en riesgo" }
+      }
+    }
+  };
+
   return (
     <div className="space-y-3.5">
       <h2 className="text-sm font-bold text-white">📊 Análisis del inventario</h2>
 
-      {/* Fila 1: Dona protagonista + Productos por categoría */}
+      {/* Fila 1: Dona estado + Productos por categoría */}
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
         <Tarjeta titulo="Estado general" subtitulo="Distribución por vencimiento">
           <div className="h-64">
@@ -179,7 +244,7 @@ export default function GraficosDashboard({ productos }) {
         </Tarjeta>
       </div>
 
-      {/* Fila 2: Valor + Stock */}
+      {/* Fila 2: Valor + Stock por categoría */}
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
         <Tarjeta titulo="Valor por categoría" subtitulo="Dónde está concentrado el capital">
           <div className="h-56">
@@ -193,6 +258,63 @@ export default function GraficosDashboard({ productos }) {
           </div>
         </Tarjeta>
       </div>
+
+      {/* Fila 3: #9 productos stock bajo + #10 dona tiendas en riesgo */}
+      <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
+        <Tarjeta titulo="🔻 10 productos con menor stock" subtitulo="Los que primero hay que reponer">
+          <div className="h-64">
+            <Bar
+              data={barrasRanking(topStockBajo.map((p) => p.nombre), topStockBajo.map((p) => Number(p.stock || 0)), "#f97316")}
+              options={opcionesBarrasH()}
+            />
+          </div>
+        </Tarjeta>
+
+        {hayResumen && topRiesgo.length > 0 ? (
+          <Tarjeta titulo="⚠️ 10 tiendas con más riesgo" subtitulo="Vencidos + por vencer + stock crítico">
+            <div className="h-64">
+              <Doughnut data={datosDonaRiesgo} options={opcionesDonaRiesgo} />
+            </div>
+          </Tarjeta>
+        ) : (
+          <Tarjeta titulo="⚠️ 10 tiendas con más riesgo" subtitulo="Seleccioná 'Todas las sucursales' para ver esto">
+            <div className="flex h-64 items-center justify-center text-center text-xs text-slate-500">
+              Este gráfico compara todas las tiendas.<br />Elegí "Todas las sucursales" arriba.
+            </div>
+          </Tarjeta>
+        )}
+      </div>
+
+      {/* Fila 4: #7 tiendas más vencidos + #8 tiendas más por vencer (solo con todas las sucursales) */}
+      {hayResumen && (
+        <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
+          <Tarjeta titulo="💀 10 tiendas con más vencidos" subtitulo="Productos ya vencidos por sucursal">
+            {topVencidos.length > 0 ? (
+              <div className="h-64">
+                <Bar
+                  data={barrasRanking(topVencidos.map((r) => r.sucursal.nombre), topVencidos.map((r) => r.vencidos), "#ef4444")}
+                  options={opcionesBarrasH()}
+                />
+              </div>
+            ) : (
+              <div className="flex h-64 items-center justify-center text-xs text-slate-500">No hay productos vencidos. 🎉</div>
+            )}
+          </Tarjeta>
+
+          <Tarjeta titulo="⏳ 10 tiendas con más por vencer" subtitulo="Productos próximos a vencer por sucursal">
+            {topPorVencer.length > 0 ? (
+              <div className="h-64">
+                <Bar
+                  data={barrasRanking(topPorVencer.map((r) => r.sucursal.nombre), topPorVencer.map((r) => r.porVencer), "#f59e0b")}
+                  options={opcionesBarrasH()}
+                />
+              </div>
+            ) : (
+              <div className="flex h-64 items-center justify-center text-xs text-slate-500">No hay productos por vencer. 🎉</div>
+            )}
+          </Tarjeta>
+        </div>
+      )}
     </div>
   );
 }
