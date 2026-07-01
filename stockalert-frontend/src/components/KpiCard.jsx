@@ -5,7 +5,8 @@ const COLORES = {
   emerald: "#10b981",
   amber: "#f59e0b",
   red: "#ef4444",
-  purple: "#a855f7"
+  purple: "#a855f7",
+  cyan: "#06b6d4"
 };
 
 export default function KpiCard({ etiqueta, valor, descripcion, color = "indigo", prefijo = "", delay = 0, esNumero = true }) {

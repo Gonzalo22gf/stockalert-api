@@ -32,6 +32,8 @@ export default function DashboardPage() {
     return <p className="text-sm text-red-400">No se pudo cargar el dashboard.</p>;
   }
 
+  const cantidadTiendas = resumen.length;
+
   let totales;
   if (sucursalSeleccionada) {
     const item = resumen.find((r) => r.sucursal._id === sucursalSeleccionada);
@@ -56,6 +58,9 @@ export default function DashboardPage() {
     };
   }
 
+  // Muestra la card de tiendas solo cuando se ven todas las sucursales
+  const verTodas = !sucursalSeleccionada;
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
@@ -77,7 +82,10 @@ export default function DashboardPage() {
       {totales && (
         <div>
           <h2 className="mb-3 text-sm font-semibold text-slate-300">🏪 {totales.nombre}</h2>
-          <div className="grid grid-cols-2 gap-3.5 md:grid-cols-3 lg:grid-cols-5">
+          <div className="grid grid-cols-2 gap-3.5 md:grid-cols-3 lg:grid-cols-6">
+            {verTodas && (
+              <KpiCard etiqueta="Tiendas" valor={cantidadTiendas} color="cyan" descripcion="sucursales activas" delay={0.02} />
+            )}
             <KpiCard etiqueta="Productos" valor={totales.totalProductos} color="indigo" descripcion="en inventario" delay={0.04} />
             <KpiCard etiqueta="Por vencer" valor={totales.porVencer} color="amber" descripcion="próximos 7 días" delay={0.08} />
             <KpiCard etiqueta="Vencidos" valor={totales.vencidos} color="red" descripcion="requieren acción" delay={0.12} />
