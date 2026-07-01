@@ -2,6 +2,30 @@ const Snapshot = require("../models/Snapshot");
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
 
+const CATEGORIAS_FIJAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
+
+// Cuenta cuántos productos hay de cada categoría (las que no son fijas van a "Otros")
+function contarCategorias(productos) {
+  const conteo = { "Lácteos": 0, "Bebidas": 0, "Almacén": 0, "Limpieza": 0, "Congelados": 0, "Otros": 0 };
+  productos.forEach((p) => {
+    if (CATEGORIAS_FIJAS.includes(p.categoria)) {
+      conteo[p.categoria]++;
+    } else {
+      conteo["Otros"]++;
+    }
+  });
+  return conteo;
+}
+
+// Suma dos objetos de categorías (para acumular el total global)
+function sumarCategorias(acc, cat) {
+  const r = { ...acc };
+  Object.keys(cat).forEach((k) => {
+    r[k] = (r[k] || 0) + cat[k];
+  });
+  return r;
+}
+
 // Calcula el resumen actual de todas las sucursales (mismo criterio que el dashboard)
 async function calcularResumenActual() {
   const sucursales = await Sucursal.find().sort({ numero: 1 });
@@ -19,6 +43,7 @@ async function calcularResumenActual() {
       const stockCritico = productos.filter((p) => p.stock > 0 && p.stock <= 5).length;
       const agotados = productos.filter((p) => p.stock === 0).length;
       const valorInventario = productos.reduce((t, p) => t + p.stock * p.precio, 0);
+      const categorias = contarCategorias(productos);
 
       return {
         sucursalId: sucursal._id,
@@ -30,10 +55,13 @@ async function calcularResumenActual() {
         porVencer,
         stockCritico,
         agotados,
-        valorInventario
+        valorInventario,
+        categorias
       };
     })
   );
+
+  const categoriasVacias = { "Lácteos": 0, "Bebidas": 0, "Almacén": 0, "Limpieza": 0, "Congelados": 0, "Otros": 0 };
 
   const totales = detalle.reduce(
     (acc, s) => ({
@@ -43,20 +71,20 @@ async function calcularResumenActual() {
       porVencer: acc.porVencer + s.porVencer,
       stockCritico: acc.stockCritico + s.stockCritico,
       agotados: acc.agotados + s.agotados,
-      valorInventario: acc.valorInventario + s.valorInventario
+      valorInventario: acc.valorInventario + s.valorInventario,
+      categorias: sumarCategorias(acc.categorias, s.categorias)
     }),
-    { tiendas: 0, totalProductos: 0, vencidos: 0, porVencer: 0, stockCritico: 0, agotados: 0, valorInventario: 0 }
+    { tiendas: 0, totalProductos: 0, vencidos: 0, porVencer: 0, stockCritico: 0, agotados: 0, valorInventario: 0, categorias: categoriasVacias }
   );
 
   return { detalle, totales };
 }
 
-// Devuelve la clave del día en formato YYYY-MM-DD
 function claveDia(fecha) {
   return fecha.toISOString().slice(0, 10);
 }
 
-// GENERAR SNAPSHOT DEL DÍA (idempotente: si ya existe el del día, lo actualiza)
+// GENERAR SNAPSHOT DEL DÍA (idempotente)
 const generarSnapshot = async (req, res) => {
   try {
     const { detalle, totales } = await calcularResumenActual();
