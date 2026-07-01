@@ -33,6 +33,13 @@ const iconos = {
       <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
       <path d="M16 3.13a4 4 0 0 1 0 7.75" />
     </svg>
+  ),
+  reportes: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <line x1="18" y1="20" x2="18" y2="10" />
+      <line x1="12" y1="20" x2="12" y2="4" />
+      <line x1="6" y1="20" x2="6" y2="14" />
+    </svg>
   )
 };
 
@@ -64,7 +71,6 @@ export default function Sidebar({ abierto, onCerrar }) {
 
   return (
     <>
-      {/* Fondo oscuro detrás del sidebar (solo visible en móvil cuando está abierto) */}
       {abierto && (
         <div
           onClick={onCerrar}
@@ -100,6 +106,7 @@ export default function Sidebar({ abierto, onCerrar }) {
               <ItemNav to="/movimientos" icono={iconos.movimientos} label="Movimientos" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} />
               <ItemNav to="/sucursales" icono={iconos.sucursales} label="Sucursales" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} />
               <ItemNav to="/usuarios" icono={iconos.usuarios} label="Usuarios" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} />
+              <ItemNav to="/reportes" icono={iconos.reportes} label="Reportes" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} />
             </>
           )}
         </nav>

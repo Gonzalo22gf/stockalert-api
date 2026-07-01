@@ -3,6 +3,7 @@ import SucursalesPage from "./pages/SucursalesPage";
 import MovimientosPage from "./pages/MovimientosPage";
 import ProductosPage from "./pages/ProductosPage";
 import DashboardPage from "./pages/DashboardPage";
+import ReportesPage from "./pages/ReportesPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./store/authStore";
 import LoginPage from "./pages/LoginPage";
@@ -31,6 +32,7 @@ export default function App() {
         <Route path="movimientos" element={<MovimientosPage />} />
         <Route path="sucursales" element={<SucursalesPage />} />
         <Route path="usuarios" element={<UsuariosPage />} />
+        <Route path="reportes" element={<ReportesPage />} />
       </Route>
     </Routes>
   );
