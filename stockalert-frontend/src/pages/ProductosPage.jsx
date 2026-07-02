@@ -8,6 +8,7 @@ import { useProductos, useEliminarProducto, useCrearProducto } from "../hooks/us
 import { useSucursales } from "../hooks/useSucursales";
 import FormularioProducto from "../components/FormularioProducto";
 import ProductoCard from "../components/ProductoCard";
+import ProductosTabla from "../components/ProductosTabla";
 import ModalEditarProducto from "../components/ModalEditarProducto";
 import { exportarProductosExcel, leerArchivoProductos } from "../utils/exportar";
 
@@ -33,6 +34,20 @@ export default function ProductosPage() {
   const [orden, setOrden] = useState("");
   const [productoEditando, setProductoEditando] = useState(null);
   const [formAbierto, setFormAbierto] = useState(false);
+  const [vista, setVista] = useState(() => {
+    try {
+      return localStorage.getItem("vistaProductos") || "tabla";
+    } catch {
+      return "tabla";
+    }
+  });
+
+  function cambiarVista(v) {
+    setVista(v);
+    try {
+      localStorage.setItem("vistaProductos", v);
+    } catch {}
+  }
 
   useEffect(() => {
     const sucursalUrl = searchParams.get("sucursal");
@@ -203,15 +218,10 @@ export default function ProductosPage() {
           onClick={() => setFormAbierto((v) => !v)}
           className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90"
         >
-          {formAbierto ? (
-            <>✕ Cerrar formulario</>
-          ) : (
-            <>+ Agregar producto</>
-          )}
+          {formAbierto ? <>✕ Cerrar formulario</> : <>+ Agregar producto</>}
         </button>
       </div>
 
-      {/* Formulario colapsable */}
       {formAbierto && <FormularioProducto esAdmin={esAdmin} />}
 
       {/* Barra de filtros */}
@@ -249,7 +259,7 @@ export default function ProductosPage() {
             <option value="precio">Precio (menor)</option>
             <option value="precio-alto">Precio (mayor)</option>
           </select>
-          <div className="flex gap-2 md:col-span-12">
+          <div className="flex flex-wrap gap-2 md:col-span-12">
             <button
               onClick={() => exportarProductosExcel(productosFiltrados)}
               disabled={!productosFiltrados || productosFiltrados.length === 0}
@@ -271,6 +281,23 @@ export default function ProductosPage() {
                 ✕ Limpiar filtros
               </button>
             )}
+            {/* Toggle de vista */}
+            <div className="ml-auto flex overflow-hidden rounded-lg border border-slate-700">
+              <button
+                onClick={() => cambiarVista("tabla")}
+                className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "tabla" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}
+                title="Ver como tabla"
+              >
+                ☰ Tabla
+              </button>
+              <button
+                onClick={() => cambiarVista("cards")}
+                className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "cards" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}
+                title="Ver como tarjetas"
+              >
+                ▦ Tarjetas
+              </button>
+            </div>
             <input ref={inputArchivoRef} type="file" accept=".csv,.xlsx,.xls" onChange={manejarImportar} className="hidden" />
           </div>
         </div>
@@ -282,17 +309,21 @@ export default function ProductosPage() {
       {!isLoading && !isError && (
         <>
           <p className="text-xs text-slate-500">Mostrando {productosFiltrados.length} de {productos?.length || 0} productos</p>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {productosFiltrados.map((producto) => (
-              <ProductoCard key={producto._id} producto={producto} esAdmin={esAdmin} onEditar={manejarEditar} onEliminar={manejarEliminar} />
-            ))}
-          </div>
-          {productosFiltrados.length === 0 && (
+
+          {productosFiltrados.length === 0 ? (
             <EmptyState
               icono="📦"
               titulo="No hay productos para mostrar"
               descripcion="Probá ajustar los filtros, o agregá un producto nuevo con el botón de arriba."
             />
+          ) : vista === "tabla" ? (
+            <ProductosTabla productos={productosFiltrados} esAdmin={esAdmin} onEditar={manejarEditar} onEliminar={manejarEliminar} />
+          ) : (
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {productosFiltrados.map((producto) => (
+                <ProductoCard key={producto._id} producto={producto} esAdmin={esAdmin} onEditar={manejarEditar} onEliminar={manejarEliminar} />
+              ))}
+            </div>
           )}
         </>
       )}
