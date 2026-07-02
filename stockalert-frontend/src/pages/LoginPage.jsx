@@ -4,15 +4,15 @@ import Swal from "sweetalert2";
 import { login, registrar } from "../api/auth";
 import { useAuthStore } from "../store/authStore";
 import PasswordInput from "../components/PasswordInput";
+import Boton from "../components/ui/Boton";
+import { Input } from "../components/ui/Input";
 
 export default function LoginPage() {
   const navigate = useNavigate();
   const guardarSesion = useAuthStore((s) => s.guardarSesion);
-
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [cargandoLogin, setCargandoLogin] = useState(false);
-
   const [regNombre, setRegNombre] = useState("");
   const [regEmail, setRegEmail] = useState("");
   const [regPassword, setRegPassword] = useState("");
@@ -25,7 +25,7 @@ export default function LoginPage() {
     try {
       const data = await login(loginEmail.trim(), loginPassword.trim());
       guardarSesion(data);
-      Swal.fire({ icon: "success", title: "Bienvenido", text: `Ingresaste como ${data.nombre}`, timer: 1600, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: "Bienvenido", text: "Ingresaste como " + data.nombre, timer: 1600, showConfirmButton: false });
       navigate("/");
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
@@ -64,22 +64,17 @@ export default function LoginPage() {
 
         <form onSubmit={manejarLogin} className="space-y-3">
           <h2 className="text-sm font-semibold text-slate-300">Iniciar sesión</h2>
-          <input
+          <Input
             type="email"
             placeholder="tu@email.com"
             required
             value={loginEmail}
             onChange={(e) => setLoginEmail(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-brand focus:outline-none"
           />
           <PasswordInput id="loginPassword" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
-          <button
-            type="submit"
-            disabled={cargandoLogin}
-            className="w-full rounded-lg bg-brand py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
-          >
+          <Boton type="submit" disabled={cargandoLogin} className="w-full">
             {cargandoLogin ? "Ingresando..." : "Ingresar al sistema"}
-          </button>
+          </Boton>
         </form>
 
         <div className="flex items-center gap-2 text-xs text-slate-500">
@@ -90,38 +85,31 @@ export default function LoginPage() {
 
         <form onSubmit={manejarRegistro} className="space-y-3">
           <h2 className="text-sm font-semibold text-slate-300">Crear cuenta</h2>
-          <input
+          <Input
             type="text"
             placeholder="Nombre completo"
             required
             value={regNombre}
             onChange={(e) => setRegNombre(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-brand focus:outline-none"
           />
-          <input
+          <Input
             type="email"
             placeholder="tu@email.com"
             required
             value={regEmail}
             onChange={(e) => setRegEmail(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-brand focus:outline-none"
           />
           <PasswordInput id="regPassword" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} required />
-          <input
+          <Input
             type="number"
             placeholder="Número de sucursal (ej: 402)"
             required
             value={regSucursal}
             onChange={(e) => setRegSucursal(e.target.value)}
-            className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-brand focus:outline-none"
           />
-          <button
-            type="submit"
-            disabled={cargandoRegistro}
-            className="w-full rounded-lg border border-slate-700 py-2 text-sm font-semibold text-white hover:bg-slate-800 disabled:opacity-50"
-          >
+          <Boton type="submit" variante="secondary" disabled={cargandoRegistro} className="w-full">
             {cargandoRegistro ? "Creando..." : "Crear cuenta"}
-          </button>
+          </Boton>
         </form>
       </div>
     </div>
