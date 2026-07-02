@@ -16,6 +16,7 @@ import { useAuthStore } from "../store/authStore";
 import { useSnapshots } from "../hooks/useSnapshots";
 import { SkeletonTabla } from "../components/Skeleton";
 import EmptyState from "../components/EmptyState";
+import Boton from "../components/ui/Boton";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
@@ -36,7 +37,6 @@ function fmtMoneda(v) {
   return "$ " + Number(v || 0).toLocaleString("es-AR");
 }
 
-// Devuelve el conteo de una categoría de forma segura (soporta snapshots viejos sin categorías)
 function cat(obj, nombre) {
   return (obj && obj.categorias && obj.categorias[nombre]) || 0;
 }
@@ -120,7 +120,6 @@ export default function ReportesPage() {
     if (!hayDatos) return;
     const libro = XLSX.utils.book_new();
 
-    // Hoja 1: Resumen general (totales + categorías por fecha)
     const filasResumen = snapshots.map((s) => {
       const fila = {
         Fecha: formatearFecha(s.fecha),
@@ -138,7 +137,6 @@ export default function ReportesPage() {
     const hojaResumen = XLSX.utils.json_to_sheet(filasResumen);
     XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen general");
 
-    // Una hoja por cada tienda (totales + categorías por fecha)
     const ultimoSnapshot = snapshots[snapshots.length - 1];
     (ultimoSnapshot.sucursales || []).forEach((suc) => {
       const filasTienda = snapshots.map((s) => {
@@ -183,18 +181,14 @@ export default function ReportesPage() {
             </button>
           ))}
         </div>
-        <button
-          onClick={descargarExcel}
-          disabled={!hayDatos}
-          className="flex items-center gap-1.5 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-40"
-        >
+        <Boton variante="success" onClick={descargarExcel} disabled={!hayDatos}>
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
             <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" y1="15" x2="12" y2="3" />
           </svg>
           Descargar Excel
-        </button>
+        </Boton>
       </div>
 
       <p className="text-xs text-slate-500">{PERIODOS[periodo].titulo} · {hayDatos ? snapshots.length : 0} registros</p>
@@ -219,7 +213,6 @@ export default function ReportesPage() {
             </div>
           </div>
 
-          {/* Tabla de evolución de totales */}
           <div className="overflow-x-auto rounded-xl border border-slate-800">
             <table className="w-full text-sm">
               <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
@@ -247,7 +240,6 @@ export default function ReportesPage() {
             </table>
           </div>
 
-          {/* Tabla de categorías por fecha */}
           <div>
             <h3 className="mb-3 text-sm font-bold text-white">📦 Productos por categoría</h3>
             <div className="overflow-x-auto rounded-xl border border-slate-800">

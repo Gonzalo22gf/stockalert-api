@@ -7,6 +7,7 @@ import { useAuthStore } from "../store/authStore";
 import { useUsuarios, useCambiarRol, useCambiarEstado, useEliminarUsuario } from "../hooks/useUsuarios";
 import { descargarBackupUsuario } from "../utils/exportar";
 import ModalEditarUsuario from "../components/ModalEditarUsuario";
+import { Input, Select } from "../components/ui/Input";
 
 function MenuAcciones({ usuario, onEditar, onRol, onEstado, onEliminar }) {
   const [abierto, setAbierto] = useState(false);
@@ -67,12 +68,10 @@ function Avatar({ nombre }) {
 export default function UsuariosPage() {
   const usuarioActual = useAuthStore((s) => s.usuario);
   const esAdmin = usuarioActual?.rol === "admin";
-
   const { data: usuarios, isLoading, isError } = useUsuarios(esAdmin);
   const cambiarRol = useCambiarRol();
   const cambiarEstado = useCambiarEstado();
   const eliminarUsuario = useEliminarUsuario();
-
   const [usuarioEditando, setUsuarioEditando] = useState(null);
   const [filtroZona, setFiltroZona] = useState("");
   const [filtroNumero, setFiltroNumero] = useState("");
@@ -132,7 +131,6 @@ export default function UsuariosPage() {
   }
 
   const zonas = [...new Set((usuarios || []).map((u) => u.sucursal?.zona).filter((z) => z !== undefined))].sort((a, b) => a - b);
-
   const usuariosFiltrados = (usuarios || []).filter((u) => {
     const texto = busqueda.toLowerCase();
     const coincideBusqueda = u.nombre.toLowerCase().includes(texto) || u.email.toLowerCase().includes(texto);
@@ -141,17 +139,15 @@ export default function UsuariosPage() {
     return coincideBusqueda && coincideZona && coincideNumero;
   });
 
-  const inputClase = "rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-brand focus:outline-none";
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center gap-3">
-        <input type="text" placeholder="Buscar por nombre o email..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} className={"flex-1 " + inputClase} />
-        <select value={filtroZona} onChange={(e) => setFiltroZona(e.target.value)} className={inputClase}>
+        <Input type="text" placeholder="🔍 Buscar por nombre o email..." value={busqueda} onChange={(e) => setBusqueda(e.target.value)} className="flex-1" />
+        <Select value={filtroZona} onChange={(e) => setFiltroZona(e.target.value)} className="w-auto">
           <option value="">Todas las zonas</option>
           {zonas.map((z) => (<option key={z} value={z}>Zona {z}</option>))}
-        </select>
-        <input type="text" placeholder="N° de tienda..." value={filtroNumero} onChange={(e) => setFiltroNumero(e.target.value)} className={inputClase} />
+        </Select>
+        <Input type="text" placeholder="N° de tienda..." value={filtroNumero} onChange={(e) => setFiltroNumero(e.target.value)} className="w-auto" />
       </div>
 
       {isLoading && <SkeletonTabla filas={5} />}
@@ -159,7 +155,6 @@ export default function UsuariosPage() {
 
       {!isLoading && !isError && (
         <>
-          {/* TABLA - solo escritorio (md y mayores) */}
           <div className="hidden overflow-x-auto rounded-xl border border-slate-800 md:block">
             <table className="w-full text-sm">
               <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
@@ -197,7 +192,6 @@ export default function UsuariosPage() {
             </table>
           </div>
 
-          {/* TARJETAS - solo móvil (menores de md) */}
           <div className="space-y-3 md:hidden">
             {usuariosFiltrados.map((u) => (
               <div key={u._id} className="rounded-xl border border-slate-800 bg-slate-950/50 p-4">

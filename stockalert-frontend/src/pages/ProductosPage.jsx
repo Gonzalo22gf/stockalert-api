@@ -11,6 +11,8 @@ import ProductoCard from "../components/ProductoCard";
 import ProductosTabla from "../components/ProductosTabla";
 import ModalEditarProducto from "../components/ModalEditarProducto";
 import { exportarProductosExcel, leerArchivoProductos } from "../utils/exportar";
+import Boton from "../components/ui/Boton";
+import { Input, Select } from "../components/ui/Input";
 
 const CATEGORIAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
 
@@ -192,9 +194,6 @@ export default function ProductosPage() {
     setOrden("");
   }
 
-  const inputClase =
-    "rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-brand focus:outline-none";
-
   return (
     <div className="space-y-6">
       {/* Encabezado: sucursal (admin) + botón agregar producto */}
@@ -202,24 +201,19 @@ export default function ProductosPage() {
         {esAdmin ? (
           <div className="flex items-center gap-3">
             <label className="text-sm text-slate-400">🏪 Sucursal</label>
-            <select value={sucursalSeleccionada} onChange={(e) => setSucursalSeleccionada(e.target.value)} className={inputClase}>
+            <Select value={sucursalSeleccionada} onChange={(e) => setSucursalSeleccionada(e.target.value)} className="w-auto">
               <option value="">Todas las sucursales</option>
               {(sucursales || []).map((s) => (
-                <option key={s._id} value={s._id}>
-                  {s.nombre}
-                </option>
+                <option key={s._id} value={s._id}>{s.nombre}</option>
               ))}
-            </select>
+            </Select>
           </div>
         ) : (
           <div />
         )}
-        <button
-          onClick={() => setFormAbierto((v) => !v)}
-          className="flex items-center gap-1.5 rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white transition-colors hover:opacity-90"
-        >
-          {formAbierto ? <>✕ Cerrar formulario</> : <>+ Agregar producto</>}
-        </button>
+        <Boton onClick={() => setFormAbierto((v) => !v)}>
+          {formAbierto ? "✕ Cerrar formulario" : "+ Agregar producto"}
+        </Boton>
       </div>
 
       {formAbierto && <FormularioProducto esAdmin={esAdmin} />}
@@ -227,28 +221,28 @@ export default function ProductosPage() {
       {/* Barra de filtros */}
       <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
-          <input
+          <Input
             type="text"
             placeholder="🔍 Buscar por nombre, lote o sucursal..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
-            className={"md:col-span-4 " + inputClase}
+            className="md:col-span-4"
           />
-          <select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className={"md:col-span-3 " + inputClase}>
+          <Select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className="md:col-span-3">
             <option value="">Todas las categorías</option>
             {categoriasDisponibles.map((c) => (
               <option key={c} value={c}>{c}</option>
             ))}
-          </select>
-          <select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} className={"md:col-span-3 " + inputClase}>
+          </Select>
+          <Select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} className="md:col-span-3">
             <option value="">Todos los estados</option>
             <option value="buen-estado">En buen estado</option>
             <option value="por-vencer">Por vencer</option>
             <option value="vencido">Vencido</option>
             <option value="stock-bajo">Stock bajo</option>
             <option value="agotado">Agotado</option>
-          </select>
-          <select value={orden} onChange={(e) => setOrden(e.target.value)} className={"md:col-span-2 " + inputClase}>
+          </Select>
+          <Select value={orden} onChange={(e) => setOrden(e.target.value)} className="md:col-span-2">
             <option value="">Ordenar por...</option>
             <option value="alfabetico">Nombre (A-Z)</option>
             <option value="alfabetico-desc">Nombre (Z-A)</option>
@@ -258,28 +252,18 @@ export default function ProductosPage() {
             <option value="stock-alto">Stock (mayor)</option>
             <option value="precio">Precio (menor)</option>
             <option value="precio-alto">Precio (mayor)</option>
-          </select>
+          </Select>
           <div className="flex flex-wrap gap-2 md:col-span-12">
-            <button
-              onClick={() => exportarProductosExcel(productosFiltrados)}
-              disabled={!productosFiltrados || productosFiltrados.length === 0}
-              className="rounded-lg bg-green-600 px-3 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50"
-            >
+            <Boton variante="success" tamano="sm" onClick={() => exportarProductosExcel(productosFiltrados)} disabled={!productosFiltrados || productosFiltrados.length === 0}>
               ↓ Excel
-            </button>
-            <button
-              onClick={() => inputArchivoRef.current?.click()}
-              className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-300 hover:bg-slate-800"
-            >
+            </Boton>
+            <Boton variante="secondary" tamano="sm" onClick={() => inputArchivoRef.current?.click()}>
               ↑ Importar
-            </button>
+            </Boton>
             {hayFiltrosActivos && (
-              <button
-                onClick={limpiarFiltros}
-                className="rounded-lg border border-slate-700 px-3 py-2 text-xs font-semibold text-slate-400 hover:bg-slate-800"
-              >
+              <Boton variante="ghost" tamano="sm" onClick={limpiarFiltros}>
                 ✕ Limpiar filtros
-              </button>
+              </Boton>
             )}
             {/* Toggle de vista */}
             <div className="ml-auto flex overflow-hidden rounded-lg border border-slate-700">
