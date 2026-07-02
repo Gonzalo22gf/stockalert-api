@@ -8,6 +8,37 @@ import { useResumenSucursales, useEliminarSucursal } from "../hooks/useSucursale
 import { obtenerProductos } from "../api/productos";
 import { descargarBackupSucursal } from "../utils/exportar";
 import ModalSucursal from "../components/ModalSucursal";
+import Boton from "../components/ui/Boton";
+import { Input, Select } from "../components/ui/Input";
+
+function MenuAcciones({ onEditar, onEliminar }) {
+  const [abierto, setAbierto] = useState(false);
+  const item = "block w-full px-4 py-2 text-left text-[13px] font-medium transition-colors hover:bg-[#1a1d26]";
+  return (
+    <div className="relative inline-block text-left">
+      <button
+        onClick={() => setAbierto((v) => !v)}
+        className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-slate-300 transition-colors hover:bg-slate-700"
+        title="Acciones"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+          <circle cx="5" cy="12" r="2" />
+          <circle cx="12" cy="12" r="2" />
+          <circle cx="19" cy="12" r="2" />
+        </svg>
+      </button>
+      {abierto && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setAbierto(false)} />
+          <div className="absolute right-0 z-20 mt-2 w-40 overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60" style={{ backgroundColor: "#13151c" }}>
+            <button onClick={() => { setAbierto(false); onEditar(); }} className={item} style={{ color: "#cbd1e0" }}>Editar</button>
+            <button onClick={() => { setAbierto(false); onEliminar(); }} className={item} style={{ color: "#f87171" }}>Eliminar</button>
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
 
 export default function SucursalesPage() {
   const usuario = useAuthStore((s) => s.usuario);
@@ -41,7 +72,7 @@ export default function SucursalesPage() {
   }
 
   function irAProductos(sucursalId) {
-    navigate(`/productos?sucursal=${sucursalId}`);
+    navigate("/productos?sucursal=" + sucursalId);
   }
 
   async function manejarEliminar(item) {
@@ -50,14 +81,11 @@ export default function SucursalesPage() {
 
     const resultado = await Swal.fire({
       title: "⚠️ Eliminar sucursal",
-      html: `
-        <div style="text-align:left;font-size:14px">
-          Vas a eliminar <b>${sucursal.nombre}</b>.<br><br>
-          Esto borrará también sus <b>${cantProductos} producto(s)</b>.<br><br>
-          <span style="color:#f87171">Esta acción <b>no se puede deshacer</b>.</span><br><br>
-          Antes de borrar se descargará automáticamente un <b>backup en Excel</b> con todos los datos.
-        </div>
-      `,
+      html:
+        "<div style=\"text-align:left;font-size:14px\">Vas a eliminar <b>" + sucursal.nombre + "</b>.<br><br>" +
+        "Esto borrará también sus <b>" + cantProductos + " producto(s)</b>.<br><br>" +
+        "<span style=\"color:#f87171\">Esta acción <b>no se puede deshacer</b>.</span><br><br>" +
+        "Antes de borrar se descargará automáticamente un <b>backup en Excel</b> con todos los datos.</div>",
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, descargar backup y eliminar",
@@ -68,19 +96,13 @@ export default function SucursalesPage() {
     if (!resultado.isConfirmed) return;
 
     try {
-      // 1. Traer los productos de la sucursal para el backup
       const productos = await obtenerProductos(sucursal._id);
-
-      // 2. Descargar backup ANTES de borrar
       descargarBackupSucursal(sucursal, productos || []);
-
-      // 3. Borrar
       const respuesta = await eliminarSucursal.mutateAsync(sucursal._id);
-
       Swal.fire({
         icon: "success",
         title: "Sucursal eliminada",
-        text: `Se eliminó "${sucursal.nombre}" y ${respuesta.productosEliminados || 0} producto(s). El backup quedó descargado.`
+        text: "Se eliminó \"" + sucursal.nombre + "\" y " + (respuesta.productosEliminados || 0) + " producto(s). El backup quedó descargado."
       });
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
@@ -97,32 +119,25 @@ export default function SucursalesPage() {
     return coincideZona && coincideNumero;
   });
 
-  const inputClase =
-    "rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:border-brand focus:outline-none";
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex flex-wrap items-center gap-3">
-          <select value={filtroZona} onChange={(e) => setFiltroZona(e.target.value)} className={inputClase}>
+          <Select value={filtroZona} onChange={(e) => setFiltroZona(e.target.value)} className="w-auto">
             <option value="">Todas las zonas</option>
             {zonas.map((z) => (
-              <option key={z} value={z}>
-                Zona {z}
-              </option>
+              <option key={z} value={z}>Zona {z}</option>
             ))}
-          </select>
-          <input
+          </Select>
+          <Input
             type="text"
             placeholder="🔍 Buscar por N° de tienda..."
             value={filtroNumero}
             onChange={(e) => setFiltroNumero(e.target.value)}
-            className={inputClase}
+            className="w-auto"
           />
         </div>
-        <button onClick={abrirCrear} className="rounded-lg bg-brand px-4 py-2 text-sm font-semibold text-white hover:opacity-90">
-          + Nueva sucursal
-        </button>
+        <Boton onClick={abrirCrear}>+ Nueva sucursal</Boton>
       </div>
 
       {isLoading && <SkeletonTabla filas={4} />}
@@ -145,7 +160,7 @@ export default function SucursalesPage() {
             </thead>
             <tbody className="divide-y divide-slate-800">
               {resumenFiltrado.map((r) => (
-                <tr key={r.sucursal._id} className="bg-slate-950/50">
+                <tr key={r.sucursal._id} className="bg-slate-950/50 transition-colors hover:bg-slate-900/50">
                   <td className="px-4 py-3">
                     <button
                       onClick={() => irAProductos(r.sucursal._id)}
@@ -159,22 +174,11 @@ export default function SucursalesPage() {
                   <td className="px-4 py-3 text-slate-400">{r.sucursal.direccion || "Sin dirección"}</td>
                   <td className="px-4 py-3 text-center text-white">{r.totalProductos}</td>
                   <td className="px-4 py-3 text-center text-white">{r.vencidos}</td>
-                  <td className={`px-4 py-3 text-center ${r.stockCritico > 0 ? "text-orange-400" : "text-white"}`}>{r.stockCritico}</td>
+                  <td className={"px-4 py-3 text-center " + (r.stockCritico > 0 ? "text-orange-400" : "text-white")}>{r.stockCritico}</td>
                   <td className="px-4 py-3 text-right text-white">{formatoMoneda(r.valorInventario)}</td>
                   <td className="px-4 py-3">
-                    <div className="flex justify-end gap-1.5">
-                      <button
-                        onClick={() => abrirEditar(r.sucursal)}
-                        className="rounded-lg bg-brand/15 px-3 py-1 text-xs font-semibold text-brand hover:bg-brand/25"
-                      >
-                        ✏️ Editar
-                      </button>
-                      <button
-                        onClick={() => manejarEliminar(r)}
-                        className="rounded-lg bg-red-500/15 px-3 py-1 text-xs font-semibold text-red-400 hover:bg-red-500/25"
-                      >
-                        🗑️ Eliminar
-                      </button>
+                    <div className="flex justify-end">
+                      <MenuAcciones onEditar={() => abrirEditar(r.sucursal)} onEliminar={() => manejarEliminar(r)} />
                     </div>
                   </td>
                 </tr>
