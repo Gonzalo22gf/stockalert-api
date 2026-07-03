@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { login, registrar } from "../api/auth";
+import { login, registrar, olvidePassword } from "../api/auth";
 import { useAuthStore } from "../store/authStore";
 import PasswordInput from "../components/PasswordInput";
 import Boton from "../components/ui/Boton";
@@ -49,6 +49,31 @@ export default function LoginPage() {
     }
   }
 
+  async function manejarOlvide() {
+    const { value: email } = await Swal.fire({
+      title: "Recuperar contraseña",
+      input: "email",
+      inputLabel: "Ingresá el email de tu cuenta",
+      inputPlaceholder: "tu@email.com",
+      inputValue: loginEmail,
+      showCancelButton: true,
+      confirmButtonText: "Enviar link",
+      cancelButtonText: "Cancelar",
+      validationMessage: "Ingresá un email válido"
+    });
+    if (!email) return;
+    try {
+      const respuesta = await olvidePassword(email.trim());
+      Swal.fire({
+        icon: "success",
+        title: "Revisá tu correo",
+        text: respuesta.mensaje || "Si el correo está registrado, te enviamos un link para restablecer la contraseña."
+      });
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Error", text: error.message });
+    }
+  }
+
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-md space-y-6 rounded-2xl border border-slate-800 bg-slate-900 p-8">
@@ -72,6 +97,11 @@ export default function LoginPage() {
             onChange={(e) => setLoginEmail(e.target.value)}
           />
           <PasswordInput id="loginPassword" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} required />
+          <div className="text-right">
+            <button type="button" onClick={manejarOlvide} className="text-xs font-medium text-brand-400 hover:underline">
+              ¿Olvidaste tu contraseña?
+            </button>
+          </div>
           <Boton type="submit" disabled={cargandoLogin} className="w-full">
             {cargandoLogin ? "Ingresando..." : "Ingresar al sistema"}
           </Boton>
