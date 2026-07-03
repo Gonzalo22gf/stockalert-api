@@ -55,6 +55,17 @@ function BotonDescarga({ onClick, disabled }) {
   );
 }
 
+function BadgePrioridad({ motivo }) {
+  return (
+    <span
+      className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
+      style={{ backgroundColor: motivo.color + "1a", color: motivo.color }}
+    >
+      {motivo.texto}
+    </span>
+  );
+}
+
 export default function PanelRiesgo({ productos }) {
   const conRiesgo = (productos || [])
     .map((p) => ({ ...p, ...calcularRiesgo(p) }))
@@ -104,39 +115,50 @@ export default function PanelRiesgo({ productos }) {
         {urgentes.length === 0 ? (
           <p className="text-sm text-slate-500">No hay acciones urgentes. Todo en orden.</p>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="text-left uppercase text-slate-500">
-                <tr>
-                  <th className="px-2 py-2">Producto</th>
-                  <th className="px-2 py-2">Lote</th>
-                  <th className="px-2 py-2">Sucursal</th>
-                  <th className="px-2 py-2">Vence</th>
-                  <th className="px-2 py-2 text-center">Stock</th>
-                  <th className="px-2 py-2">Prioridad</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800">
-                {urgentes.slice(0, 8).map((p) => (
-                  <tr key={p._id}>
-                    <td className="px-2 py-2 font-semibold text-white">{p.nombre}</td>
-                    <td className="px-2 py-2 text-slate-400">{p.lote || "—"}</td>
-                    <td className="px-2 py-2 text-slate-400">{p.sucursal?.nombre || "—"}</td>
-                    <td className="px-2 py-2 text-slate-400">{formatearFecha(p.vencimiento)}</td>
-                    <td className="px-2 py-2 text-center text-white">{p.stock}</td>
-                    <td className="px-2 py-2">
-                      <span
-                        className="rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                        style={{ backgroundColor: p.motivoPrincipal.color + "1a", color: p.motivoPrincipal.color }}
-                      >
-                        {p.motivoPrincipal.texto}
-                      </span>
-                    </td>
+          <>
+            {/* TABLA - solo escritorio */}
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full text-xs">
+                <thead className="text-left uppercase text-slate-500">
+                  <tr>
+                    <th className="px-2 py-2">Producto</th>
+                    <th className="px-2 py-2">Lote</th>
+                    <th className="px-2 py-2">Sucursal</th>
+                    <th className="px-2 py-2">Vence</th>
+                    <th className="px-2 py-2 text-center">Stock</th>
+                    <th className="px-2 py-2">Prioridad</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+                <tbody className="divide-y divide-slate-800">
+                  {urgentes.slice(0, 8).map((p) => (
+                    <tr key={p._id}>
+                      <td className="px-2 py-2 font-semibold text-white">{p.nombre}</td>
+                      <td className="px-2 py-2 text-slate-400">{p.lote || "—"}</td>
+                      <td className="px-2 py-2 text-slate-400">{p.sucursal?.nombre || "—"}</td>
+                      <td className="px-2 py-2 text-slate-400">{formatearFecha(p.vencimiento)}</td>
+                      <td className="px-2 py-2 text-center text-white">{p.stock}</td>
+                      <td className="px-2 py-2"><BadgePrioridad motivo={p.motivoPrincipal} /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* TARJETAS - solo móvil (sin scroll lateral) */}
+            <div className="space-y-2 md:hidden">
+              {urgentes.slice(0, 8).map((p) => (
+                <div key={p._id} className="flex items-center gap-3 rounded-lg bg-slate-950/50 p-2.5">
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-white">{p.nombre}</p>
+                    <p className="text-[10px] text-slate-500">
+                      {p.sucursal?.nombre ? p.sucursal.nombre + " · " : ""}Lote: {p.lote || "—"} · Vence: {formatearFecha(p.vencimiento)} · Stock: {p.stock}
+                    </p>
+                  </div>
+                  <BadgePrioridad motivo={p.motivoPrincipal} />
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </div>
 
@@ -161,12 +183,7 @@ export default function PanelRiesgo({ productos }) {
                     Lote: {p.lote || "Sin lote"} · Vence: {formatearFecha(p.vencimiento)}
                   </p>
                 </div>
-                <span
-                  className="shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold"
-                  style={{ backgroundColor: p.motivoPrincipal.color + "1a", color: p.motivoPrincipal.color }}
-                >
-                  {p.motivoPrincipal.texto}
-                </span>
+                <BadgePrioridad motivo={p.motivoPrincipal} />
               </div>
             ))}
           </div>

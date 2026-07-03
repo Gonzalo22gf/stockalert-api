@@ -7,7 +7,6 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const navigate = useNavigate();
   const esAdmin = usuario?.rol === "admin";
   const [menuAbierto, setMenuAbierto] = useState(false);
-
   const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
   const nombreSucursal = esAdmin ? "Todas las sucursales" : usuario?.sucursal?.nombre || "Mi sucursal";
 
@@ -16,7 +15,8 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
     { label: "📊 Dashboard", ruta: "/", soloAdmin: true },
     { label: "📋 Movimientos", ruta: "/movimientos", soloAdmin: true },
     { label: "🏪 Sucursales", ruta: "/sucursales", soloAdmin: true },
-    { label: "👥 Usuarios", ruta: "/usuarios", soloAdmin: true }
+    { label: "👥 Usuarios", ruta: "/usuarios", soloAdmin: true },
+    { label: "📈 Reportes", ruta: "/reportes", soloAdmin: true }
   ];
 
   function ir(ruta) {
@@ -24,7 +24,6 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
     navigate(ruta);
   }
 
-  // Estos chips (sucursal y fecha) se ocultan en pantallas chicas y solo aparecen en lg+
   const chipClase =
     "hidden lg:flex items-center gap-1.5 rounded-[9px] border border-border bg-panel px-3 py-[7px] text-[12.5px] font-medium text-slate-400 transition-all hover:bg-panel-hover hover:border-slate-700";
 
@@ -47,7 +46,6 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
           {subtitulo && <p className="hidden truncate text-[12.5px] text-slate-600 sm:block">{subtitulo}</p>}
         </div>
       </div>
-
       <div className="flex shrink-0 items-center gap-2 md:gap-2.5">
         <div className="relative">
           <button
@@ -59,7 +57,6 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
               <polyline points="6 9 12 15 18 9" />
             </svg>
           </button>
-
           {menuAbierto && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
@@ -80,7 +77,6 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
             </>
           )}
         </div>
-
         <div className={chipClase}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
