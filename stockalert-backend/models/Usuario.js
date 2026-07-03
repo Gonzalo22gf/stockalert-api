@@ -31,6 +31,15 @@ const usuarioSchema = new mongoose.Schema(
     activo: {
       type: Boolean,
       default: true
+    },
+    // Recuperación de contraseña por correo
+    tokenRecuperacion: {
+      type: String,
+      default: null
+    },
+    tokenExpiracion: {
+      type: Date,
+      default: null
     }
   },
   {
