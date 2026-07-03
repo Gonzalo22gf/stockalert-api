@@ -1,15 +1,19 @@
 const nodemailer = require("nodemailer");
+const dns = require("dns");
 
-// Transporte de correo usando Gmail + contraseña de aplicación
+// Render a veces resuelve Gmail por IPv6 y falla (ENETUNREACH). Forzamos IPv4 primero.
+dns.setDefaultResultOrder("ipv4first");
+
 const transporte = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   }
 });
 
-// Envía un correo. Devuelve una promesa.
 async function enviarCorreo({ para, asunto, html }) {
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     throw new Error("Faltan las variables EMAIL_USER / EMAIL_PASS");
