@@ -71,6 +71,8 @@ El `.env` no se sube al repositorio (está en `.gitignore`).
 
 ## 🧭 Endpoints principales
 
+📚 **Documentación interactiva (Swagger):** https://stockalert-api.onrender.com/api-docs
+
 Requieren token JWT en el header `Authorization: Bearer <token>` (salvo login/registro).
 
 - `POST /api/usuarios/login` — iniciar sesión
