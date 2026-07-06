@@ -1,34 +1,32 @@
-const nodemailer = require("nodemailer");
-const dns = require("dns").promises;
-
-// Render no tiene salida IPv6 y Gmail resuelve primero por IPv6 (ENETUNREACH).
-// Fix: resolvemos la IP de Gmail con el resolver del sistema forzando IPv4,
-// y conectamos directo a esa IP con el servername correcto para el TLS.
-async function crearTransporte() {
-  const { address } = await dns.lookup("smtp.gmail.com", { family: 4 });
-  return nodemailer.createTransport({
-    host: address,
-    port: 465,
-    secure: true,
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS
-    },
-    tls: { servername: "smtp.gmail.com" }
-  });
-}
+// Envio de correos via API HTTPS de Brevo (puerto 443).
+// Render Free bloquea los puertos SMTP (25/465/587) desde sept 2025,
+// por eso NO usamos nodemailer/SMTP: usamos la API web de Brevo.
 
 async function enviarCorreo({ para, asunto, html }) {
-  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
-    throw new Error("Faltan las variables EMAIL_USER / EMAIL_PASS");
+  if (!process.env.BREVO_API_KEY || !process.env.EMAIL_USER) {
+    throw new Error("Faltan las variables BREVO_API_KEY / EMAIL_USER");
   }
-  const transporte = await crearTransporte();
-  return transporte.sendMail({
-    from: "\"StockAlert\" <" + process.env.EMAIL_USER + ">",
-    to: para,
-    subject: asunto,
-    html
+
+  const respuesta = await fetch("https://api.brevo.com/v3/smtp/email", {
+    method: "POST",
+    headers: {
+      "api-key": process.env.BREVO_API_KEY,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      sender: { name: "StockAlert", email: process.env.EMAIL_USER },
+      to: [{ email: para }],
+      subject: asunto,
+      htmlContent: html
+    })
   });
+
+  if (!respuesta.ok) {
+    const detalle = await respuesta.text();
+    throw new Error("Brevo respondio " + respuesta.status + ": " + detalle);
+  }
+
+  return respuesta.json();
 }
 
 module.exports = { enviarCorreo };
