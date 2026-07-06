@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/Usuario");
 const Sucursal = require("../models/Sucursal");
+const { validarPassword } = require("../utils/validarPassword");
 
 const generarToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
@@ -17,6 +18,10 @@ const registrarUsuario = async (req, res) => {
     }
 
     const emailNormalizado = email.toLowerCase().trim();
+    const errorPassword = validarPassword(password);
+    if (errorPassword) {
+      return res.status(400).json({ mensaje: errorPassword });
+    }
     const usuarioExiste = await Usuario.findOne({ email: emailNormalizado });
 
     if (usuarioExiste) {
@@ -241,8 +246,9 @@ const editarUsuarioAdmin = async (req, res) => {
     }
 
     if (password !== undefined && password !== "") {
-      if (password.length < 6) {
-        return res.status(400).json({ mensaje: "La contraseña debe tener al menos 6 caracteres" });
+      const errorPassword = validarPassword(password);
+      if (errorPassword) {
+        return res.status(400).json({ mensaje: errorPassword });
       }
       const salt = await bcrypt.genSalt(10);
       camposUpdate.password = await bcrypt.hash(password, salt);

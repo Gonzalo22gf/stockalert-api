@@ -16,8 +16,8 @@ export default function RestablecerPage() {
 
   async function manejarSubmit(e) {
     e.preventDefault();
-    if (password.length < 6) {
-      Swal.fire({ icon: "warning", title: "Contraseña muy corta", text: "Debe tener al menos 6 caracteres." });
+    if (password.length < 8) {
+      Swal.fire({ icon: "warning", title: "Contraseña muy corta", text: "Debe tener al menos 8 caracteres, e incluir mayúscula, número y símbolo." });
       return;
     }
     if (password !== confirmar) {

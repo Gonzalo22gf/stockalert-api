@@ -1,4 +1,5 @@
 const crypto = require("crypto");
+const { validarPassword } = require("../utils/validarPassword");
 const bcrypt = require("bcryptjs");
 const Usuario = require("../models/Usuario");
 const { enviarCorreo } = require("../services/email");
@@ -64,8 +65,9 @@ const restablecerPassword = async (req, res) => {
     if (!token || !password) {
       return res.status(400).json({ mensaje: "Token y nueva contraseña son obligatorios" });
     }
-    if (password.length < 6) {
-      return res.status(400).json({ mensaje: "La contraseña debe tener al menos 6 caracteres" });
+    const errorPassword = validarPassword(password);
+    if (errorPassword) {
+      return res.status(400).json({ mensaje: errorPassword });
     }
 
     const usuario = await Usuario.findOne({
