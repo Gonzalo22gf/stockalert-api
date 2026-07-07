@@ -72,7 +72,7 @@ function htmlJefe(sucursal, r) {
   return html;
 }
 
-// HTML del correo para el ADMIN (top 10 tiendas en riesgo)
+// HTML del correo para los ADMINS (top 10 tiendas en riesgo)
 function htmlAdmin(ranking) {
   let html = "<div style='font-family:sans-serif;max-width:560px'>";
   html += "<h2>🚨 Top 10 tiendas en riesgo - StockAlert</h2>";
@@ -91,11 +91,12 @@ function htmlAdmin(ranking) {
 
 const enviarAlertasDiarias = async (req, res) => {
   try {
-    // Traemos todo de una: sucursales, productos y jefes activos
-    const [sucursales, productos, jefes] = await Promise.all([
+    // Traemos todo de una: sucursales, productos, jefes y admins activos
+    const [sucursales, productos, jefes, admins] = await Promise.all([
       Sucursal.find(),
       Producto.find(),
-      Usuario.find({ rol: "jefe", activo: { $ne: false } }).populate("sucursal")
+      Usuario.find({ rol: "jefe", activo: { $ne: false } }).populate("sucursal"),
+      Usuario.find({ rol: "admin", activo: { $ne: false } })
     ]);
 
     // Agrupamos productos por sucursal y clasificamos
@@ -105,7 +106,7 @@ const enviarAlertasDiarias = async (req, res) => {
       porSucursal.set(String(s._id), { sucursal: s, resumen: clasificar(propios) });
     }
 
-    // ── Correo del ADMIN: top 10 tiendas con riesgo, ordenadas ──
+    // Ranking: top 10 tiendas con riesgo, ordenadas
     const ranking = [...porSucursal.values()]
       .map(({ sucursal, resumen }) => ({
         nombre: nombreSucursal(sucursal),
@@ -118,19 +119,27 @@ const enviarAlertasDiarias = async (req, res) => {
       .sort((a, b) => b.vencidos - a.vencidos || b.porVencer - a.porVencer || b.stockCritico - a.stockCritico)
       .slice(0, 10);
 
-    let correoAdmin = false;
-    if (process.env.EMAIL_ALERTAS) {
-      await enviarCorreo({
-        para: process.env.EMAIL_ALERTAS,
-        asunto: "StockAlert - Top 10 tiendas en riesgo",
-        html: htmlAdmin(ranking)
-      });
-      correoAdmin = true;
+    let correosAdmins = 0;
+    let correosJefes = 0;
+    let fallidos = 0;
+
+    // ── Correo a CADA ADMIN registrado: el top 10 ──
+    for (const admin of admins) {
+      if (!admin.email) continue;
+      try {
+        await enviarCorreo({
+          para: admin.email,
+          asunto: "StockAlert - Top 10 tiendas en riesgo",
+          html: htmlAdmin(ranking)
+        });
+        correosAdmins++;
+      } catch (e) {
+        console.error("Fallo correo a admin " + admin.email + ":", e.message);
+        fallidos++;
+      }
     }
 
     // ── Correo a CADA JEFE: el estado de SU tienda (siempre, este bien o mal) ──
-    let correosJefes = 0;
-    let fallidos = 0;
     for (const jefe of jefes) {
       if (!jefe.sucursal?._id || !jefe.email) continue;
       const datos = porSucursal.get(String(jefe.sucursal._id));
@@ -148,7 +157,7 @@ const enviarAlertasDiarias = async (req, res) => {
       }
     }
 
-    res.json({ mensaje: "Alertas diarias enviadas", correoAdmin, correosJefes, fallidos });
+    res.json({ mensaje: "Alertas diarias enviadas", correosAdmins, correosJefes, fallidos });
   } catch (error) {
     console.error("ERROR ALERTAS DIARIAS:", error);
     res.status(500).json({ mensaje: "Error al enviar alertas diarias" });
