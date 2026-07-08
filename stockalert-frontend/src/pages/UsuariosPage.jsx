@@ -11,11 +11,30 @@ import { Input, Select } from "../components/ui/Input";
 
 function MenuAcciones({ usuario, onEditar, onRol, onEstado, onEliminar }) {
   const [abierto, setAbierto] = useState(false);
+  const [pos, setPos] = useState({ top: 0, left: 0 });
   const item = "block w-full px-4 py-2 text-left text-[13px] font-medium transition-colors hover:bg-[#1a1d26]";
+
+  function alternar(e) {
+    if (!abierto) {
+      const r = e.currentTarget.getBoundingClientRect();
+      const anchoMenu = 176; // w-44
+      const altoMenu = 160;  // aprox: 4 opciones
+      let left = r.right - anchoMenu;
+      let top = r.bottom + 6;
+      // Si no entra abajo, se abre hacia arriba
+      if (top + altoMenu > window.innerHeight) {
+        top = r.top - altoMenu - 6;
+      }
+      if (left < 8) left = 8;
+      setPos({ top, left });
+    }
+    setAbierto((v) => !v);
+  }
+
   return (
     <div className="relative inline-block text-left">
       <button
-        onClick={() => setAbierto((v) => !v)}
+        onClick={alternar}
         className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1.5 text-slate-300 transition-colors hover:bg-slate-700"
         title="Acciones"
       >
@@ -28,7 +47,10 @@ function MenuAcciones({ usuario, onEditar, onRol, onEstado, onEliminar }) {
       {abierto && (
         <>
           <div className="fixed inset-0 z-10" onClick={() => setAbierto(false)} />
-          <div className="absolute right-0 z-20 mt-2 w-44 overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60" style={{ backgroundColor: "#13151c" }}>
+          <div
+            className="fixed z-20 w-44 overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60"
+            style={{ top: pos.top, left: pos.left, backgroundColor: "#13151c" }}
+          >
             <button onClick={() => { setAbierto(false); onEditar(); }} className={item} style={{ color: "#cbd1e0" }}>Editar</button>
             <button onClick={() => { setAbierto(false); onRol(); }} className={item} style={{ color: "#cbd1e0" }}>Cambiar rol</button>
             <button onClick={() => { setAbierto(false); onEstado(); }} className={item} style={{ color: usuario.activo ? "#fb923c" : "#4ade80" }}>{usuario.activo ? "Desactivar" : "Activar"}</button>
