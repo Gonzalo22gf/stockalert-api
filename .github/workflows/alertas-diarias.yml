@@ -2,8 +2,8 @@ name: Alertas diarias por correo
 
 on:
   schedule:
-    # 9:00 UTC = 6:00 AM Argentina
-    - cron: "0 9 * * *"
+    # 8:23 UTC = 5:23 AM Argentina (minuto impar para esquivar la cola de GitHub)
+    - cron: "23 8 * * *"
   workflow_dispatch:
 
 jobs:
