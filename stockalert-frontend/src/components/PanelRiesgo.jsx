@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import { Siren, Trophy } from "lucide-react";
 
 function diasParaVencer(vencimiento) {
   return Math.ceil((new Date(vencimiento) - new Date()) / (1000 * 60 * 60 * 24));

@@ -48,7 +48,7 @@ function MenuAcciones({ usuario, onEditar, onRol, onEstado, onEliminar }) {
         <>
           <div className="fixed inset-0 z-10" onClick={() => setAbierto(false)} />
           <div
-            className="fixed z-20 w-44 overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60"
+            className="fixed z-20 w-44 animate-pop overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60"
             style={{ top: pos.top, left: pos.left, backgroundColor: "#13151c" }}
           >
             <button onClick={() => { setAbierto(false); onEditar(); }} className={item} style={{ color: "#cbd1e0" }}>Editar</button>

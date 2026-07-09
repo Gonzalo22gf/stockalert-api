@@ -58,9 +58,9 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onCerrar}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-fade-fast" onClick={onCerrar}>
       <div
-        className="w-full max-w-lg rounded-2xl border border-slate-800 bg-slate-900 p-6"
+        className="w-full max-w-lg animate-pop rounded-2xl border border-slate-800 bg-slate-900 p-6"
         onClick={(e) => e.stopPropagation()}
       >
         <h2 className="mb-4 text-base font-bold text-white">Editar producto</h2>

@@ -48,8 +48,8 @@ export default function ModalSucursal({ sucursal, onCerrar }) {
   const cargando = crearSucursal.isPending || editarSucursal.isPending;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" onClick={onCerrar}>
-      <div className="w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6" onClick={(e) => e.stopPropagation()}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 animate-fade-fast" onClick={onCerrar}>
+      <div className="w-full max-w-md animate-pop rounded-2xl border border-slate-800 bg-slate-900 p-6" onClick={(e) => e.stopPropagation()}>
         <h2 className="mb-4 text-base font-bold text-white">{esEdicion ? "Editar sucursal" : "🏪 Nueva sucursal"}</h2>
         <form onSubmit={manejarGuardar} className="space-y-3">
           <div>

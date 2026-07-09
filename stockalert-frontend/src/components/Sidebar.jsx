@@ -1,49 +1,11 @@
 import { NavLink } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import {
+  LayoutDashboard, Package, Activity, Store, Users, TrendingUp,
+  ChevronRight, ChevronLeft, LogOut, BoxesIcon
+} from "lucide-react";
 
-const iconos = {
-  dashboard: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <rect x="3" y="3" width="7" height="7" />
-      <rect x="14" y="3" width="7" height="7" />
-      <rect x="14" y="14" width="7" height="7" />
-      <rect x="3" y="14" width="7" height="7" />
-    </svg>
-  ),
-  productos: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-    </svg>
-  ),
-  movimientos: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
-    </svg>
-  ),
-  sucursales: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-      <polyline points="9 22 9 12 15 12 15 22" />
-    </svg>
-  ),
-  usuarios: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
-      <circle cx="9" cy="7" r="4" />
-      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
-      <path d="M16 3.13a4 4 0 0 1 0 7.75" />
-    </svg>
-  ),
-  reportes: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-      <line x1="18" y1="20" x2="18" y2="10" />
-      <line x1="12" y1="20" x2="12" y2="4" />
-      <line x1="6" y1="20" x2="6" y2="14" />
-    </svg>
-  )
-};
-
-function ItemNav({ to, icono, label, soloAdmin, esAdmin, onNavegar, colapsado }) {
+function ItemNav({ to, Icono, label, soloAdmin, esAdmin, onNavegar, colapsado }) {
   if (soloAdmin && !esAdmin) return null;
   return (
     <NavLink
@@ -61,7 +23,7 @@ function ItemNav({ to, icono, label, soloAdmin, esAdmin, onNavegar, colapsado })
         }`
       }
     >
-      {icono}
+      <Icono size={17} strokeWidth={1.8} />
       {!colapsado && label}
     </NavLink>
   );
@@ -71,19 +33,13 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
   const usuario = useAuthStore((s) => s.usuario);
   const cerrarSesion = useAuthStore((s) => s.cerrarSesion);
   const esAdmin = usuario?.rol === "admin";
-
-  // El colapso solo aplica en escritorio (md+). En móvil siempre se ve completo.
   const anchoSidebar = colapsado ? "md:w-[72px]" : "md:w-[248px]";
 
   return (
     <>
       {abierto && (
-        <div
-          onClick={onCerrar}
-          className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden"
-        />
+        <div onClick={onCerrar} className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden" />
       )}
-
       <aside
         className={`fixed z-40 flex h-screen w-[248px] flex-col border-r border-border-soft bg-base p-[14px] transition-all duration-300 md:static md:z-auto md:translate-x-0 ${anchoSidebar} ${
           abierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
@@ -92,9 +48,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
         {/* Logo + botón colapsar */}
         <div className={`flex items-center gap-2.5 px-2 pb-6 pt-1 ${colapsado ? "md:justify-center md:px-0" : ""}`}>
           <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand/30">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.4">
-              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
-            </svg>
+            <BoxesIcon size={18} strokeWidth={2} stroke="white" />
           </div>
           {!colapsado && (
             <div className="min-w-0 flex-1">
@@ -102,34 +56,26 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
               <p className="text-[10px] font-medium tracking-wide text-slate-600">v5.0 · Inventario</p>
             </div>
           )}
-          {/* Botón colapsar/expandir — solo escritorio */}
           <button
             onClick={onAlternarColapso}
             title={colapsado ? "Expandir menú" : "Colapsar menú"}
             className="hidden shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-panel hover:text-white md:block"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              {colapsado ? (
-                <polyline points="9 18 15 12 9 6" />
-              ) : (
-                <polyline points="15 18 9 12 15 6" />
-              )}
-            </svg>
+            {colapsado ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
         </div>
 
         <nav className="flex flex-1 flex-col gap-[3px]">
           {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">Principal</p>}
-          <ItemNav to="/" icono={iconos.dashboard} label="Dashboard" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-          <ItemNav to="/productos" icono={iconos.productos} label="Productos" esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-
+          <ItemNav to="/" Icono={LayoutDashboard} label="Dashboard" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+          <ItemNav to="/productos" Icono={Package} label="Productos" esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
           {esAdmin && (
             <>
               {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">Análisis</p>}
-              <ItemNav to="/movimientos" icono={iconos.movimientos} label="Movimientos" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/sucursales" icono={iconos.sucursales} label="Sucursales" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/usuarios" icono={iconos.usuarios} label="Usuarios" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/reportes" icono={iconos.reportes} label="Reportes" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/movimientos" Icono={Activity} label="Movimientos" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/sucursales" Icono={Store} label="Sucursales" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/usuarios" Icono={Users} label="Usuarios" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/reportes" Icono={TrendingUp} label="Reportes" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
             </>
           )}
         </nav>
@@ -146,28 +92,20 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
                 <p className="text-[10.5px] text-slate-600">{esAdmin ? "Administrador" : "Jefe de sucursal"}</p>
               </div>
               <button onClick={cerrarSesion} title="Cerrar sesión" className="text-slate-600 transition-colors hover:text-red-400">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
+                <LogOut size={15} strokeWidth={2.2} />
               </button>
             </>
           )}
         </div>
 
-        {/* Botón cerrar sesión cuando está colapsado */}
+        {/* Botón logout cuando está colapsado */}
         {colapsado && (
           <button
             onClick={cerrarSesion}
             title="Cerrar sesión"
             className="mt-2 hidden items-center justify-center rounded-lg p-2 text-slate-500 transition-colors hover:bg-panel hover:text-red-400 md:flex"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
+            <LogOut size={16} strokeWidth={2.2} />
           </button>
         )}
       </aside>

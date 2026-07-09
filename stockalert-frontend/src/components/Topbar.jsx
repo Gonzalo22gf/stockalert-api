@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
+import { Zap, ChevronDown, Package, LayoutDashboard, ClipboardList, Store, Users, TrendingUp, Home, Calendar, Menu } from "lucide-react";
 
 export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const usuario = useAuthStore((s) => s.usuario);
@@ -11,12 +12,12 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const nombreSucursal = esAdmin ? "Todas las sucursales" : usuario?.sucursal?.nombre || "Mi sucursal";
 
   const accesos = [
-    { label: "📦 Productos", ruta: "/productos" },
-    { label: "📊 Dashboard", ruta: "/", soloAdmin: true },
-    { label: "📋 Movimientos", ruta: "/movimientos", soloAdmin: true },
-    { label: "🏪 Sucursales", ruta: "/sucursales", soloAdmin: true },
-    { label: "👥 Usuarios", ruta: "/usuarios", soloAdmin: true },
-    { label: "📈 Reportes", ruta: "/reportes", soloAdmin: true }
+    { label: "Productos", icono: Package, ruta: "/productos" },
+    { label: "Dashboard", icono: LayoutDashboard, ruta: "/", soloAdmin: true },
+    { label: "Movimientos", icono: ClipboardList, ruta: "/movimientos", soloAdmin: true },
+    { label: "Sucursales", icono: Store, ruta: "/sucursales", soloAdmin: true },
+    { label: "Usuarios", icono: Users, ruta: "/usuarios", soloAdmin: true },
+    { label: "Reportes", icono: TrendingUp, ruta: "/reportes", soloAdmin: true }
   ];
 
   function ir(ruta) {
@@ -35,11 +36,7 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
           title="Mostrar/ocultar menú"
           className="shrink-0 rounded-lg border border-border bg-panel p-2 text-slate-400 transition-all hover:bg-panel-hover hover:text-white"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <line x1="3" y1="12" x2="21" y2="12" />
-            <line x1="3" y1="6" x2="21" y2="6" />
-            <line x1="3" y1="18" x2="21" y2="18" />
-          </svg>
+          <Menu size={18} />
         </button>
         <div className="min-w-0">
           <h1 className="truncate text-base font-bold text-white md:text-[19px]">{titulo}</h1>
@@ -52,44 +49,39 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
             onClick={() => setMenuAbierto((v) => !v)}
             className="flex items-center gap-1.5 rounded-[9px] border border-brand/25 bg-brand/10 px-3 py-[7px] text-[12.5px] font-semibold text-brand-400 transition-all hover:bg-brand/20"
           >
-            ⚡ <span className="hidden sm:inline">Accesos rápidos</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <polyline points="6 9 12 15 18 9" />
-            </svg>
+            <Zap size={14} /> <span className="hidden sm:inline">Accesos rápidos</span>
+            <ChevronDown size={12} />
           </button>
           {menuAbierto && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
-              <div className="absolute right-0 z-20 mt-2 w-48 overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60 animate-fade" style={{ backgroundColor: "#13151c" }}>
+              <div className="absolute right-0 z-20 mt-2 w-48 animate-pop overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60" style={{ backgroundColor: "#13151c" }}>
                 {accesos
                   .filter((a) => !a.soloAdmin || esAdmin)
-                  .map((a) => (
-                    <button
-                      key={a.ruta}
-                      onClick={() => ir(a.ruta)}
-                      className="block w-full px-4 py-2.5 text-left text-[13px] font-medium transition-colors hover:bg-[#1a1d26]"
-                      style={{ color: "#cbd1e0" }}
-                    >
-                      {a.label}
-                    </button>
-                  ))}
+                  .map((a) => {
+                    const Icono = a.icono;
+                    return (
+                      <button
+                        key={a.ruta}
+                        onClick={() => ir(a.ruta)}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[13px] font-medium transition-colors hover:bg-[#1a1d26]"
+                        style={{ color: "#cbd1e0" }}
+                      >
+                        <Icono size={15} className="shrink-0 text-slate-500" />
+                        {a.label}
+                      </button>
+                    );
+                  })}
               </div>
             </>
           )}
         </div>
         <div className={chipClase}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-          </svg>
+          <Home size={12} />
           {nombreSucursal}
         </div>
         <div className={chipClase}>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <rect x="3" y="4" width="18" height="18" rx="2" />
-            <line x1="16" y1="2" x2="16" y2="6" />
-            <line x1="8" y1="2" x2="8" y2="6" />
-            <line x1="3" y1="10" x2="21" y2="10" />
-          </svg>
+          <Calendar size={12} />
           {fecha}
         </div>
       </div>
