@@ -255,10 +255,10 @@ export default function ProductosPage() {
           </Select>
           <div className="flex flex-wrap gap-2 md:col-span-12">
             <Boton variante="success" tamano="sm" onClick={() => exportarProductosExcel(productosFiltrados)} disabled={!productosFiltrados || productosFiltrados.length === 0}>
-              ↓ Excel
+              Excel
             </Boton>
             <Boton variante="secondary" tamano="sm" onClick={() => inputArchivoRef.current?.click()}>
-              ↑ Importar
+              Importar
             </Boton>
             {hayFiltrosActivos && (
               <Boton variante="ghost" tamano="sm" onClick={limpiarFiltros}>
@@ -272,14 +272,14 @@ export default function ProductosPage() {
                 className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "tabla" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}
                 title="Ver como tabla"
               >
-                ☰ Tabla
+                Tabla
               </button>
               <button
                 onClick={() => cambiarVista("cards")}
                 className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "cards" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}
                 title="Ver como tarjetas"
               >
-                ▦ Tarjetas
+                Tarjetas
               </button>
             </div>
             <input ref={inputArchivoRef} type="file" accept=".csv,.xlsx,.xls" onChange={manejarImportar} className="hidden" />
