@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const crypto = require("crypto");
 const { validarPassword } = require("../utils/validarPassword");
 const bcrypt = require("bcryptjs");
@@ -53,7 +54,7 @@ const olvidePassword = async (req, res) => {
 
     res.json(respuestaGenerica);
   } catch (error) {
-    console.error("ERROR OLVIDE PASSWORD:", error);
+    logger.error("ERROR OLVIDE PASSWORD:", error);
     res.status(500).json({ mensaje: "Error al procesar la solicitud" });
   }
 };
@@ -87,7 +88,7 @@ const restablecerPassword = async (req, res) => {
 
     res.json({ mensaje: "Contraseña restablecida. Ya podés iniciar sesión." });
   } catch (error) {
-    console.error("ERROR RESTABLECER PASSWORD:", error);
+    logger.error("ERROR RESTABLECER PASSWORD:", error);
     res.status(500).json({ mensaje: "Error al restablecer la contraseña" });
   }
 };

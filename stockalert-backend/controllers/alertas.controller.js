@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const Producto = require("../models/Producto");
 const Usuario = require("../models/Usuario");
 const Sucursal = require("../models/Sucursal");
@@ -134,7 +135,7 @@ const enviarAlertasDiarias = async (req, res) => {
         });
         correosAdmins++;
       } catch (e) {
-        console.error("Fallo correo a admin " + admin.email + ":", e.message);
+        logger.error("Fallo correo a admin " + admin.email + ":", e.message);
         fallidos++;
       }
     }
@@ -152,14 +153,14 @@ const enviarAlertasDiarias = async (req, res) => {
         });
         correosJefes++;
       } catch (e) {
-        console.error("Fallo correo a jefe " + jefe.email + ":", e.message);
+        logger.error("Fallo correo a jefe " + jefe.email + ":", e.message);
         fallidos++;
       }
     }
 
     res.json({ mensaje: "Alertas diarias enviadas", correosAdmins, correosJefes, fallidos });
   } catch (error) {
-    console.error("ERROR ALERTAS DIARIAS:", error);
+    logger.error("ERROR ALERTAS DIARIAS:", error);
     res.status(500).json({ mensaje: "Error al enviar alertas diarias" });
   }
 };

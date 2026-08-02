@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const Snapshot = require("../models/Snapshot");
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
@@ -105,7 +106,7 @@ const generarSnapshot = async (req, res) => {
 
     res.json({ mensaje: "Snapshot generado", dia, snapshot });
   } catch (error) {
-    console.error("ERROR GENERAR SNAPSHOT:", error);
+    logger.error("ERROR GENERAR SNAPSHOT:", error);
     res.status(500).json({ mensaje: "Error al generar snapshot" });
   }
 };
@@ -128,7 +129,7 @@ const obtenerHistorico = async (req, res) => {
     const snapshots = await Snapshot.find(filtro).sort({ fecha: 1 });
     res.json(snapshots);
   } catch (error) {
-    console.error("ERROR HISTORICO:", error);
+    logger.error("ERROR HISTORICO:", error);
     res.status(500).json({ mensaje: "Error al obtener histórico" });
   }
 };

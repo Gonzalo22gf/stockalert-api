@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/Usuario");
@@ -56,7 +57,7 @@ const registrarUsuario = async (req, res) => {
       token: generarToken(usuario._id)
     });
   } catch (error) {
-    console.error("ERROR REGISTRO:", error);
+    logger.error("ERROR REGISTRO:", error);
     res.status(500).json({ mensaje: "Error al registrar usuario" });
   }
 };
@@ -95,7 +96,7 @@ const loginUsuario = async (req, res) => {
       token: generarToken(usuario._id)
     });
   } catch (error) {
-    console.error("ERROR LOGIN:", error);
+    logger.error("ERROR LOGIN:", error);
     res.status(500).json({ mensaje: "Error al iniciar sesión" });
   }
 };
@@ -122,7 +123,7 @@ const listarUsuarios = async (req, res) => {
 
     res.json(usuarios);
   } catch (error) {
-    console.error("ERROR LISTAR USUARIOS:", error);
+    logger.error("ERROR LISTAR USUARIOS:", error);
     res.status(500).json({ mensaje: "Error al listar usuarios" });
   }
 };
@@ -153,7 +154,7 @@ const cambiarRol = async (req, res) => {
 
     res.json({ mensaje: "Rol actualizado", usuario });
   } catch (error) {
-    console.error("ERROR CAMBIAR ROL:", error);
+    logger.error("ERROR CAMBIAR ROL:", error);
     res.status(500).json({ mensaje: "Error al cambiar rol" });
   }
 };
@@ -183,7 +184,7 @@ const cambiarEstado = async (req, res) => {
 
     res.json({ mensaje: `Usuario ${activo ? "activado" : "desactivado"}`, usuario });
   } catch (error) {
-    console.error("ERROR CAMBIAR ESTADO:", error);
+    logger.error("ERROR CAMBIAR ESTADO:", error);
     res.status(500).json({ mensaje: "Error al cambiar estado" });
   }
 };
@@ -215,7 +216,7 @@ const cambiarSucursal = async (req, res) => {
 
     res.json({ mensaje: "Sucursal del usuario actualizada", usuario });
   } catch (error) {
-    console.error("ERROR CAMBIAR SUCURSAL:", error);
+    logger.error("ERROR CAMBIAR SUCURSAL:", error);
     res.status(500).json({ mensaje: "Error al cambiar sucursal del usuario" });
   }
 };
@@ -270,7 +271,7 @@ const editarUsuarioAdmin = async (req, res) => {
 
     res.json({ mensaje: "Usuario actualizado", usuario });
   } catch (error) {
-    console.error("ERROR EDITAR USUARIO:", error);
+    logger.error("ERROR EDITAR USUARIO:", error);
     res.status(500).json({ mensaje: "Error al editar usuario" });
   }
 };
@@ -299,7 +300,7 @@ const eliminarUsuario = async (req, res) => {
 
     res.json({ mensaje: "Usuario eliminado" });
   } catch (error) {
-    console.error("ERROR ELIMINAR USUARIO:", error);
+    logger.error("ERROR ELIMINAR USUARIO:", error);
     res.status(500).json({ mensaje: "Error al eliminar usuario" });
   }
 };

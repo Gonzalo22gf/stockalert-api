@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const Movimiento = require("../models/Movimiento");
 
 const obtenerMovimientos = async (req, res) => {
@@ -20,7 +21,7 @@ const obtenerMovimientos = async (req, res) => {
 
     res.json(movimientos);
   } catch (error) {
-    console.error("ERROR OBTENER MOVIMIENTOS:", error);
+    logger.error("ERROR OBTENER MOVIMIENTOS:", error);
 
     res.status(500).json({
       mensaje: "Error al obtener movimientos"

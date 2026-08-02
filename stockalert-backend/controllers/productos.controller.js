@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const Producto = require("../models/Producto");
 const Movimiento = require("../models/Movimiento");
 
@@ -50,7 +51,7 @@ const obtenerProductos = async (req, res) => {
 
     res.json(productos);
   } catch (error) {
-    console.error("ERROR OBTENER PRODUCTOS:", error);
+    logger.error("ERROR OBTENER PRODUCTOS:", error);
     res.status(500).json({ mensaje: "Error al obtener productos" });
   }
 };
@@ -114,7 +115,7 @@ const crearProducto = async (req, res) => {
 
     res.status(201).json(productoCompleto);
   } catch (error) {
-    console.error("ERROR CREAR PRODUCTO:", error);
+    logger.error("ERROR CREAR PRODUCTO:", error);
     res.status(500).json({ mensaje: error.message || "Error al crear producto" });
   }
 };
@@ -208,7 +209,7 @@ const actualizarProducto = async (req, res) => {
 
     res.json(productoActualizado);
   } catch (error) {
-    console.error("ERROR ACTUALIZAR PRODUCTO:", error);
+    logger.error("ERROR ACTUALIZAR PRODUCTO:", error);
     res.status(500).json({ mensaje: error.message || "Error al actualizar producto" });
   }
 };
@@ -243,7 +244,7 @@ const eliminarProducto = async (req, res) => {
 
     res.json({ mensaje: "Producto eliminado correctamente", eliminadoPor: { _id: req.usuario._id, nombre: req.usuario.nombre, email: req.usuario.email } });
   } catch (error) {
-    console.error("ERROR ELIMINAR PRODUCTO:", error);
+    logger.error("ERROR ELIMINAR PRODUCTO:", error);
     res.status(500).json({ mensaje: error.message || "Error al eliminar producto" });
   }
 };

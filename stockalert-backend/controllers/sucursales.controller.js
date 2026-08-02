@@ -1,3 +1,4 @@
+const logger = require("../utils/logger");
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
 
@@ -86,7 +87,7 @@ const crearSucursal = async (req, res) => {
 
     res.status(201).json({ mensaje: "Sucursal creada", sucursal });
   } catch (error) {
-    console.error("ERROR CREAR SUCURSAL:", error);
+    logger.error("ERROR CREAR SUCURSAL:", error);
     res.status(500).json({ mensaje: error.message || "Error al crear sucursal" });
   }
 };
@@ -116,7 +117,7 @@ const editarSucursal = async (req, res) => {
 
     res.json({ mensaje: "Sucursal actualizada", sucursal });
   } catch (error) {
-    console.error("ERROR EDITAR SUCURSAL:", error);
+    logger.error("ERROR EDITAR SUCURSAL:", error);
     res.status(500).json({ mensaje: "Error al editar sucursal" });
   }
 };
@@ -144,7 +145,7 @@ const eliminarSucursal = async (req, res) => {
       productosEliminados: resultadoProductos.deletedCount
     });
   } catch (error) {
-    console.error("ERROR ELIMINAR SUCURSAL:", error);
+    logger.error("ERROR ELIMINAR SUCURSAL:", error);
     res.status(500).json({ mensaje: "Error al eliminar sucursal" });
   }
 };
