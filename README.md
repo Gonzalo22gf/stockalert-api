@@ -4,7 +4,7 @@
 
 StockAlert permite a cadenas de supermercados gestionar el stock y las fechas de vencimiento de sus productos en múltiples sucursales, con alertas de productos vencidos, próximos a vencer y con stock crítico. Incluye un dashboard analítico, reportes históricos con evolución en el tiempo y exportación a Excel.
 
-🔗 **Demo en vivo:** https://gonzalo22gf.github.io/stockalert-api/
+🔗 **Demo en vivo:** https://mistockalert.com
 
 ---
 
@@ -51,7 +51,7 @@ npm install
 npm run dev
 ```
 
-El frontend corre en http://localhost:5173/stockalert-api/
+El frontend corre en http://localhost:5173/
 
 ---
 
@@ -91,7 +91,7 @@ El `.env` no se sube al repositorio (está en `.gitignore`).
 
 ## 🧭 Endpoints principales
 
-📚 **Documentación interactiva (Swagger):** https://stockalert-api.onrender.com/api-docs
+📚 **Documentación interactiva (Swagger):** https://api.mistockalert.com/api-docs
 
 Requieren token JWT en el header `Authorization: Bearer <token>` (salvo login/registro).
 
