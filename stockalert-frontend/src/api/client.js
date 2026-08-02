@@ -1,4 +1,4 @@
-const API_URL = "https://stockalert-api.onrender.com";
+const API_URL = "https://api.mistockalert.com";
 
 function obtenerToken() {
   return localStorage.getItem("tokenStockAlert") || "";

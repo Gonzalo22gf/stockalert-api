@@ -19,7 +19,9 @@ app.use(helmet());
 
 const origenesPermitidos = [
   "http://localhost:5173",
-  "https://gonzalo22gf.github.io"
+  "https://gonzalo22gf.github.io",
+  "https://mistockalert.com",
+  "https://www.mistockalert.com"
 ];
 app.use(
   cors({
