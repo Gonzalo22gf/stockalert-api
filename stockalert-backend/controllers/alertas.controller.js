@@ -164,4 +164,4 @@ const enviarAlertasDiarias = async (req, res) => {
   }
 };
 
-module.exports = { enviarAlertasDiarias };
+module.exports = { enviarAlertasDiarias, clasificar };
