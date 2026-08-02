@@ -1,0 +1,25 @@
+services:
+  # Base de datos MongoDB local
+  mongo:
+    image: mongo:7
+    container_name: stockalert-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+
+  # Backend de StockAlert
+  backend:
+    build: ./stockalert-backend
+    container_name: stockalert-backend
+    ports:
+      - "3000:3000"
+    environment:
+      - MONGO_URI=mongodb://mongo:27017/stockalert
+      - JWT_SECRET=clave-secreta-local-para-desarrollo
+      - PORT=3000
+    depends_on:
+      - mongo
+
+volumes:
+  mongo-data:

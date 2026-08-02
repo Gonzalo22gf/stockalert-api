@@ -17,6 +17,7 @@ StockAlert permite a cadenas de supermercados gestionar el stock y las fechas de
 - **Exportación a Excel** — reportes multi-hoja (resumen general + una hoja por tienda), con desglose por categoría.
 - **Escáner de códigos de barras (EAN)** — carga rápida de productos desde la cámara del celular.
 - **Importación / exportación** — carga masiva de productos desde CSV/Excel.
+- **Alertas diarias por correo** — el administrador recibe el top de tiendas en riesgo; cada jefe recibe el parte de su tienda.
 - **Seguridad** — JWT, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL y CORS restringido.
 - **Diseño responsive** — escritorio y móvil.
 
@@ -24,11 +25,11 @@ StockAlert permite a cadenas de supermercados gestionar el stock y las fechas de
 
 ## 🛠️ Stack tecnológico
 
-**Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx.
+**Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx, lucide-react.
 
-**Backend:** Node.js + Express, MongoDB + Mongoose, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize.
+**Backend:** Node.js + Express, MongoDB + Mongoose, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize, Swagger.
 
-**Infraestructura:** Frontend en GitHub Pages (deploy automático con GitHub Actions), backend en Render, base de datos en MongoDB Atlas, snapshots diarios vía GitHub Actions (cron).
+**Infraestructura:** Frontend en GitHub Pages (deploy automático con GitHub Actions), backend en Render, base de datos en MongoDB Atlas, snapshots y alertas diarias vía GitHub Actions (cron), correos transaccionales con Brevo. Contenedores con Docker.
 
 ---
 
@@ -54,6 +55,23 @@ El frontend corre en http://localhost:5173/stockalert-api/
 
 ---
 
+## 🐳 Levantar con Docker
+
+La forma más rápida de correr todo el sistema (backend + MongoDB) sin instalar nada más que Docker:
+
+```bash
+docker compose up --build
+```
+
+Esto levanta dos contenedores conectados entre sí:
+
+- **backend** — la API de StockAlert (Node + Express) en http://localhost:3000
+- **mongo** — una base de datos MongoDB local con persistencia de datos
+
+No hace falta instalar Node ni MongoDB en la máquina: Docker se encarga de todo. Para detener los contenedores, Ctrl+C (o `docker compose down` desde otra terminal).
+
+---
+
 ## 🔑 Variables de entorno
 
 Crear un `.env` en `stockalert-backend/`:
@@ -62,6 +80,8 @@ Crear un `.env` en `stockalert-backend/`:
 MONGO_URI=tu_cadena_de_conexion_mongodb
 JWT_SECRET=una_clave_secreta_larga_y_aleatoria
 CRON_SECRET=otra_clave_secreta_para_los_snapshots
+BREVO_API_KEY=tu_api_key_de_brevo
+EMAIL_USER=tu_remitente_verificado_en_brevo
 PORT=3000
 ```
 
@@ -88,7 +108,7 @@ Requieren token JWT en el header `Authorization: Bearer <token>` (salvo login/re
 
 - **stockalert-backend/** — API REST (Node + Express + MongoDB): config, controllers, middleware, models, routes.
 - **stockalert-frontend/** — SPA (React + Vite): api, hooks, components, pages, store.
-- **.github/workflows/** — CI/CD: deploy automático + snapshot diario.
+- **.github/workflows/** — CI/CD: deploy automático + snapshot diario + alertas diarias.
 
 El sistema captura un snapshot del estado de todas las sucursales cada día (vía GitHub Actions), lo que permite construir reportes históricos con la evolución del inventario en el tiempo.
 
