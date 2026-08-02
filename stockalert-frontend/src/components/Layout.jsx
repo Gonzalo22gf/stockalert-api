@@ -48,7 +48,7 @@ export default function Layout() {
   }
 
   return (
-    <div className="flex h-screen bg-base">
+    <div className="flex h-dvh bg-base">
       <Sidebar
         abierto={sidebarAbierto}
         colapsado={sidebarColapsado}

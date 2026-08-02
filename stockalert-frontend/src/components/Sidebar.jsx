@@ -41,7 +41,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
         <div onClick={onCerrar} className="fixed inset-0 z-30 bg-black/50 backdrop-blur-sm md:hidden" />
       )}
       <aside
-        className={`fixed z-40 flex h-screen w-[248px] flex-col border-r border-border-soft bg-base p-[14px] transition-all duration-300 md:static md:z-auto md:translate-x-0 ${anchoSidebar} ${
+        className={`fixed z-40 flex h-dvh w-[248px] flex-col overflow-y-auto border-r border-border-soft bg-base p-[14px] transition-all duration-300 md:static md:z-auto md:translate-x-0 ${anchoSidebar} ${
           abierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         } ${!abierto ? "md:hidden" : ""}`}
       >
