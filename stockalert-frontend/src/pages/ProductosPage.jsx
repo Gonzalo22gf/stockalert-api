@@ -153,6 +153,7 @@ export default function ProductosPage() {
     const coincideBusqueda =
       p.nombre.toLowerCase().includes(texto) ||
       (p.lote || "").toLowerCase().includes(texto) ||
+      (p.codigoBarras || "").toLowerCase().includes(texto) ||
       (p.sucursal?.nombre || "").toLowerCase().includes(texto);
 
     const coincideCategoria = filtroCategoria ? p.categoria === filtroCategoria : true;
@@ -200,7 +201,7 @@ export default function ProductosPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         {esAdmin ? (
           <div className="flex items-center gap-3">
-            <label className="text-sm text-slate-400">🏪 Sucursal</label>
+            <label className="text-sm text-slate-400">Sucursal</label>
             <Select value={sucursalSeleccionada} onChange={(e) => setSucursalSeleccionada(e.target.value)} className="w-auto">
               <option value="">Todas las sucursales</option>
               {(sucursales || []).map((s) => (
@@ -223,7 +224,7 @@ export default function ProductosPage() {
         <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
           <Input
             type="text"
-            placeholder="🔍 Buscar por nombre, lote o sucursal..."
+            placeholder="Buscar por nombre, lote, EAN o sucursal..."
             value={busqueda}
             onChange={(e) => setBusqueda(e.target.value)}
             className="md:col-span-4"
