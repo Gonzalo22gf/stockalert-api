@@ -1,0 +1,23 @@
+version: 2
+updates:
+  # Dependencias del backend
+  - package-ecosystem: "npm"
+    directory: "/stockalert-backend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "backend"
+
+  # Dependencias del frontend
+  - package-ecosystem: "npm"
+    directory: "/stockalert-frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "frontend"
