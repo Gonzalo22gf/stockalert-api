@@ -3,6 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import FabEscaner from "./FabEscaner";
+import { useInactividad } from "../hooks/useInactividad";
 
 const TITULOS = {
   "/": { titulo: "Dashboard", subtitulo: "Resumen general del inventario" },
@@ -14,6 +15,7 @@ const TITULOS = {
 };
 
 export default function Layout() {
+  useInactividad();
   const location = useLocation();
   const { titulo, subtitulo } = TITULOS[location.pathname] || { titulo: "StockAlert", subtitulo: "" };
 
