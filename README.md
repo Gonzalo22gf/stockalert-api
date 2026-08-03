@@ -1,41 +1,46 @@
 # 📦 StockAlert
 
-**Sistema de inventario y control de vencimientos multi-sucursal para supermercados.**
+**SaaS multi-empresa de inventario y control de vencimientos para supermercados.**
 
-StockAlert permite a cadenas de supermercados gestionar el stock y las fechas de vencimiento de sus productos en múltiples sucursales, con alertas de productos vencidos, próximos a vencer y con stock crítico. Incluye un dashboard analítico, reportes históricos con evolución en el tiempo y exportación a Excel.
+StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencimiento de sus productos en múltiples sucursales, con alertas automáticas, dashboard analítico y reportes históricos. Cada empresa tiene su espacio completamente aislado — los datos de un negocio jamás son visibles para otro.
 
 🔗 **Demo en vivo:** https://mistockalert.com
+📚 **API Docs (Swagger):** https://api.mistockalert.com/api-docs
 
 ---
 
 ## ✨ Características
 
-- **Gestión multi-sucursal** — inventario independiente por tienda, con roles (administrador y jefe de sucursal).
+- **Multi-empresa (SaaS)** — cada negocio crea su cuenta y opera en su propio espacio aislado. Registro en dos modos: crear empresa nueva o unirse a una existente.
+- **Gestión multi-sucursal** — inventario independiente por tienda, con roles diferenciados (administrador ve todo; jefe de sucursal ve solo su tienda).
 - **Control de vencimientos** — clasificación automática: en buen estado, por vencer (≤7 días) y vencidos.
 - **Dashboard analítico** — KPIs en tiempo real, acciones urgentes, top de productos en riesgo y gráficos por categoría, tienda y estado.
 - **Reportes históricos** — captura automática diaria del estado de las tiendas, con visualización por período (diario, semanal, mensual, anual).
 - **Exportación a Excel** — reportes multi-hoja (resumen general + una hoja por tienda), con desglose por categoría.
-- **Escáner de códigos de barras (EAN)** — carga rápida de productos desde la cámara del celular.
+- **Escáner de códigos de barras (EAN)** — carga rápida de productos desde la cámara del celular. Búsqueda por nombre, lote, EAN o sucursal.
 - **Importación / exportación** — carga masiva de productos desde CSV/Excel.
-- **Alertas diarias por correo** — el administrador recibe el top de tiendas en riesgo; cada jefe recibe el parte de su tienda.
-- **Seguridad** — JWT, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL y CORS restringido.
-- **Diseño responsive** — escritorio y móvil.
+- **Alertas diarias por correo** — el administrador recibe el top 10 de tiendas en riesgo de su empresa; cada jefe recibe el parte de su tienda.
+- **Seguridad** — JWT con empresa embebida, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos e invalidación de sesiones al cambiar contraseña.
+- **PWA instalable** — se instala desde el navegador en cualquier celular o computadora, con ícono propio y pantalla completa. Se actualiza automáticamente con cada deploy.
+- **Diseño responsive** — escritorio y móvil, con íconos lucide-react y animaciones suaves.
 
 ---
 
 ## 🛠️ Stack tecnológico
 
-**Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx, lucide-react.
+**Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx, lucide-react, vite-plugin-pwa.
 
-**Backend:** Node.js + Express, MongoDB + Mongoose, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize, Swagger.
+**Backend:** Node.js + Express, MongoDB + Mongoose, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize, Swagger, Pino (logs estructurados).
 
-**Infraestructura:** Frontend en GitHub Pages (deploy automático con GitHub Actions), backend en Render, base de datos en MongoDB Atlas, snapshots y alertas diarias vía GitHub Actions (cron), correos transaccionales con Brevo. Contenedores con Docker.
+**Infraestructura:** dominio propio `mistockalert.com` (GitHub Pages + Render), MongoDB Atlas, GitHub Actions (CI/CD + snapshots diarios + alertas), Brevo (correo transaccional), Docker.
+
+**Calidad:** 35 tests (Jest + Supertest + mongodb-memory-server): seguridad de API, lógica de negocio y aislamiento IDOR entre empresas. Dependabot activo para vigilancia de vulnerabilidades.
 
 ---
 
 ## 🚀 Instalación local
 
-**Requisitos:** Node.js 18+ y una base de datos MongoDB (local o Atlas).
+**Requisitos:** Node.js 18+ y MongoDB (local o Atlas).
 
 **Backend:**
 ```bash
@@ -57,18 +62,21 @@ El frontend corre en http://localhost:5173/
 
 ## 🐳 Levantar con Docker
 
-La forma más rápida de correr todo el sistema (backend + MongoDB) sin instalar nada más que Docker:
+La forma más rápida — sin instalar Node ni MongoDB:
 
 ```bash
 docker compose up --build
 ```
 
-Esto levanta dos contenedores conectados entre sí:
+Levanta dos contenedores conectados: backend en http://localhost:3000 y MongoDB local. Para detener: Ctrl+C o `docker compose down`.
 
-- **backend** — la API de StockAlert (Node + Express) en http://localhost:3000
-- **mongo** — una base de datos MongoDB local con persistencia de datos
+---
 
-No hace falta instalar Node ni MongoDB en la máquina: Docker se encarga de todo. Para detener los contenedores, Ctrl+C (o `docker compose down` desde otra terminal).
+## 🔒 Seguridad multi-empresa
+
+El aislamiento entre empresas está verificado con tests automáticos de aislamiento IDOR: una empresa no puede ver, editar ni eliminar datos de otra empresa por ningún camino, aunque conozca los IDs. Los tests corren en cada push.
+
+Medidas adicionales: bloqueo temporal de cuenta (15 min) tras 5 intentos fallidos de login, invalidación de sesiones al cambiar contraseña, límite de payload de 1MB, Dependabot semanal.
 
 ---
 
@@ -91,12 +99,11 @@ El `.env` no se sube al repositorio (está en `.gitignore`).
 
 ## 🧭 Endpoints principales
 
-📚 **Documentación interactiva (Swagger):** https://api.mistockalert.com/api-docs
-
 Requieren token JWT en el header `Authorization: Bearer <token>` (salvo login/registro).
 
+- `POST /api/usuarios/registro` — crear empresa nueva o unirse a una existente
 - `POST /api/usuarios/login` — iniciar sesión
-- `GET /api/productos` — listar productos
+- `GET /api/productos` — listar productos (filtrado automático por empresa)
 - `POST /api/productos` — crear producto
 - `GET /api/sucursales/resumen` — métricas por tienda (admin)
 - `POST /api/snapshots/generar` — genera la foto del día (protegido por clave, lo dispara el cron)
@@ -106,11 +113,23 @@ Requieren token JWT en el header `Authorization: Bearer <token>` (salvo login/re
 
 ## 🏗️ Arquitectura
 
-- **stockalert-backend/** — API REST (Node + Express + MongoDB): config, controllers, middleware, models, routes.
-- **stockalert-frontend/** — SPA (React + Vite): api, hooks, components, pages, store.
+- **stockalert-backend/** — API REST (Node + Express + MongoDB): config, controllers, middleware, models, routes, utils.
+- **stockalert-frontend/** — SPA (React + Vite + PWA): api, hooks, components, pages, store.
 - **.github/workflows/** — CI/CD: deploy automático + snapshot diario + alertas diarias.
+- **.github/dependabot.yml** — actualización automática de dependencias.
 
-El sistema captura un snapshot del estado de todas las sucursales cada día (vía GitHub Actions), lo que permite construir reportes históricos con la evolución del inventario en el tiempo.
+Cada empresa tiene sus propios datos, usuarios, sucursales y snapshots. El sistema captura una foto del estado del inventario de cada empresa cada día (vía GitHub Actions), lo que permite construir reportes históricos con la evolución real en el tiempo.
+
+---
+
+## 🧪 Tests
+
+```bash
+cd stockalert-backend
+npm test
+```
+
+35 tests en 4 suites: seguridad de la API (rutas protegidas, tokens), lógica de negocio (clasificación de alertas, validación de contraseñas) y aislamiento IDOR entre empresas.
 
 ---
 
