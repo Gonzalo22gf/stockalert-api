@@ -90,6 +90,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[12.5px] font-semibold text-white">{usuario?.nombre}</p>
                 <p className="text-[10.5px] text-slate-600">{esAdmin ? "Administrador" : "Jefe de sucursal"}</p>
+                {usuario?.empresa?.nombre && <p className="truncate text-[10px] text-slate-700">{usuario.empresa.nombre}</p>}
               </div>
               <button onClick={cerrarSesion} title="Cerrar sesión" className="text-slate-600 transition-colors hover:text-red-400">
                 <LogOut size={15} strokeWidth={2.2} />

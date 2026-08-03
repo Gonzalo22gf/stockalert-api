@@ -6,20 +6,19 @@ const usuarioGuardado = JSON.parse(localStorage.getItem("usuarioStockAlert") || 
 export const useAuthStore = create((set) => ({
   token: tokenGuardado,
   usuario: usuarioGuardado,
-
   guardarSesion: (data) => {
     const usuario = {
       _id: data._id,
       nombre: data.nombre,
       email: data.email,
       rol: data.rol,
-      sucursal: data.sucursal
+      sucursal: data.sucursal,
+      empresa: data.empresa || null
     };
     localStorage.setItem("tokenStockAlert", data.token);
     localStorage.setItem("usuarioStockAlert", JSON.stringify(usuario));
     set({ token: data.token, usuario });
   },
-
   cerrarSesion: () => {
     localStorage.removeItem("tokenStockAlert");
     localStorage.removeItem("usuarioStockAlert");
