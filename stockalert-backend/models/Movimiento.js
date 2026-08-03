@@ -23,6 +23,10 @@ const movimientoSchema = new mongoose.Schema(
       required: true
     },
 
+    empresa: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Empresa"
+    },
     usuario: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",

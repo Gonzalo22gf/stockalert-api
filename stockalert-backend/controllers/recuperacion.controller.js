@@ -5,7 +5,7 @@ const bcrypt = require("bcryptjs");
 const Usuario = require("../models/Usuario");
 const { enviarCorreo } = require("../services/email");
 
-const URL_FRONTEND = "https://gonzalo22gf.github.io/stockalert-api";
+const URL_FRONTEND = "https://mistockalert.com";
 
 // Hashea el token para guardarlo (nunca se guarda el token en crudo)
 function hashearToken(token) {

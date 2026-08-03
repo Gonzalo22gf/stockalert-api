@@ -28,6 +28,10 @@ const usuarioSchema = new mongoose.Schema(
       ref: "Sucursal",
       required: true
     },
+    empresa: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Empresa"
+    },
     activo: {
       type: Boolean,
       default: true

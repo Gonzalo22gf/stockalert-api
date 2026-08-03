@@ -12,12 +12,10 @@ function prepararLotes({ lotes, lote, stock, vencimiento }) {
   }
   return [{ numero: lote || "", stock: Number(stock || 0), vencimiento }];
 }
-
 function calcularStockTotal(lotes) {
   if (!Array.isArray(lotes) || lotes.length === 0) return 0;
   return lotes.reduce((total, lote) => total + Number(lote.stock || 0), 0);
 }
-
 function obtenerProximoVencimiento(lotes, vencimientoFallback) {
   if (!Array.isArray(lotes) || lotes.length === 0) return vencimientoFallback;
   const ordenados = [...lotes]
@@ -25,30 +23,25 @@ function obtenerProximoVencimiento(lotes, vencimientoFallback) {
     .sort((a, b) => new Date(a.vencimiento) - new Date(b.vencimiento));
   return ordenados[0]?.vencimiento || vencimientoFallback;
 }
-
 function obtenerLotePrincipal(lotes, loteFallback) {
   if (!Array.isArray(lotes) || lotes.length === 0) return loteFallback || "";
   return lotes[0].numero || "";
 }
 
-// ========================= //
-// OBTENER PRODUCTOS         //
-// ========================= //
+// OBTENER PRODUCTOS — siempre acotado a la empresa del usuario
 const obtenerProductos = async (req, res) => {
   try {
-    let filtro = {};
+    let filtro = { empresa: req.empresaId };
     if (req.usuario.rol === "admin") {
       if (req.query.sucursal) filtro.sucursal = req.query.sucursal;
     } else {
       filtro.sucursal = req.usuario.sucursal?._id || req.usuario.sucursal;
     }
-
     const productos = await Producto.find(filtro)
-  .populate("sucursal", "zona numero direccion empresa")
-  .populate("creadoPor", "nombre email rol")
-  .populate("actualizadoPor", "nombre email rol")
-  .sort({ createdAt: -1 });
-
+      .populate("sucursal", "zona numero direccion empresa")
+      .populate("creadoPor", "nombre email rol")
+      .populate("actualizadoPor", "nombre email rol")
+      .sort({ createdAt: -1 });
     res.json(productos);
   } catch (error) {
     logger.error("ERROR OBTENER PRODUCTOS:", error);
@@ -56,33 +49,32 @@ const obtenerProductos = async (req, res) => {
   }
 };
 
-// ========================= //
-// CREAR PRODUCTO            //
-// ========================= //
+// CREAR PRODUCTO
 const crearProducto = async (req, res) => {
   try {
     const { nombre, categoria, stock, precio, vencimiento, codigoBarras, lote, lotes, sucursal } = req.body;
-
     if (!nombre || !categoria || precio === undefined ||
         (!vencimiento && (!Array.isArray(lotes) || lotes.length === 0))) {
       return res.status(400).json({ mensaje: "Todos los campos son obligatorios" });
     }
-
     const lotesProducto = prepararLotes({ lotes, lote, stock, vencimiento });
     const stockTotal = calcularStockTotal(lotesProducto);
     const vencimientoPrincipal = obtenerProximoVencimiento(lotesProducto, vencimiento);
     const lotePrincipal = obtenerLotePrincipal(lotesProducto, lote);
-
     if (stockTotal < 0 || !vencimientoPrincipal) {
       return res.status(400).json({ mensaje: "Los datos de lote, stock y vencimiento no son válidos" });
     }
-
     let sucursalProducto = req.usuario.sucursal?._id || req.usuario.sucursal;
     if (req.usuario.rol === "admin") {
       if (!sucursal) return res.status(400).json({ mensaje: "El administrador debe seleccionar una sucursal" });
       sucursalProducto = sucursal;
     }
-
+    // Blindaje: la sucursal destino debe pertenecer a la empresa del usuario
+    const Sucursal = require("../models/Sucursal");
+    const sucursalValida = await Sucursal.findOne({ _id: sucursalProducto, empresa: req.empresaId });
+    if (!sucursalValida) {
+      return res.status(403).json({ mensaje: "La sucursal no pertenece a tu empresa" });
+    }
     const producto = await Producto.create({
       nombre, categoria,
       stock: stockTotal, precio,
@@ -92,11 +84,11 @@ const crearProducto = async (req, res) => {
       lotes: lotesProducto,
       usuario: req.usuario._id,
       sucursal: sucursalProducto,
+      empresa: req.empresaId,
       creadoPor: req.usuario._id,
       actualizadoPor: req.usuario._id,
       fechaUltimaActualizacion: new Date()
     });
-
     await Movimiento.create({
       producto: producto._id,
       nombreProducto: producto.nombre,
@@ -104,15 +96,14 @@ const crearProducto = async (req, res) => {
       accion: "CREAR",
       usuario: req.usuario._id,
       sucursal: sucursalProducto,
+      empresa: req.empresaId,
       detalle: `Producto creado por ${req.usuario.nombre}`,
       cambios: { nombre: producto.nombre, categoria: producto.categoria, stock: producto.stock, precio: producto.precio, vencimiento: producto.vencimiento, codigoBarras: producto.codigoBarras || "", lote: producto.lote || "", lotes: producto.lotes || [] }
     });
-
     const productoCompleto = await Producto.findById(producto._id)
-  .populate("sucursal", "zona numero direccion empresa")
-  .populate("creadoPor", "nombre email rol")
-  .populate("actualizadoPor", "nombre email rol");
-
+      .populate("sucursal", "zona numero direccion empresa")
+      .populate("creadoPor", "nombre email rol")
+      .populate("actualizadoPor", "nombre email rol");
     res.status(201).json(productoCompleto);
   } catch (error) {
     logger.error("ERROR CREAR PRODUCTO:", error);
@@ -120,21 +111,17 @@ const crearProducto = async (req, res) => {
   }
 };
 
-// ========================= //
-// ACTUALIZAR PRODUCTO       //
-// ========================= //
+// ACTUALIZAR PRODUCTO
 const actualizarProducto = async (req, res) => {
   try {
-    const producto = await Producto.findById(req.params.id);
+    // Blindaje: el producto debe ser de la empresa del usuario
+    const producto = await Producto.findOne({ _id: req.params.id, empresa: req.empresaId });
     if (!producto) return res.status(404).json({ mensaje: "Producto no encontrado" });
-
     const esAdmin = req.usuario.rol === "admin";
     const sucursalUsuario = req.usuario.sucursal?._id || req.usuario.sucursal;
-
     if (!esAdmin && producto.sucursal.toString() !== sucursalUsuario.toString()) {
       return res.status(403).json({ mensaje: "No autorizado para editar este producto" });
     }
-
     const datosAnteriores = {
       nombre: producto.nombre, categoria: producto.categoria,
       stock: producto.stock, precio: producto.precio,
@@ -143,15 +130,11 @@ const actualizarProducto = async (req, res) => {
       lote: producto.lote || "", lotes: producto.lotes || [],
       sucursal: producto.sucursal
     };
-
     const { nombre, categoria, stock, precio, vencimiento, codigoBarras, lote, lotes, sucursal } = req.body;
-
     const lotesProducto = prepararLotes({ lotes, lote, stock, vencimiento });
     const stockTotal = calcularStockTotal(lotesProducto);
     const vencimientoPrincipal = obtenerProximoVencimiento(lotesProducto, vencimiento);
     const lotePrincipal = obtenerLotePrincipal(lotesProducto, lote);
-
-    // Campos a actualizar
     const camposUpdate = {
       nombre, categoria,
       stock: stockTotal, precio,
@@ -162,37 +145,36 @@ const actualizarProducto = async (req, res) => {
       actualizadoPor: req.usuario._id,
       fechaUltimaActualizacion: new Date()
     };
-
-    // ✅ INCLUIR SUCURSAL si se manda (para transferencias)
+    // Transferencia de sucursal (solo admin) — la destino debe ser de la misma empresa
     if (sucursal && esAdmin) {
+      const Sucursal = require("../models/Sucursal");
+      const destinoValido = await Sucursal.findOne({ _id: sucursal, empresa: req.empresaId });
+      if (!destinoValido) {
+        return res.status(403).json({ mensaje: "La sucursal destino no pertenece a tu empresa" });
+      }
       camposUpdate.sucursal = sucursal;
     }
-
     const productoActualizado = await Producto.findByIdAndUpdate(
-  req.params.id,
-  camposUpdate,
-  { new: true, runValidators: true }
-)
-  .populate("sucursal", "zona numero direccion empresa")
-  .populate("creadoPor", "nombre email rol")
-  .populate("actualizadoPor", "nombre email rol");
-
-    // Detectar si fue una transferencia
+      req.params.id,
+      camposUpdate,
+      { new: true, runValidators: true }
+    )
+      .populate("sucursal", "zona numero direccion empresa")
+      .populate("creadoPor", "nombre email rol")
+      .populate("actualizadoPor", "nombre email rol");
     const fueTransferencia = sucursal && esAdmin &&
       datosAnteriores.sucursal?.toString() !== sucursal?.toString();
-
-    const accionMovimiento = fueTransferencia ? "EDITAR" : "EDITAR";
     const detalleMovimiento = fueTransferencia
       ? `Producto transferido a sucursal ${sucursal} por ${req.usuario.nombre}`
       : `Producto editado por ${req.usuario.nombre}`;
-
     await Movimiento.create({
       producto: producto._id,
       nombreProducto: productoActualizado.nombre,
       lote: productoActualizado.lote || "",
-      accion: accionMovimiento,
+      accion: "EDITAR",
       usuario: req.usuario._id,
       sucursal: productoActualizado.sucursal?._id || productoActualizado.sucursal || producto.sucursal,
+      empresa: req.empresaId,
       detalle: detalleMovimiento,
       cambios: {
         antes: datosAnteriores,
@@ -206,7 +188,6 @@ const actualizarProducto = async (req, res) => {
         }
       }
     });
-
     res.json(productoActualizado);
   } catch (error) {
     logger.error("ERROR ACTUALIZAR PRODUCTO:", error);
@@ -214,21 +195,17 @@ const actualizarProducto = async (req, res) => {
   }
 };
 
-// ========================= //
-// ELIMINAR PRODUCTO         //
-// ========================= //
+// ELIMINAR PRODUCTO
 const eliminarProducto = async (req, res) => {
   try {
-    const producto = await Producto.findById(req.params.id);
+    // Blindaje: el producto debe ser de la empresa del usuario
+    const producto = await Producto.findOne({ _id: req.params.id, empresa: req.empresaId });
     if (!producto) return res.status(404).json({ mensaje: "Producto no encontrado" });
-
     const esAdmin = req.usuario.rol === "admin";
     const sucursalUsuario = req.usuario.sucursal?._id || req.usuario.sucursal;
-
     if (!esAdmin && producto.sucursal.toString() !== sucursalUsuario.toString()) {
       return res.status(403).json({ mensaje: "No autorizado para eliminar este producto" });
     }
-
     await Movimiento.create({
       producto: producto._id,
       nombreProducto: producto.nombre,
@@ -236,12 +213,11 @@ const eliminarProducto = async (req, res) => {
       accion: "ELIMINAR",
       usuario: req.usuario._id,
       sucursal: producto.sucursal,
+      empresa: req.empresaId,
       detalle: `Producto eliminado por ${req.usuario.nombre}`,
       cambios: { nombre: producto.nombre, categoria: producto.categoria, stock: producto.stock, precio: producto.precio, vencimiento: producto.vencimiento, codigoBarras: producto.codigoBarras || "", lote: producto.lote || "", lotes: producto.lotes || [] }
     });
-
     await Producto.findByIdAndDelete(req.params.id);
-
     res.json({ mensaje: "Producto eliminado correctamente", eliminadoPor: { _id: req.usuario._id, nombre: req.usuario.nombre, email: req.usuario.email } });
   } catch (error) {
     logger.error("ERROR ELIMINAR PRODUCTO:", error);

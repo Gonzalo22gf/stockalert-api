@@ -10,9 +10,13 @@ const categoriasSchema = {
   Otros: { type: Number, default: 0 }
 };
 
-// Cada snapshot es una "foto" del estado de todas las sucursales en un día concreto.
+// Cada snapshot es una "foto" del estado de todas las sucursales de UNA empresa en un día.
 const snapshotSchema = new mongoose.Schema(
   {
+    empresa: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Empresa"
+    },
     fecha: {
       type: Date,
       required: true,
@@ -20,9 +24,7 @@ const snapshotSchema = new mongoose.Schema(
     },
     diaClave: {
       type: String,
-      required: true,
-      unique: true,
-      index: true
+      required: true
     },
     totales: {
       tiendas: { type: Number, default: 0 },
@@ -54,5 +56,8 @@ const snapshotSchema = new mongoose.Schema(
     timestamps: true
   }
 );
+
+// Un snapshot por dia POR EMPRESA (cada empresa tiene su foto diaria propia).
+snapshotSchema.index({ empresa: 1, diaClave: 1 }, { unique: true });
 
 module.exports = mongoose.model("Snapshot", snapshotSchema);

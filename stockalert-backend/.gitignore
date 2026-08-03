@@ -1,2 +1,7 @@
 node_modules
+.envbackup-*/
+backup-db.cjs
 .env
+backup-*/
+migrar-empresa.cjs
+backup-db.cjs

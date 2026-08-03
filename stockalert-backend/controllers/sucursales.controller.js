@@ -2,43 +2,36 @@ const logger = require("../utils/logger");
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
 
-// LISTAR TODAS
+// LISTAR TODAS — solo las de la empresa del usuario
 const obtenerSucursales = async (req, res) => {
   try {
-    const sucursales = await Sucursal.find().sort({ numero: 1 });
+    const sucursales = await Sucursal.find({ empresa: req.empresaId }).sort({ numero: 1 });
     res.json(sucursales);
   } catch (error) {
     res.status(500).json({ mensaje: "Error al obtener sucursales" });
   }
 };
 
-// RESUMEN (solo admin)
+// RESUMEN (solo admin) — acotado a la empresa
 const obtenerResumenSucursales = async (req, res) => {
   try {
     if (req.usuario.rol !== "admin") {
       return res.status(403).json({ mensaje: "No autorizado" });
     }
-
-    const sucursales = await Sucursal.find().sort({ numero: 1 });
+    const sucursales = await Sucursal.find({ empresa: req.empresaId }).sort({ numero: 1 });
     const hoy = new Date();
-
     const resumen = await Promise.all(
       sucursales.map(async (sucursal) => {
-        const productos = await Producto.find({ sucursal: sucursal._id });
-
+        const productos = await Producto.find({ sucursal: sucursal._id, empresa: req.empresaId });
         const totalProductos = productos.length;
-
         const vencidos = productos.filter((p) => new Date(p.vencimiento) < hoy).length;
-
         const porVencer = productos.filter((p) => {
           const diff = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
           return diff >= 0 && diff <= 7;
         }).length;
-
         const stockCritico = productos.filter((p) => p.stock > 0 && p.stock <= 5).length;
         const agotados     = productos.filter((p) => p.stock === 0).length;
         const valorInventario = productos.reduce((t, p) => t + p.stock * p.precio, 0);
-
         return {
           sucursal: {
             _id:       sucursal._id,
@@ -48,43 +41,34 @@ const obtenerResumenSucursales = async (req, res) => {
             direccion: sucursal.direccion,
             empresa:   sucursal.empresa
           },
-          totalProductos,
-          vencidos,
-          porVencer,
-          stockCritico,
-          agotados,
-          valorInventario
+          totalProductos, vencidos, porVencer, stockCritico, agotados, valorInventario
         };
       })
     );
-
     res.json(resumen);
   } catch (error) {
     res.status(500).json({ mensaje: "Error al obtener resumen de sucursales" });
   }
 };
 
-// CREAR SUCURSAL (solo admin)
+// CREAR SUCURSAL (solo admin) — dentro de su empresa
 const crearSucursal = async (req, res) => {
   try {
-    const { zona, numero, direccion, empresa } = req.body;
-
+    const { zona, numero, direccion } = req.body;
     if (zona === undefined || zona === null || numero === undefined || numero === null) {
       return res.status(400).json({ mensaje: "Zona y número son obligatorios" });
     }
-
-    const yaExiste = await Sucursal.findOne({ numero: Number(numero) });
+    // El numero es unico POR EMPRESA
+    const yaExiste = await Sucursal.findOne({ numero: Number(numero), empresa: req.empresaId });
     if (yaExiste) {
-      return res.status(400).json({ mensaje: "Ya existe una sucursal con ese número" });
+      return res.status(400).json({ mensaje: "Ya existe una sucursal con ese número en tu empresa" });
     }
-
     const sucursal = await Sucursal.create({
       zona: Number(zona),
       numero: Number(numero),
       direccion: direccion?.trim() || "",
-      empresa: empresa?.trim() || "Carrefour"
+      empresa: req.empresaId
     });
-
     res.status(201).json({ mensaje: "Sucursal creada", sucursal });
   } catch (error) {
     logger.error("ERROR CREAR SUCURSAL:", error);
@@ -92,54 +76,48 @@ const crearSucursal = async (req, res) => {
   }
 };
 
-// EDITAR SUCURSAL (solo admin)
+// EDITAR SUCURSAL (solo admin) — solo si es de su empresa
 const editarSucursal = async (req, res) => {
   try {
     const { zona, numero, direccion } = req.body;
-
     if (zona === undefined || zona === null || numero === undefined || numero === null) {
       return res.status(400).json({ mensaje: "Zona y número son obligatorios" });
     }
-
-    const sucursal = await Sucursal.findByIdAndUpdate(
-      req.params.id,
-      {
-        zona: Number(zona),
-        numero: Number(numero),
-        direccion: direccion?.trim() || ""
-      },
-      { new: true, runValidators: true }
-    );
-
-    if (!sucursal) {
+    // Blindaje: la sucursal debe ser de la empresa del usuario
+    const existente = await Sucursal.findOne({ _id: req.params.id, empresa: req.empresaId });
+    if (!existente) {
       return res.status(404).json({ mensaje: "Sucursal no encontrada" });
     }
-
-    res.json({ mensaje: "Sucursal actualizada", sucursal });
+    // Si cambia el numero, que no choque con otra de la misma empresa
+    if (Number(numero) !== existente.numero) {
+      const choque = await Sucursal.findOne({ numero: Number(numero), empresa: req.empresaId, _id: { $ne: existente._id } });
+      if (choque) {
+        return res.status(400).json({ mensaje: "Ya existe otra sucursal con ese número en tu empresa" });
+      }
+    }
+    existente.zona = Number(zona);
+    existente.numero = Number(numero);
+    existente.direccion = direccion?.trim() || "";
+    await existente.save();
+    res.json({ mensaje: "Sucursal actualizada", sucursal: existente });
   } catch (error) {
     logger.error("ERROR EDITAR SUCURSAL:", error);
     res.status(500).json({ mensaje: "Error al editar sucursal" });
   }
 };
 
-// ELIMINAR SUCURSAL + sus productos (solo admin)
+// ELIMINAR SUCURSAL + sus productos (solo admin) — solo si es de su empresa
 const eliminarSucursal = async (req, res) => {
   try {
     if (req.usuario.rol !== "admin") {
       return res.status(403).json({ mensaje: "No autorizado" });
     }
-
-    const sucursal = await Sucursal.findById(req.params.id);
+    const sucursal = await Sucursal.findOne({ _id: req.params.id, empresa: req.empresaId });
     if (!sucursal) {
       return res.status(404).json({ mensaje: "Sucursal no encontrada" });
     }
-
-    // Borrar todos los productos de esa sucursal
-    const resultadoProductos = await Producto.deleteMany({ sucursal: sucursal._id });
-
-    // Borrar la sucursal
+    const resultadoProductos = await Producto.deleteMany({ sucursal: sucursal._id, empresa: req.empresaId });
     await Sucursal.findByIdAndDelete(sucursal._id);
-
     res.json({
       mensaje: "Sucursal eliminada",
       productosEliminados: resultadoProductos.deletedCount

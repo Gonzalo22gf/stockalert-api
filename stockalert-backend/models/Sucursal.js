@@ -8,16 +8,15 @@ const sucursalSchema = new mongoose.Schema(
     },
     numero: {
       type: Number,
-      required: true,
-      unique: true
+      required: true
     },
     direccion: {
       type: String,
       trim: true
     },
     empresa: {
-      type: String,
-      default: "Carrefour"
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Empresa"
     }
   },
   {
@@ -26,6 +25,10 @@ const sucursalSchema = new mongoose.Schema(
     toObject: { virtuals: true }
   }
 );
+
+// El numero de sucursal es unico DENTRO de cada empresa (no global):
+// Carrefour y Coto pueden tener ambos la tienda 402.
+sucursalSchema.index({ empresa: 1, numero: 1 }, { unique: true });
 
 sucursalSchema.virtual("nombre").get(function () {
   return `Zona ${this.zona}, ${this.numero}`;

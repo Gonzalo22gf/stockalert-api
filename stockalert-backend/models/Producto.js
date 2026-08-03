@@ -80,6 +80,10 @@ const productoSchema = new mongoose.Schema(
       default: []
     },
 
+    empresa: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Empresa"
+    },
     usuario: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Usuario",
