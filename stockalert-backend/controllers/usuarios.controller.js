@@ -66,38 +66,51 @@ const registrarUsuario = async (req, res) => {
 const loginUsuario = async (req, res) => {
   try {
     const { email, password } = req.body;
-
     if (!email || !password) {
-      return res.status(400).json({ mensaje: "Email y contraseña son obligatorios" });
+      return res.status(400).json({ mensaje: "Email y contrasena son obligatorios" });
     }
-
     const emailNormalizado = email.toLowerCase().trim();
-    const usuario = await Usuario.findOne({ email: emailNormalizado }).populate("sucursal");
-
+    const usuario = await Usuario.findOne({ email: emailNormalizado }).populate("sucursal").populate("empresa");
     if (!usuario) {
       return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
-
-    if (usuario.activo === false) {
-      return res.status(403).json({ mensaje: "Tu cuenta está desactivada. Contactá al administrador." });
+    // Verificar bloqueo temporal
+    if (usuario.bloqueadoHasta && usuario.bloqueadoHasta > new Date()) {
+      const minutosRestantes = Math.ceil((usuario.bloqueadoHasta - new Date()) / 60000);
+      return res.status(403).json({ mensaje: "Cuenta bloqueada temporalmente. Intentá de nuevo en " + minutosRestantes + " minuto(s)." });
     }
-
+    if (usuario.activo === false) {
+      return res.status(403).json({ mensaje: "Tu cuenta esta desactivada. Contacta al administrador." });
+    }
     const passwordCorrecto = await bcrypt.compare(password, usuario.password);
     if (!passwordCorrecto) {
+      // Incrementar intentos fallidos
+      usuario.intentosFallidos = (usuario.intentosFallidos || 0) + 1;
+      if (usuario.intentosFallidos >= 5) {
+        usuario.bloqueadoHasta = new Date(Date.now() + 15 * 60 * 1000); // 15 minutos
+        usuario.intentosFallidos = 0;
+        await usuario.save();
+        return res.status(403).json({ mensaje: "Demasiados intentos fallidos. Cuenta bloqueada 15 minutos." });
+      }
+      await usuario.save();
       return res.status(401).json({ mensaje: "Credenciales incorrectas" });
     }
-
+    // Login exitoso: resetear contador
+    usuario.intentosFallidos = 0;
+    usuario.bloqueadoHasta = null;
+    await usuario.save();
     res.json({
       _id: usuario._id,
       nombre: usuario.nombre,
       email: usuario.email,
       rol: usuario.rol,
+      empresa: usuario.empresa ? { _id: usuario.empresa._id, nombre: usuario.empresa.nombre } : null,
       sucursal: usuario.sucursal,
-      token: generarToken(usuario._id)
+      token: generarToken(usuario._id, usuario.empresa ? usuario.empresa._id : null)
     });
   } catch (error) {
     logger.error("ERROR LOGIN:", error);
-    res.status(500).json({ mensaje: "Error al iniciar sesión" });
+    res.status(500).json({ mensaje: "Error al iniciar sesion" });
   }
 };
 

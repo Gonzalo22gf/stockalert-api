@@ -36,7 +36,16 @@ const usuarioSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
-    // Recuperación de contraseña por correo
+    // Anti fuerza bruta: bloqueo temporal por intentos fallidos
+    intentosFallidos: {
+      type: Number,
+      default: 0
+    },
+    bloqueadoHasta: {
+      type: Date,
+      default: null
+    },
+    // Recuperacion de contrasena por correo
     tokenRecuperacion: {
       type: String,
       default: null
