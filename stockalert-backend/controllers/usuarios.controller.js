@@ -106,7 +106,7 @@ const loginUsuario = async (req, res) => {
       rol: usuario.rol,
       empresa: usuario.empresa ? { _id: usuario.empresa._id, nombre: usuario.empresa.nombre } : null,
       sucursal: usuario.sucursal,
-      token: generarToken(usuario._id, usuario.empresa ? usuario.empresa._id : null)
+      token: generarToken(usuario._id, usuario.empresa ? usuario.empresa._id : null, usuario.passwordVersion || 0)
     });
   } catch (error) {
     logger.error("ERROR LOGIN:", error);
@@ -229,6 +229,7 @@ const editarUsuarioAdmin = async (req, res) => {
       if (errorPassword) return res.status(400).json({ mensaje: errorPassword });
       const salt = await bcrypt.genSalt(10);
       camposUpdate.password = await bcrypt.hash(password, salt);
+      camposUpdate.passwordVersion = (objetivo.passwordVersion || 0) + 1;
     }
     if (Object.keys(camposUpdate).length === 0) {
       return res.status(400).json({ mensaje: "No se enviaron campos para actualizar" });

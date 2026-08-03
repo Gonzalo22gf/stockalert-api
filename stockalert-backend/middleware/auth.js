@@ -19,6 +19,12 @@ const protegerRuta = async (req, res, next) => {
       }
       // La empresa del usuario queda disponible para filtrar en cada controlador
       req.empresaId = req.usuario.empresa ? req.usuario.empresa._id : null;
+      // Verificar que el token no fue invalidado por cambio de contrasena
+      const pwvToken = decoded.pwv || 0;
+      const pwvUsuario = req.usuario.passwordVersion || 0;
+      if (pwvToken !== pwvUsuario) {
+        return res.status(401).json({ mensaje: "Sesion expirada. Vuelve a iniciar sesion." });
+      }
       next();
     } catch (error) {
       return res.status(401).json({ mensaje: "Token inválido o expirado" });

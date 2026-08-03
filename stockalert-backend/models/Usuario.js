@@ -36,6 +36,11 @@ const usuarioSchema = new mongoose.Schema(
       type: Boolean,
       default: true
     },
+    // Invalida todos los tokens anteriores al cambiar la contrasena
+    passwordVersion: {
+      type: Number,
+      default: 0
+    },
     // Anti fuerza bruta: bloqueo temporal por intentos fallidos
     intentosFallidos: {
       type: Number,
