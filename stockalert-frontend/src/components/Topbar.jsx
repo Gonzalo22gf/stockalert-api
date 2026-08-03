@@ -39,6 +39,8 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
         </div>
       </div>
       <div className="flex shrink-0 items-center gap-2 md:gap-2.5">
+
+        {/* Dropdown Accesos rapidos */}
         <div className="relative">
           <button onClick={() => setMenuAbierto((v) => !v)} className="flex items-center gap-1.5 rounded-[9px] border border-brand/25 bg-brand/10 px-3 py-[7px] text-[12.5px] font-semibold text-brand-400 transition-all hover:bg-brand/20">
             <Zap size={14} /> <span className="hidden sm:inline">Accesos rapidos</span>
@@ -48,6 +50,7 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
             <>
               <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
               <div className="absolute right-0 z-20 mt-2 w-52 animate-pop overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60" style={{ backgroundColor: "#13151c" }}>
+                {/* Navegacion */}
                 {accesos.filter((a) => !a.soloAdmin || esAdmin).map((a) => {
                   const Icono = a.icono;
                   return (
@@ -57,19 +60,11 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
                     </button>
                   );
                 })}
-                {esAdmin && empresa?.codigoAcceso && (
-                  <>
-                    <div className="mx-3 my-1.5 border-t border-[#2a2e3a]" />
-                    <div className="flex items-center gap-2 px-4 py-2">
-                      <KeyRound size={13} className="shrink-0 text-slate-600" />
-                      <span className="text-[11px] text-slate-500">Codigo:</span>
-                      <span className="text-[12px] font-bold tracking-widest text-brand-400">{empresa.codigoAcceso}</span>
-                    </div>
-                  </>
-                )}
+                {/* Links frecuentes de la empresa */}
                 {linksEmpresa.length > 0 && (
                   <>
-                    <div className="mx-3 my-1.5 border-t border-[#2a2e3a]" />
+                    <div className="mx-3 my-1 border-t border-[#2a2e3a]" />
+                    <p className="px-4 pt-1.5 pb-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-600">Links frecuentes</p>
                     {linksEmpresa.map((link) => {
                       return (
                         <a key={link._id} href={link.url} target="_blank" rel="noopener noreferrer" onClick={() => setMenuAbierto(false)} className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[13px] font-medium transition-colors hover:bg-[#1a1d26]" style={{ color: "#cbd1e0" }}>
@@ -84,6 +79,15 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
             </>
           )}
         </div>
+
+        {/* Chip codigo de acceso — visible siempre para admins */}
+        {esAdmin && empresa?.codigoAcceso && (
+          <div className="hidden lg:flex items-center gap-1.5 rounded-[9px] border border-brand/30 bg-brand/10 px-3 py-[7px] text-[12.5px] font-bold tracking-widest text-brand-400 select-all cursor-pointer" title="Codigo de acceso de tu empresa">
+            <KeyRound size={12} />
+            {empresa.codigoAcceso}
+          </div>
+        )}
+
         <div className={chipClase}><Home size={12} />{nombreSucursal}</div>
         <div className={chipClase}><Calendar size={12} />{fecha}</div>
       </div>

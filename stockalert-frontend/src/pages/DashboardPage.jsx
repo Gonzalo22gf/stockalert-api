@@ -7,7 +7,6 @@ import { useAuthStore } from "../store/authStore";
 import KpiCard from "../components/KpiCard";
 import PanelRiesgo from "../components/PanelRiesgo";
 import GraficosDashboard from "../components/GraficosDashboard";
-import WidgetEmpresa from "../components/WidgetEmpresa";
 
 export default function DashboardPage() {
   const usuario = useAuthStore((s) => s.usuario);
@@ -63,7 +62,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      <WidgetEmpresa />
       <div className="flex items-center gap-3">
         <label className="text-sm text-slate-400">Ver sucursal</label>
         <select
