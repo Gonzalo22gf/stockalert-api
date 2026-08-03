@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
-import { Zap, ChevronDown, Package, LayoutDashboard, ClipboardList, Store, Users, TrendingUp, Home, Calendar, Menu } from "lucide-react";
+import { Zap, ChevronDown, Package, LayoutDashboard, ClipboardList, Store, Users, TrendingUp, Home, Calendar, Menu, Link, KeyRound } from "lucide-react";
+import { useLinks } from "../hooks/useLinks";
+import { usePerfilEmpresa } from "../hooks/useEmpresa";
 
 export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const usuario = useAuthStore((s) => s.usuario);
   const navigate = useNavigate();
   const esAdmin = usuario?.rol === "admin";
   const [menuAbierto, setMenuAbierto] = useState(false);
+  const { data: empresa } = usePerfilEmpresa();
+  const { data: linksEmpresa = [] } = useLinks();
   const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
   const nombreSucursal = esAdmin ? "Todas las sucursales" : usuario?.sucursal?.nombre || "Mi sucursal";
 
@@ -19,6 +23,7 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
     { label: "Usuarios", icono: Users, ruta: "/usuarios", soloAdmin: true },
     { label: "Reportes", icono: TrendingUp, ruta: "/reportes", soloAdmin: true }
   ];
+  const accesosLinks = linksEmpresa.slice(0, 10);
 
   function ir(ruta) {
     setMenuAbierto(false);
@@ -72,6 +77,35 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
                       </button>
                     );
                   })}
+                {esAdmin && empresa?.codigoAcceso && (
+                  <>
+                    <div className="mx-3 my-1.5 border-t border-[#2a2e3a]" />
+                    <div className="flex items-center gap-2 px-4 py-2">
+                      <KeyRound size={13} className="shrink-0 text-slate-600" />
+                      <span className="text-[11px] text-slate-500">Codigo:</span>
+                      <span className="text-[12px] font-bold tracking-widest text-brand-400">{empresa.codigoAcceso}</span>
+                    </div>
+                  </>
+                )}
+                {accesosLinks.length > 0 && (
+                  <>
+                    <div className="mx-3 my-1.5 border-t border-[#2a2e3a]" />
+                    {accesosLinks.map((link) => (
+                      
+                        key={link._id}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={() => setMenuAbierto(false)}
+                        className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-[13px] font-medium transition-colors hover:bg-[#1a1d26]"
+                        style={{ color: "#cbd1e0" }}
+                      >
+                        <Link size={15} className="shrink-0 text-slate-500" />
+                        {link.nombre}
+                      </a>
+                    ))}
+                  </>
+                )}
               </div>
             </>
           )}

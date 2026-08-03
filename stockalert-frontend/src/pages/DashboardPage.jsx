@@ -63,8 +63,9 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
+      <WidgetEmpresa />
       <div className="flex items-center gap-3">
-        <label className="text-sm text-slate-400">🏪 Ver sucursal</label>
+        <label className="text-sm text-slate-400">Ver sucursal</label>
         <select
           value={sucursalSeleccionada}
           onChange={(e) => setSucursalSeleccionada(e.target.value)}
@@ -81,7 +82,7 @@ export default function DashboardPage() {
 
       {totales && (
         <div>
-          <h2 className="mb-3 text-sm font-semibold text-slate-300">🏪 {totales.nombre}</h2>
+          <h2 className="mb-3 text-sm font-semibold text-slate-300">{totales.nombre}</h2>
           <div className="grid grid-cols-2 gap-3.5 md:grid-cols-3 lg:grid-cols-6">
             {verTodas && (
               <KpiCard etiqueta="Tiendas" valor={cantidadTiendas} color="cyan" descripcion="sucursales activas" delay={0.02} />
@@ -98,7 +99,6 @@ export default function DashboardPage() {
       <PanelRiesgo productos={productos} />
 
       <GraficosDashboard productos={productos} resumenSucursales={verTodas ? resumen : null} />
-      <WidgetEmpresa />
     </div>
   );
 }
