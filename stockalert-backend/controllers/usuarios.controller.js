@@ -3,58 +3,71 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const Usuario = require("../models/Usuario");
 const Sucursal = require("../models/Sucursal");
+const Empresa = require("../models/Empresa");
 const { validarPassword } = require("../utils/validarPassword");
 
-const generarToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+function generarCodigoAcceso(nombreEmpresa) {
+  const prefijo = nombreEmpresa.toUpperCase().replace(/[^A-Z]/g, "").substring(0, 4).padEnd(4, "X");
+  const numeros = Math.floor(1000 + Math.random() * 9000);
+  return prefijo + "-" + numeros;
+}
+
+const generarToken = (id, empresa, pwv) => {
+  return jwt.sign({ id, empresa, pwv: pwv || 0 }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
 
-// REGISTRO
+// REGISTRO — dos modos:
+//   modo "crear": nace una empresa nueva y el usuario es su admin
+//   modo "unir": el usuario se suma a una empresa existente por su codigo de acceso
 const registrarUsuario = async (req, res) => {
   try {
-    const { nombre, email, password, numeroSucursal } = req.body;
-
-    if (!nombre || !email || !password || numeroSucursal === undefined || numeroSucursal === null) {
-      return res.status(400).json({ mensaje: "Nombre, email, contraseña y número de sucursal son obligatorios" });
+    const { nombre, email, password, modo, nombreEmpresa, numeroSucursal } = req.body;
+    if (!nombre || !email || !password) {
+      return res.status(400).json({ mensaje: "Nombre, email y contrasena son obligatorios" });
     }
-
     const emailNormalizado = email.toLowerCase().trim();
     const errorPassword = validarPassword(password);
-    if (errorPassword) {
-      return res.status(400).json({ mensaje: errorPassword });
-    }
+    if (errorPassword) return res.status(400).json({ mensaje: errorPassword });
     const usuarioExiste = await Usuario.findOne({ email: emailNormalizado });
-
-    if (usuarioExiste) {
-      return res.status(400).json({ mensaje: "El usuario ya existe" });
-    }
-
-    const sucursal = await Sucursal.findOne({ numero: Number(numeroSucursal) });
-
-    if (!sucursal) {
-      return res.status(400).json({ mensaje: "La sucursal indicada no existe. Contactá al administrador." });
-    }
+    if (usuarioExiste) return res.status(400).json({ mensaje: "El usuario ya existe" });
 
     const salt = await bcrypt.genSalt(10);
     const passwordHasheado = await bcrypt.hash(password, salt);
-    const rolAsignado = "jefe";
+    let empresa, sucursal, rolAsignado;
+
+    if (modo === "crear") {
+      if (!nombreEmpresa || !nombreEmpresa.trim()) {
+        return res.status(400).json({ mensaje: "El nombre de la empresa es obligatorio" });
+      }
+      const codigo = generarCodigoAcceso(nombreEmpresa.trim());
+      empresa = await Empresa.create({ nombre: nombreEmpresa.trim(), codigoAcceso: codigo });
+      sucursal = await Sucursal.create({ zona: 1, numero: 1, direccion: "", empresa: empresa._id });
+      rolAsignado = "admin";
+    } else {
+      if (!nombreEmpresa || !nombreEmpresa.trim()) {
+        return res.status(400).json({ mensaje: "El codigo de acceso es obligatorio" });
+      }
+      empresa = await Empresa.findOne({ codigoAcceso: nombreEmpresa.trim().toUpperCase() });
+      if (!empresa) {
+        return res.status(400).json({ mensaje: "Codigo de acceso invalido. Pedile el codigo al administrador de la empresa." });
+      }
+      sucursal = await Sucursal.findOne({ numero: Number(numeroSucursal), empresa: empresa._id });
+      if (!sucursal) {
+        return res.status(400).json({ mensaje: "Esa sucursal no existe en la empresa indicada" });
+      }
+      rolAsignado = "jefe";
+    }
 
     const usuario = await Usuario.create({
-      nombre,
-      email: emailNormalizado,
-      password: passwordHasheado,
-      rol: rolAsignado,
-      sucursal: sucursal._id,
-      activo: true
+      nombre, email: emailNormalizado, password: passwordHasheado,
+      rol: rolAsignado, sucursal: sucursal._id, empresa: empresa._id, activo: true
     });
 
     res.status(201).json({
-      _id: usuario._id,
-      nombre: usuario.nombre,
-      email: usuario.email,
-      rol: usuario.rol,
+      _id: usuario._id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol,
+      empresa: { _id: empresa._id, nombre: empresa.nombre, codigoAcceso: empresa.codigoAcceso },
       sucursal: { _id: sucursal._id, zona: sucursal.zona, numero: sucursal.numero, direccion: sucursal.direccion },
-      token: generarToken(usuario._id)
+      token: generarToken(usuario._id, empresa._id, 0)
     });
   } catch (error) {
     logger.error("ERROR REGISTRO:", error);

@@ -64,6 +64,7 @@ app.use("/api/sucursales", require("./routes/sucursales.routes"));
 app.use("/api/snapshots", require("./routes/snapshots.routes"));
 app.use("/api/movimientos", require("./routes/movimientos.routes"));
 app.use("/api/links", require("./routes/links.routes"));
+app.use("/api/empresa", require("./routes/empresa.routes"));
 
 // Documentación interactiva de la API (Swagger)
 const swaggerUi = require("swagger-ui-express");

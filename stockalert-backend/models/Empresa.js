@@ -9,6 +9,11 @@ const empresaSchema = new mongoose.Schema(
       required: true,
       trim: true
     },
+    codigoAcceso: {
+      type: String,
+      unique: true,
+      sparse: true
+    },
     activa: {
       type: Boolean,
       default: true

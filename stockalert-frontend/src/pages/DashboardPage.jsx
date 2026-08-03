@@ -7,6 +7,7 @@ import { useAuthStore } from "../store/authStore";
 import KpiCard from "../components/KpiCard";
 import PanelRiesgo from "../components/PanelRiesgo";
 import GraficosDashboard from "../components/GraficosDashboard";
+import WidgetEmpresa from "../components/WidgetEmpresa";
 
 export default function DashboardPage() {
   const usuario = useAuthStore((s) => s.usuario);
@@ -97,6 +98,7 @@ export default function DashboardPage() {
       <PanelRiesgo productos={productos} />
 
       <GraficosDashboard productos={productos} resumenSucursales={verTodas ? resumen : null} />
+      <WidgetEmpresa />
     </div>
   );
 }

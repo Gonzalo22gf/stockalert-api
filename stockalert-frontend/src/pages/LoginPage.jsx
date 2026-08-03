@@ -150,7 +150,7 @@ export default function LoginPage() {
             <Input type="text" placeholder="Nombre de tu empresa (ej: Supermercado Don Juan)" required value={regEmpresa} onChange={(e) => setRegEmpresa(e.target.value)} />
           ) : (
             <>
-              <Input type="text" placeholder="Nombre de la empresa a la que te unes" required value={regEmpresa} onChange={(e) => setRegEmpresa(e.target.value)} />
+              <Input type="text" placeholder="Codigo de acceso (ej: CARR-3354)" required value={regEmpresa} onChange={(e) => setRegEmpresa(e.target.value)} />
               <Input type="number" placeholder="Numero de sucursal (ej: 402)" required value={regSucursal} onChange={(e) => setRegSucursal(e.target.value)} />
             </>
           )}
@@ -158,7 +158,7 @@ export default function LoginPage() {
           <p className="text-[11px] text-slate-500">
             {modoRegistro === "crear"
               ? "Creas una empresa nueva y quedas como administrador."
-              : "Te sumas como jefe a una sucursal de una empresa ya registrada."}
+              : "Ingresa el codigo de acceso que te dio el administrador de la empresa."}
           </p>
 
           <Boton type="submit" variante="secondary" disabled={cargandoRegistro} className="w-full">
