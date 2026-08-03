@@ -21,19 +21,24 @@ function formatearFecha(fecha) {
 export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }) {
   const estado = obtenerEstado(producto.vencimiento);
   const estadoStock = obtenerEstadoStock(producto.stock);
-
   return (
     <div className="animate-rise rounded-2xl border border-border-soft bg-panel p-[18px] transition-all duration-200 hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-black/30">
       <div className="mb-1 flex items-start justify-between gap-2">
         <span className="font-semibold text-white">{producto.nombre}</span>
-        {esAdmin && producto.sucursal?.nombre && (
-          <span className="shrink-0 rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold text-brand-400">
-            {producto.sucursal.nombre}
-          </span>
-        )}
+        <div className="flex shrink-0 flex-col items-end gap-1">
+          {esAdmin && producto.sucursal?.nombre && (
+            <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold text-brand-400">
+              {producto.sucursal.nombre}
+            </span>
+          )}
+          {producto.codigoBarras && (
+            <span className="text-[10px] font-medium tracking-wide text-slate-500">
+              EAN {producto.codigoBarras}
+            </span>
+          )}
+        </div>
       </div>
       <p className="mb-3.5 text-xs font-medium uppercase tracking-wide text-slate-600">{producto.categoria}</p>
-
       <div className="mb-3.5 grid grid-cols-3 gap-2 rounded-xl bg-base/60 p-3 text-center">
         <div>
           <p className="text-base font-bold text-white">{producto.stock}</p>
@@ -48,7 +53,6 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
           <p className="text-[10px] uppercase tracking-wide text-slate-600">Vence</p>
         </div>
       </div>
-
       <div className="mb-3.5 flex flex-wrap gap-1.5">
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estado.color}`}>{estado.texto}</span>
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estadoStock.color}`}>{estadoStock.texto}</span>
@@ -58,7 +62,6 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
           </span>
         )}
       </div>
-
       <div className="flex gap-2">
         <button
           onClick={() => onEditar(producto)}

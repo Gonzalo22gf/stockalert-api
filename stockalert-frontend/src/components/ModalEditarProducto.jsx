@@ -19,6 +19,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
   const [lote, setLote] = useState("");
   const [stock, setStock] = useState("");
   const [vencimiento, setVencimiento] = useState("");
+  const [codigoBarras, setCodigoBarras] = useState("");
 
   useEffect(() => {
     if (producto) {
@@ -28,6 +29,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       setLote(producto.lote || "");
       setStock(producto.stock ?? "");
       setVencimiento(fechaParaInput(producto.vencimiento));
+      setCodigoBarras(producto.codigoBarras || "");
     }
   }, [producto]);
 
@@ -46,6 +48,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       lote,
       stock: Number(stock),
       vencimiento,
+      codigoBarras: codigoBarras.trim(),
       lotes: [{ numero: lote, stock: Number(stock), vencimiento }]
     };
     try {
@@ -94,9 +97,15 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
               <Input type="number" value={stock} onChange={(e) => setStock(e.target.value)} />
             </div>
           </div>
-          <div>
-            <label className="mb-1 block text-xs text-slate-400">Vencimiento</label>
-            <Input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="mb-1 block text-xs text-slate-400">Código de barras (EAN)</label>
+              <Input value={codigoBarras} onChange={(e) => setCodigoBarras(e.target.value)} placeholder="Opcional" />
+            </div>
+            <div>
+              <label className="mb-1 block text-xs text-slate-400">Vencimiento</label>
+              <Input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
+            </div>
           </div>
           <div className="flex gap-2 pt-2">
             <Boton type="submit" disabled={actualizarProducto.isPending} className="flex-1">
