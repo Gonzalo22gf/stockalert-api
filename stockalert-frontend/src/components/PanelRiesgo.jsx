@@ -191,7 +191,7 @@ export default function PanelRiesgo({ productos }) {
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-sm font-semibold text-white">{p.nombre}</p>
                   <p className="text-[10px] text-slate-500">
-                    Lote: {p.lote || "Sin lote"} · Vence: {formatearFecha(p.vencimiento)}
+                    {p.codigoBarras ? <span className="font-mono">EAN: {p.codigoBarras} · </span> : ""}Lote: {p.lote || "Sin lote"} · Vence: {formatearFecha(p.vencimiento)}
                   </p>
                 </div>
                 <BadgePrioridad motivo={p.motivoPrincipal} />
