@@ -23,6 +23,9 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Seguridad** — JWT con empresa embebida, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos e invalidación de sesiones al cambiar contraseña.
 - **PWA instalable** — se instala desde el navegador en cualquier celular o computadora, con ícono propio y pantalla completa. Se actualiza automáticamente con cada deploy.
 - **Diseño responsive** — escritorio y móvil, con íconos lucide-react y animaciones suaves.
+- **Código de acceso por empresa** — cada empresa recibe un código único (ej: `CARR-3354`) para invitar a su equipo. Visible en el topbar y con página dedicada con instrucciones paso a paso.
+- **Links frecuentes** — cada empresa puede guardar hasta 10 links de acceso rápido (agregar, editar y borrar desde el sidebar). Disponibles también en el menú de Accesos rápidos.
+- **Cierre automático por inactividad** — la sesión se cierra sola tras 10 minutos sin actividad, protegiendo el acceso en dispositivos compartidos.
 
 ---
 
