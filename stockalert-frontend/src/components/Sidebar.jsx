@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import { useAuthStore } from "../store/authStore";
 import {
-  LayoutDashboard, Package, Activity, Store, Users, TrendingUp,
+  LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound,
   ChevronRight, ChevronLeft, LogOut, BoxesIcon
 } from "lucide-react";
 
@@ -76,6 +76,8 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
               <ItemNav to="/sucursales" Icono={Store} label="Sucursales" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/usuarios" Icono={Users} label="Usuarios" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/reportes" Icono={TrendingUp} label="Reportes" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/links" Icono={Link} label="Links frecuentes" onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/codigo-acceso" Icono={KeyRound} label="Codigo de acceso" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
             </>
           )}
         </nav>
