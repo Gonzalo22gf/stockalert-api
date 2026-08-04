@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Navigate } from "react-router-dom";
 import * as XLSX from "xlsx";
+import { ajustarAnchos } from "../utils/exportar";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -136,6 +137,7 @@ export default function ReportesPage() {
       return fila;
     });
     const hojaResumen = XLSX.utils.json_to_sheet(filasResumen);
+    ajustarAnchos(hojaResumen, filasResumen);
     XLSX.utils.book_append_sheet(libro, hojaResumen, "Resumen general");
 
     const ultimoSnapshot = snapshots[snapshots.length - 1];
@@ -155,6 +157,7 @@ export default function ReportesPage() {
         return fila;
       });
       const hoja = XLSX.utils.json_to_sheet(filasTienda);
+      ajustarAnchos(hoja, filasTienda);
       const nombreHoja = ("T" + suc.numero + " " + suc.nombre).slice(0, 31).replace(/[:\\/?*[\]]/g, "");
       XLSX.utils.book_append_sheet(libro, hoja, nombreHoja);
     });

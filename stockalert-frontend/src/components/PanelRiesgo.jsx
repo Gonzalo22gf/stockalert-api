@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import { ajustarAnchos } from "../utils/exportar";
 import { Siren, Trophy } from "lucide-react";
 
 function diasParaVencer(vencimiento) {
@@ -32,6 +33,7 @@ function formatearFecha(fecha) {
 function descargarExcel(filas, nombreArchivo, nombreHoja) {
   if (!filas || filas.length === 0) return;
   const hoja = XLSX.utils.json_to_sheet(filas);
+  ajustarAnchos(hoja, filas);
   const libro = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(libro, hoja, nombreHoja);
   const fecha = new Date().toISOString().slice(0, 10);
@@ -82,10 +84,13 @@ export default function PanelRiesgo({ productos }) {
   function descargarUrgentes() {
     const filas = urgentes.map((p) => ({
       Producto: p.nombre,
+      "EAN / Cod. barras": p.codigoBarras || "",
       Lote: p.lote || "",
       Sucursal: p.sucursal?.nombre || "",
       Vence: formatearFecha(p.vencimiento),
       Stock: p.stock,
+      "Precio ($)": p.precio || 0,
+      "Valor en riesgo ($)": Number(p.stock || 0) * Number(p.precio || 0),
       Prioridad: p.motivoPrincipal.texto
     }));
     descargarExcel(filas, "acciones_urgentes", "Urgentes");
@@ -95,10 +100,13 @@ export default function PanelRiesgo({ productos }) {
     const filas = top10.map((p, i) => ({
       Puesto: i + 1,
       Producto: p.nombre,
+      "EAN / Cod. barras": p.codigoBarras || "",
       Lote: p.lote || "",
       Sucursal: p.sucursal?.nombre || "",
       Vence: formatearFecha(p.vencimiento),
       Stock: p.stock,
+      "Precio ($)": p.precio || 0,
+      "Valor en riesgo ($)": Number(p.stock || 0) * Number(p.precio || 0),
       Riesgo: p.motivoPrincipal.texto,
       Puntaje: Math.round(p.puntaje)
     }));
