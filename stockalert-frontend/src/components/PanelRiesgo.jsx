@@ -131,6 +131,7 @@ export default function PanelRiesgo({ productos }) {
                 <thead className="text-left uppercase text-slate-500">
                   <tr>
                     <th className="px-2 py-2">Producto</th>
+                    <th className="px-2 py-2">EAN</th>
                     <th className="px-2 py-2">Lote</th>
                     <th className="px-2 py-2">Sucursal</th>
                     <th className="px-2 py-2">Vence</th>
@@ -142,6 +143,7 @@ export default function PanelRiesgo({ productos }) {
                   {urgentes.slice(0, 8).map((p) => (
                     <tr key={p._id}>
                       <td className="px-2 py-2 font-semibold text-white">{p.nombre}</td>
+                      <td className="px-2 py-2 text-slate-400 font-mono text-[10px]">{p.codigoBarras || "—"}</td>
                       <td className="px-2 py-2 text-slate-400">{p.lote || "—"}</td>
                       <td className="px-2 py-2 text-slate-400">{p.sucursal?.nombre || "—"}</td>
                       <td className="px-2 py-2 text-slate-400">{formatearFecha(p.vencimiento)}</td>
