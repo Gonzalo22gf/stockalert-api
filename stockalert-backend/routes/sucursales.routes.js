@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const validar = require("../middleware/validar");
+const { sucursalSchema } = require("../validators/index");
+
 const {
   obtenerSucursales,
   obtenerResumenSucursales,
@@ -48,7 +51,7 @@ const { protegerRuta, soloAdmin } = require("../middleware/auth");
  *       403: { description: "No autorizado" }
  */
 router.get("/", protegerRuta, obtenerSucursales);
-router.post("/", protegerRuta, soloAdmin, crearSucursal);
+router.post("/", validar(sucursalSchema), protegerRuta, soloAdmin, crearSucursal);
 
 /**
  * @swagger
@@ -104,7 +107,7 @@ router.get("/resumen", protegerRuta, obtenerResumenSucursales);
  *       403: { description: "No autorizado" }
  *       404: { description: "Sucursal no encontrada" }
  */
-router.put("/:id", protegerRuta, soloAdmin, editarSucursal);
+router.put("/:id", validar(sucursalSchema), protegerRuta, soloAdmin, editarSucursal);
 router.delete("/:id", protegerRuta, soloAdmin, eliminarSucursal);
 
 module.exports = router;

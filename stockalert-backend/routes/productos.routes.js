@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const validar = require("../middleware/validar");
+const { productoSchema } = require("../validators/index");
+
 const {
   obtenerProductos,
   crearProducto,
@@ -57,7 +60,7 @@ const { protegerRuta } = require("../middleware/auth");
  *       401: { description: "No autenticado" }
  */
 router.get("/", protegerRuta, obtenerProductos);
-router.post("/", protegerRuta, crearProducto);
+router.post("/", validar(productoSchema), protegerRuta, crearProducto);
 
 /**
  * @swagger
@@ -101,7 +104,7 @@ router.post("/", protegerRuta, crearProducto);
  *       200: { description: "Producto eliminado" }
  *       404: { description: "Producto no encontrado" }
  */
-router.put("/:id", protegerRuta, actualizarProducto);
+router.put("/:id", validar(productoSchema), protegerRuta, actualizarProducto);
 router.delete("/:id", protegerRuta, eliminarProducto);
 
 module.exports = router;

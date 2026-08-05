@@ -1,5 +1,8 @@
 const express = require("express");
 const router = express.Router();
+const validar = require("../middleware/validar");
+const { registroSchema, loginSchema, cambiarRolSchema, cambiarEstadoSchema, cambiarSucursalSchema, editarUsuarioSchema } = require("../validators/index");
+
 const rateLimit = require("express-rate-limit");
 const {
   registrarUsuario,
@@ -53,7 +56,7 @@ const limiteAuth = rateLimit({
  *       400: { description: "Datos inválidos o email ya registrado" }
  *       429: { description: "Demasiados intentos (rate limit)" }
  */
-router.post("/registro", limiteAuth, registrarUsuario);
+router.post("/registro", validar(registroSchema), limiteAuth, registrarUsuario);
 
 /**
  * @swagger
@@ -76,7 +79,7 @@ router.post("/registro", limiteAuth, registrarUsuario);
  *       401: { description: "Credenciales inválidas" }
  *       429: { description: "Demasiados intentos (rate limit)" }
  */
-router.post("/login", limiteAuth, loginUsuario);
+router.post("/login", validar(loginSchema), limiteAuth, loginUsuario);
 
 /**
  * @swagger
@@ -223,7 +226,7 @@ router.put("/:id/sucursal", protegerRuta, soloAdmin, cambiarSucursal);
  *       403: { description: "No autorizado" }
  *       404: { description: "Usuario no encontrado" }
  */
-router.put("/:id", protegerRuta, soloAdmin, editarUsuarioAdmin);
+router.put("/:id", validar(editarUsuarioSchema), protegerRuta, soloAdmin, editarUsuarioAdmin);
 router.delete("/:id", protegerRuta, soloAdmin, eliminarUsuario);
 
 module.exports = router;
