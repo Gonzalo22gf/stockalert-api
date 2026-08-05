@@ -216,7 +216,18 @@
     "porVencer": "即将过期",
     "stockCritico": "库存紧张",
     "agotados": "缺货",
-    "valorInventario": "库存价值"
+    "valorInventario": "库存价值",
+    "ultimos14": "最近14天",
+    "ultimas12sem": "最近12周",
+    "ultimos12mes": "最近12个月",
+    "ultimos5": "最近5年",
+    "resumenGeneral": "总体摘要",
+    "registros": "条记录",
+    "error": "无法加载历史数据。",
+    "evolucion": "风险趋势",
+    "porCategoria": "按类别统计产品",
+    "sinHistorial": "此期间暂无历史记录",
+    "sinHistorialDesc": "系统每天保存门店快照，几天后即可看到完整趋势。"
   },
   "links": {
     "titulo": "常用链接",

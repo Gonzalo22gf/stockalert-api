@@ -216,7 +216,18 @@
     "porVencer": "期限切れ間近",
     "stockCritico": "在庫危機",
     "agotados": "在庫切れ",
-    "valorInventario": "在庫価値"
+    "valorInventario": "在庫価値",
+    "ultimos14": "過去14日間",
+    "ultimas12sem": "過去12週間",
+    "ultimos12mes": "過去12ヶ月",
+    "ultimos5": "過去5年間",
+    "resumenGeneral": "全体サマリー",
+    "registros": "件",
+    "error": "履歴を読み込めませんでした。",
+    "evolucion": "リスク推移",
+    "porCategoria": "カテゴリ別商品",
+    "sinHistorial": "この期間の履歴はまだありません",
+    "sinHistorialDesc": "システムは毎日店舗のスナップショットを保存します。"
   },
   "links": {
     "titulo": "よく使うリンク",

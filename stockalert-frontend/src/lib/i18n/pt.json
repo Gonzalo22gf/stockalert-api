@@ -216,7 +216,18 @@
     "porVencer": "A vencer",
     "stockCritico": "Estoque crítico",
     "agotados": "Esgotados",
-    "valorInventario": "Valor do inventário"
+    "valorInventario": "Valor do inventário",
+    "ultimos14": "Últimos 14 dias",
+    "ultimas12sem": "Últimas 12 semanas",
+    "ultimos12mes": "Últimos 12 meses",
+    "ultimos5": "Últimos 5 anos",
+    "resumenGeneral": "Resumo geral",
+    "registros": "registros",
+    "error": "Não foi possível carregar o histórico.",
+    "evolucion": "Evolução de riscos",
+    "porCategoria": "Produtos por categoria",
+    "sinHistorial": "Ainda não há histórico neste período",
+    "sinHistorialDesc": "O sistema salva um instantâneo diário das lojas."
   },
   "links": {
     "titulo": "Links rápidos",

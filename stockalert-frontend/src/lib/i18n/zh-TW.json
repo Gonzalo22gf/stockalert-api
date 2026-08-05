@@ -216,7 +216,18 @@
     "porVencer": "即將到期",
     "stockCritico": "庫存緊張",
     "agotados": "缺貨",
-    "valorInventario": "庫存價值"
+    "valorInventario": "庫存價值",
+    "ultimos14": "最近14天",
+    "ultimas12sem": "最近12週",
+    "ultimos12mes": "最近12個月",
+    "ultimos5": "最近5年",
+    "resumenGeneral": "總體摘要",
+    "registros": "筆記錄",
+    "error": "無法載入歷史資料。",
+    "evolucion": "風險趨勢",
+    "porCategoria": "按類別統計產品",
+    "sinHistorial": "此期間暫無歷史記錄",
+    "sinHistorialDesc": "系統每天儲存門市快照，幾天後即可看到完整趨勢。"
   },
   "links": {
     "titulo": "常用連結",

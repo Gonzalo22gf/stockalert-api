@@ -216,7 +216,18 @@
     "porVencer": "Expiring",
     "stockCritico": "Critical stock",
     "agotados": "Out of stock",
-    "valorInventario": "Inventory value"
+    "valorInventario": "Inventory value",
+    "ultimos14": "Last 14 days",
+    "ultimas12sem": "Last 12 weeks",
+    "ultimos12mes": "Last 12 months",
+    "ultimos5": "Last 5 years",
+    "resumenGeneral": "General summary",
+    "registros": "records",
+    "error": "Could not load historical data.",
+    "evolucion": "Risk evolution",
+    "porCategoria": "Products by category",
+    "sinHistorial": "No history yet for this period",
+    "sinHistorialDesc": "The system saves a daily snapshot. In a few days you will see the full evolution."
   },
   "links": {
     "titulo": "Quick links",
