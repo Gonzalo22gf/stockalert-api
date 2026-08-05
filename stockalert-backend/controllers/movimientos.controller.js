@@ -1,6 +1,5 @@
 const logger = require("../utils/logger");
 const Movimiento = require("../models/Movimiento");
-const { AppError } = require("../utils/errors/AppError");
 
 const obtenerMovimientos = async (req, res, next) => {
   try {
