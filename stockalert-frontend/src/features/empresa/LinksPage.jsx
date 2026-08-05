@@ -2,6 +2,7 @@ import { useState } from "react";
 import { ExternalLink, Plus, Pencil, Trash2, Link } from "lucide-react";
 import Swal from "sweetalert2";
 import { useLinks, useCrearLink, useEditarLink, useBorrarLink } from "./useLinks";
+import { useAuthStore } from "../auth/authStore";
 import Boton from "../../components/ui/Boton";
 import { Input } from "../../components/ui/Input";
 
@@ -10,6 +11,9 @@ export default function LinksPage() {
   const crearLink = useCrearLink();
   const editarLink = useEditarLink();
   const borrarLink = useBorrarLink();
+  const usuario = useAuthStore((s) => s.usuario);
+  const esAdmin = usuario?.rol === "admin";
+
   const [nombre, setNombre] = useState("");
   const [url, setUrl] = useState("");
   const [editandoId, setEditandoId] = useState(null);
@@ -22,7 +26,8 @@ export default function LinksPage() {
     const urlFinal = url.startsWith("http") ? url.trim() : "https://" + url.trim();
     try {
       await crearLink.mutateAsync({ nombre: nombre.trim(), url: urlFinal });
-      setNombre(""); setUrl("");
+      setNombre("");
+      setUrl("");
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
     }
@@ -46,10 +51,13 @@ export default function LinksPage() {
 
   async function manejarBorrar(id, nom) {
     const { isConfirmed } = await Swal.fire({
-      icon: "warning", title: "Borrar link",
+      icon: "warning",
+      title: "Borrar link",
       text: 'Vas a borrar el link "' + nom + '". Esta accion no se puede deshacer.',
-      showCancelButton: true, confirmButtonText: "Borrar",
-      cancelButtonText: "Cancelar", confirmButtonColor: "#ef4444"
+      showCancelButton: true,
+      confirmButtonText: "Borrar",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#ef4444"
     });
     if (!isConfirmed) return;
     try {
@@ -59,43 +67,50 @@ export default function LinksPage() {
     }
   }
 
-  const puedeAgregar = links.length < 10;
+  const puedeAgregar = esAdmin && links.length < 10;
 
   return (
     <div className="animate-rise space-y-6 max-w-2xl mx-auto">
       <div>
         <h1 className="text-lg font-bold text-white">Links frecuentes</h1>
-        <p className="text-sm text-slate-400">Accesos rapidos de tu empresa. Hasta 10 links.</p>
+        <p className="text-sm text-slate-400">
+          {esAdmin ? "Accesos rapidos de tu empresa. Hasta 10 links." : "Accesos rapidos de tu empresa."}
+        </p>
       </div>
-      {puedeAgregar && (
-        <form onSubmit={manejarCrear} className="rounded-xl border border-border-soft bg-panel p-4 space-y-3">
-          <p className="text-xs font-semibold text-slate-300">Agregar link</p>
-          <div className="grid grid-cols-2 gap-3">
-            <Input placeholder="Nombre (ej: Panel Brevo)" value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={50} />
-            <Input placeholder="URL (ej: https://...)" value={url} onChange={(e) => setUrl(e.target.value)} />
-          </div>
-          <Boton type="submit" disabled={crearLink.isPending || !nombre.trim() || !url.trim()} className="w-full">
-            <Plus size={14} className="inline mr-1" />
-            {crearLink.isPending ? "Guardando..." : "Agregar link"}
-          </Boton>
-        </form>
+
+      {/* Formulario agregar — solo admin */}
+      {esAdmin && (
+        puedeAgregar ? (
+          <form onSubmit={manejarCrear} className="rounded-xl border border-border-soft bg-panel p-4 space-y-3">
+            <p className="text-xs font-semibold text-slate-300">Agregar link</p>
+            <div className="grid grid-cols-2 gap-3">
+              <Input placeholder="Nombre (ej: Panel Brevo)" value={nombre} onChange={(e) => setNombre(e.target.value)} maxLength={50} />
+              <Input placeholder="URL (ej: https://...)" value={url} onChange={(e) => setUrl(e.target.value)} />
+            </div>
+            <Boton type="submit" disabled={crearLink.isPending || !nombre.trim() || !url.trim()} className="w-full">
+              <Plus size={14} className="inline mr-1" />
+              {crearLink.isPending ? "Guardando..." : "Agregar link"}
+            </Boton>
+          </form>
+        ) : (
+          <p className="text-xs text-slate-500 text-center">Llegaste al maximo de 10 links. Borra uno para agregar otro.</p>
+        )
       )}
-      {!puedeAgregar && (
-        <p className="text-xs text-slate-500 text-center">Llegaste al maximo de 10 links. Borra uno para agregar otro.</p>
-      )}
+
+      {/* Lista de links */}
       {isLoading ? (
         <p className="text-sm text-slate-500 text-center">Cargando...</p>
       ) : links.length === 0 ? (
         <div className="rounded-xl border border-border-soft bg-panel p-8 text-center">
           <Link size={32} className="mx-auto mb-3 text-slate-700" />
           <p className="text-sm text-slate-500">No hay links todavia.</p>
-          <p className="text-xs text-slate-600">Agrega los accesos rapidos de tu empresa.</p>
+          {esAdmin && <p className="text-xs text-slate-600">Agrega los accesos rapidos de tu empresa.</p>}
         </div>
       ) : (
         <div className="space-y-2">
           {links.map((link) => (
             <div key={link._id} className="rounded-xl border border-border-soft bg-panel p-3">
-              {editandoId === link._id ? (
+              {esAdmin && editandoId === link._id ? (
                 <div className="space-y-2">
                   <div className="grid grid-cols-2 gap-2">
                     <Input value={editNombre} onChange={(e) => setEditNombre(e.target.value)} maxLength={50} />
@@ -118,18 +133,23 @@ export default function LinksPage() {
                   <a href={link.url} target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-brand-400 transition-colors" title="Abrir link">
                     <ExternalLink size={15} />
                   </a>
-                  <button onClick={() => manejarEditar(link)} className="text-slate-500 hover:text-amber-400 transition-colors" title="Editar">
-                    <Pencil size={15} />
-                  </button>
-                  <button onClick={() => manejarBorrar(link._id, link.nombre)} className="text-slate-500 hover:text-red-400 transition-colors" title="Borrar">
-                    <Trash2 size={15} />
-                  </button>
+                  {esAdmin && (
+                    <>
+                      <button onClick={() => manejarEditar(link)} className="text-slate-500 hover:text-amber-400 transition-colors" title="Editar">
+                        <Pencil size={15} />
+                      </button>
+                      <button onClick={() => manejarBorrar(link._id, link.nombre)} className="text-slate-500 hover:text-red-400 transition-colors" title="Borrar">
+                        <Trash2 size={15} />
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
           ))}
         </div>
       )}
+
       <p className="text-xs text-slate-600 text-center">{links.length}/10 links</p>
     </div>
   );
