@@ -1,16 +1,30 @@
 import { useState } from "react";
-import { KeyRound, Copy, Check, Users } from "lucide-react";
+import { KeyRound, Copy, Check, Users, Share2 } from "lucide-react";
 import { usePerfilEmpresa } from "../empresa/useEmpresa";
 
 export default function CodigoAccesoPage() {
   const { data: empresa, isLoading } = usePerfilEmpresa();
   const [copiado, setCopiado] = useState(false);
+  const puedeCompartir = typeof navigator !== "undefined" && !!navigator.share;
 
   function copiarCodigo() {
     if (!empresa?.codigoAcceso) return;
     navigator.clipboard.writeText(empresa.codigoAcceso);
     setCopiado(true);
     setTimeout(() => setCopiado(false), 2500);
+  }
+
+  function compartirCodigo() {
+    if (!empresa?.codigoAcceso) return;
+    navigator.share({
+      title: "StockAlert — Codigo de acceso",
+      text:
+        "Unite a " +
+        empresa.nombre +
+        " en StockAlert con el codigo: " +
+        empresa.codigoAcceso +
+        "\n\nhttps://mistockalert.com"
+    }).catch(() => {});
   }
 
   if (isLoading) return <p className="text-sm text-slate-500">Cargando...</p>;
@@ -32,13 +46,25 @@ export default function CodigoAccesoPage() {
           <p className="text-5xl font-bold tracking-[0.2em] text-brand-400">{empresa?.codigoAcceso || "---"}</p>
         </div>
 
-        <button
-          onClick={copiarCodigo}
-          className="mx-auto flex items-center gap-2 rounded-xl bg-brand/10 px-6 py-3 text-sm font-semibold text-brand-400 hover:bg-brand/20 transition-colors"
-        >
-          {copiado ? <Check size={16} /> : <Copy size={16} />}
-          {copiado ? "Copiado al portapapeles" : "Copiar codigo"}
-        </button>
+        <div className="flex items-center justify-center gap-3">
+          <button
+            onClick={copiarCodigo}
+            className="flex items-center gap-2 rounded-xl bg-brand/10 px-5 py-3 text-sm font-semibold text-brand-400 hover:bg-brand/20 transition-colors"
+          >
+            {copiado ? <Check size={16} /> : <Copy size={16} />}
+            {copiado ? "Copiado" : "Copiar codigo"}
+          </button>
+
+          {puedeCompartir && (
+            <button
+              onClick={compartirCodigo}
+              className="flex items-center gap-2 rounded-xl bg-slate-700/40 px-5 py-3 text-sm font-semibold text-slate-300 hover:bg-slate-700/70 transition-colors"
+            >
+              <Share2 size={16} />
+              Compartir
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="rounded-2xl border border-border-soft bg-panel p-5 space-y-3">
