@@ -67,7 +67,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
 
         <nav className="flex flex-1 flex-col gap-[3px]">
           {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">Principal</p>}
-          <ItemNav to="/" Icono={LayoutDashboard} label="Dashboard" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+          <ItemNav to="/" Icono={LayoutDashboard} label="Dashboard" onNavegar={onCerrar} colapsado={colapsado} />
           <ItemNav to="/productos" Icono={Package} label="Productos" esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
           {esAdmin && (
             <>
