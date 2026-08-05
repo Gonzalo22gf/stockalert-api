@@ -11,21 +11,56 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 
 ## ✨ Características
 
-- **Multi-empresa (SaaS)** — cada negocio crea su cuenta y opera en su propio espacio aislado. Registro en dos modos: crear empresa nueva o unirse a una existente.
-- **Gestión multi-sucursal** — inventario independiente por tienda, con roles diferenciados (administrador ve todo; jefe de sucursal ve solo su tienda).
+- **Multi-empresa (SaaS)** — cada negocio crea su cuenta y opera en su propio espacio aislado. Registro en dos modos: crear empresa nueva o unirse a una existente por código de acceso.
+- **Gestión multi-sucursal** — inventario independiente por tienda, con roles diferenciados: el administrador ve todas las sucursales, el jefe de sucursal ve solo la suya.
+- **Dashboard por rol** — el administrador ve métricas globales con filtro por sucursal; el jefe ve automáticamente los KPIs de su propia tienda.
 - **Control de vencimientos** — clasificación automática: en buen estado, por vencer (≤7 días) y vencidos.
-- **Dashboard analítico** — KPIs en tiempo real, acciones urgentes, top de productos en riesgo y gráficos por categoría, tienda y estado.
+- **Exportación a Excel** — inventario, acciones urgentes y top 10 en riesgo con EAN, anchos automáticos, fila de totales y valor en riesgo. Reportes históricos multi-hoja.
+- **Escáner de códigos de barras (EAN)** — carga rápida de productos desde la cámara del celular. EAN visible en dashboard y Excel.
+- **Importación masiva** — carga de productos desde CSV/Excel.
+- **Alertas diarias por correo** — el administrador recibe el top 10 de tiendas en riesgo; cada jefe recibe el parte de su tienda.
 - **Reportes históricos** — captura automática diaria del estado de las tiendas, con visualización por período (diario, semanal, mensual, anual).
-- **Exportación a Excel** — reportes multi-hoja (resumen general + una hoja por tienda), con desglose por categoría.
-- **Escáner de códigos de barras (EAN)** — carga rápida de productos desde la cámara del celular. Búsqueda por nombre, lote, EAN o sucursal.
-- **Importación / exportación** — carga masiva de productos desde CSV/Excel.
-- **Alertas diarias por correo** — el administrador recibe el top 10 de tiendas en riesgo de su empresa; cada jefe recibe el parte de su tienda.
-- **Seguridad** — JWT con empresa embebida, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos e invalidación de sesiones al cambiar contraseña.
-- **PWA instalable** — se instala desde el navegador en cualquier celular o computadora, con ícono propio y pantalla completa. Se actualiza automáticamente con cada deploy.
-- **Diseño responsive** — escritorio y móvil, con íconos lucide-react y animaciones suaves.
-- **Código de acceso por empresa** — cada empresa recibe un código único (ej: `CARR-3354`) para invitar a su equipo. Visible en el topbar y con página dedicada con instrucciones paso a paso.
-- **Links frecuentes** — cada empresa puede guardar hasta 10 links de acceso rápido (agregar, editar y borrar desde el sidebar). Disponibles también en el menú de Accesos rápidos.
-- **Cierre automático por inactividad** — la sesión se cierra sola tras 10 minutos sin actividad, protegiendo el acceso en dispositivos compartidos.
+- **Código de acceso por empresa** — cada empresa recibe un código único (ej: CARR-3354) para invitar a su equipo. Visible en el topbar, con página dedicada con instrucciones y botón de compartir nativo (Web Share API).
+- **Links frecuentes** — cada empresa guarda hasta 10 accesos rápidos. Los administradores los gestionan; los jefes los consultan.
+- **Cierre automático por inactividad** — la sesión se cierra tras 10 minutos sin actividad.
+- **Seguridad** — JWT con empresa embebida, Zod en todos los endpoints, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos e invalidación de sesiones al cambiar contraseña.
+- **PWA instalable** — se instala desde el navegador en cualquier celular o computadora, con ícono propio y pantalla completa.
+- **Diseño responsive** — escritorio y móvil.
+
+---
+
+## 🏗️ Arquitectura profesional
+
+### Backend — arquitectura de capas
+
+```
+stockalert-backend/
+├── controllers/     → orquestan: reciben request, llaman al service, devuelven response
+├── services/        → lógica de negocio pura (sin HTTP ni Mongoose)
+├── repositories/    → queries MongoDB centralizadas
+├── validators/      → schemas Zod por endpoint (validación antes de tocar la DB)
+├── middleware/      → auth, errorHandler centralizado, validar
+├── utils/errors/    → AppError, NotFoundError, ForbiddenError, ValidationError
+├── models/          → esquemas Mongoose
+└── routes/          → definición de rutas
+```
+
+### Frontend — organizado por features
+
+```
+stockalert-frontend/src/
+├── features/
+│   ├── auth/        → login, registro, código de acceso, authStore
+│   ├── dashboard/   → KPIs, panel de riesgo, gráficos, snapshots
+│   ├── productos/   → tabla, cards, formularios, escáner EAN
+│   ├── movimientos/
+│   ├── sucursales/
+│   ├── usuarios/
+│   ├── reportes/
+│   └── empresa/     → links frecuentes, widget empresa
+├── components/      → Layout, Sidebar, Topbar, ui/ (globales)
+└── lib/             → client HTTP, exportar Excel
+```
 
 ---
 
@@ -33,7 +68,7 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 
 **Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx, lucide-react, vite-plugin-pwa.
 
-**Backend:** Node.js + Express, MongoDB + Mongoose, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize, Swagger, Pino (logs estructurados).
+**Backend:** Node.js + Express, MongoDB + Mongoose, Zod, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize, Swagger, Pino.
 
 **Infraestructura:** dominio propio `mistockalert.com` (GitHub Pages + Render), MongoDB Atlas, GitHub Actions (CI/CD + snapshots diarios + alertas), Brevo (correo transaccional), Docker.
 
@@ -41,19 +76,25 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 
 ---
 
+## 🔒 Seguridad multi-empresa
+
+El aislamiento entre empresas está verificado con tests automáticos IDOR: una empresa no puede ver, editar ni eliminar datos de otra empresa por ningún camino, aunque conozca los IDs. Los tests corren en cada push.
+
+Medidas adicionales: validación con Zod en todos los endpoints, bloqueo temporal (15 min) tras 5 intentos fallidos de login, invalidación de sesiones al cambiar contraseña, límite de payload de 1MB, Dependabot semanal.
+
+---
+
 ## 🚀 Instalación local
 
 **Requisitos:** Node.js 18+ y MongoDB (local o Atlas).
 
-**Backend:**
 ```bash
+# Backend
 cd stockalert-backend
 npm install
 npm run dev
-```
 
-**Frontend:**
-```bash
+# Frontend
 cd stockalert-frontend
 npm install
 npm run dev
@@ -63,29 +104,19 @@ El frontend corre en http://localhost:5173/
 
 ---
 
-## 🐳 Levantar con Docker
-
-La forma más rápida — sin instalar Node ni MongoDB:
+## 🐳 Docker
 
 ```bash
 docker compose up --build
 ```
 
-Levanta dos contenedores conectados: backend en http://localhost:3000 y MongoDB local. Para detener: Ctrl+C o `docker compose down`.
-
----
-
-## 🔒 Seguridad multi-empresa
-
-El aislamiento entre empresas está verificado con tests automáticos de aislamiento IDOR: una empresa no puede ver, editar ni eliminar datos de otra empresa por ningún camino, aunque conozca los IDs. Los tests corren en cada push.
-
-Medidas adicionales: bloqueo temporal de cuenta (15 min) tras 5 intentos fallidos de login, invalidación de sesiones al cambiar contraseña, límite de payload de 1MB, Dependabot semanal.
+Levanta backend en http://localhost:3000 y MongoDB local. Para detener: `docker compose down`.
 
 ---
 
 ## 🔑 Variables de entorno
 
-Crear un `.env` en `stockalert-backend/`:
+Crear `.env` en `stockalert-backend/`:
 
 ```env
 MONGO_URI=tu_cadena_de_conexion_mongodb
@@ -96,32 +127,21 @@ EMAIL_USER=tu_remitente_verificado_en_brevo
 PORT=3000
 ```
 
-El `.env` no se sube al repositorio (está en `.gitignore`).
-
 ---
 
 ## 🧭 Endpoints principales
 
-Requieren token JWT en el header `Authorization: Bearer <token>` (salvo login/registro).
+Requieren `Authorization: Bearer <token>` (salvo login/registro).
 
-- `POST /api/usuarios/registro` — crear empresa nueva o unirse a una existente
+- `POST /api/usuarios/registro` — crear empresa o unirse por código de acceso
 - `POST /api/usuarios/login` — iniciar sesión
 - `GET /api/productos` — listar productos (filtrado automático por empresa)
 - `POST /api/productos` — crear producto
-- `GET /api/sucursales/resumen` — métricas por tienda (admin)
-- `POST /api/snapshots/generar` — genera la foto del día (protegido por clave, lo dispara el cron)
-- `GET /api/snapshots/historico` — histórico por rango de fechas (admin)
-
----
-
-## 🏗️ Arquitectura
-
-- **stockalert-backend/** — API REST (Node + Express + MongoDB): config, controllers, middleware, models, routes, utils.
-- **stockalert-frontend/** — SPA (React + Vite + PWA): api, hooks, components, pages, store.
-- **.github/workflows/** — CI/CD: deploy automático + snapshot diario + alertas diarias.
-- **.github/dependabot.yml** — actualización automática de dependencias.
-
-Cada empresa tiene sus propios datos, usuarios, sucursales y snapshots. El sistema captura una foto del estado del inventario de cada empresa cada día (vía GitHub Actions), lo que permite construir reportes históricos con la evolución real en el tiempo.
+- `GET /api/sucursales/resumen` — métricas por tienda
+- `GET /api/empresa/perfil` — nombre y código de acceso de la empresa
+- `GET/POST/PUT/DELETE /api/links` — gestión de links frecuentes
+- `POST /api/snapshots/generar` — genera la foto del día (cron)
+- `GET /api/snapshots/historico` — histórico por rango de fechas
 
 ---
 
@@ -132,7 +152,7 @@ cd stockalert-backend
 npm test
 ```
 
-35 tests en 4 suites: seguridad de la API (rutas protegidas, tokens), lógica de negocio (clasificación de alertas, validación de contraseñas) y aislamiento IDOR entre empresas.
+35 tests en 4 suites: seguridad de la API, lógica de negocio, validación de contraseñas y aislamiento IDOR entre empresas.
 
 ---
 
