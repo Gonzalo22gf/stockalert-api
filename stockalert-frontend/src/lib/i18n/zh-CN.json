@@ -144,7 +144,12 @@
     "advertencia": "所有相关产品将被删除。",
     "eliminada": "门店已删除",
     "error": "错误",
-    "sinSucursales": "暂无门店"
+    "sinSucursales": "暂无门店",
+    "todas": "所有区域",
+    "buscar": "按门店编号搜索...",
+    "nombre": "名称",
+    "sinDireccion": "无地址",
+    "noDeshacer": "此操作无法撤销。"
   },
   "usuarios": {
     "titulo": "用户",
@@ -166,7 +171,13 @@
     "noDeshacer": "此操作无法撤销。",
     "eliminado": "用户已删除",
     "error": "错误",
-    "sinUsuarios": "暂无用户"
+    "sinUsuarios": "暂无用户",
+    "buscar": "按姓名或邮箱搜索...",
+    "cambiarRol": "更改角色",
+    "rolActualizado": "角色已更新",
+    "activado": "用户已激活",
+    "desactivado": "用户已停用",
+    "sinSucursal": "无门店"
   },
   "movimientos": {
     "titulo": "动态",
@@ -175,9 +186,19 @@
     "editar": "编辑",
     "eliminar": "删除",
     "filtrarSucursal": "按门店筛选",
-    "todas": "全部",
+    "todas": "所有操作",
     "sinMovimientos": "暂无动态记录",
-    "error": "加载动态时出错"
+    "error": "加载动态时出错",
+    "creados": "已创建",
+    "editados": "已编辑",
+    "eliminados": "已删除",
+    "todasSucursales": "所有门店",
+    "buscar": "按产品搜索...",
+    "desde": "从",
+    "hasta": "到",
+    "limpiar": "清除筛选",
+    "mostrando": "显示",
+    "de": "共"
   },
   "reportes": {
     "titulo": "报告",
@@ -247,6 +268,7 @@
     "sinDatos": "无数据",
     "todas": "全部",
     "si": "是",
-    "no": "否"
+    "no": "否",
+    "acciones": "操作"
   }
 }

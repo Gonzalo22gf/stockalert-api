@@ -144,7 +144,12 @@
     "advertencia": "All associated products will be deleted.",
     "eliminada": "Branch deleted",
     "error": "Error",
-    "sinSucursales": "No branches"
+    "sinSucursales": "No branches",
+    "todas": "All zones",
+    "buscar": "Search by branch number...",
+    "nombre": "Name",
+    "sinDireccion": "No address",
+    "noDeshacer": "This action cannot be undone."
   },
   "usuarios": {
     "titulo": "Users",
@@ -166,7 +171,13 @@
     "noDeshacer": "This action cannot be undone.",
     "eliminado": "User deleted",
     "error": "Error",
-    "sinUsuarios": "No users"
+    "sinUsuarios": "No users",
+    "buscar": "Search by name or email...",
+    "cambiarRol": "Change role",
+    "rolActualizado": "Role updated",
+    "activado": "User activated",
+    "desactivado": "User deactivated",
+    "sinSucursal": "No branch"
   },
   "movimientos": {
     "titulo": "Movements",
@@ -175,9 +186,19 @@
     "editar": "EDIT",
     "eliminar": "DELETE",
     "filtrarSucursal": "Filter by branch",
-    "todas": "All",
+    "todas": "All actions",
     "sinMovimientos": "No movements recorded",
-    "error": "Error loading movements"
+    "error": "Error loading movements",
+    "creados": "Created",
+    "editados": "Edited",
+    "eliminados": "Deleted",
+    "todasSucursales": "All branches",
+    "buscar": "Search by product...",
+    "desde": "From",
+    "hasta": "To",
+    "limpiar": "Clear filters",
+    "mostrando": "Showing",
+    "de": "of"
   },
   "reportes": {
     "titulo": "Reports",
@@ -247,6 +268,7 @@
     "sinDatos": "No data",
     "todas": "All",
     "si": "Yes",
-    "no": "No"
+    "no": "No",
+    "acciones": "Actions"
   }
 }

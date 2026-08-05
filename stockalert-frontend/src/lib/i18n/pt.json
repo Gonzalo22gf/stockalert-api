@@ -144,7 +144,12 @@
     "advertencia": "Todos os produtos associados serão excluídos.",
     "eliminada": "Filial excluída",
     "error": "Erro",
-    "sinSucursales": "Sem filiais"
+    "sinSucursales": "Sem filiais",
+    "todas": "Todas as zonas",
+    "buscar": "Buscar por número de filial...",
+    "nombre": "Nome",
+    "sinDireccion": "Sem endereço",
+    "noDeshacer": "Esta ação não pode ser desfeita."
   },
   "usuarios": {
     "titulo": "Usuários",
@@ -166,7 +171,13 @@
     "noDeshacer": "Esta ação não pode ser desfeita.",
     "eliminado": "Usuário excluído",
     "error": "Erro",
-    "sinUsuarios": "Sem usuários"
+    "sinUsuarios": "Sem usuários",
+    "buscar": "Buscar por nome ou email...",
+    "cambiarRol": "Mudar função",
+    "rolActualizado": "Função atualizada",
+    "activado": "Usuário ativado",
+    "desactivado": "Usuário desativado",
+    "sinSucursal": "Sem filial"
   },
   "movimientos": {
     "titulo": "Movimentos",
@@ -175,9 +186,19 @@
     "editar": "EDITAR",
     "eliminar": "EXCLUIR",
     "filtrarSucursal": "Filtrar por filial",
-    "todas": "Todas",
+    "todas": "Todas as ações",
     "sinMovimientos": "Sem movimentos registrados",
-    "error": "Erro ao carregar movimentos"
+    "error": "Erro ao carregar movimentos",
+    "creados": "Criados",
+    "editados": "Editados",
+    "eliminados": "Excluídos",
+    "todasSucursales": "Todas as filiais",
+    "buscar": "Buscar por produto...",
+    "desde": "De",
+    "hasta": "Até",
+    "limpiar": "Limpar filtros",
+    "mostrando": "Mostrando",
+    "de": "de"
   },
   "reportes": {
     "titulo": "Relatórios",
@@ -247,6 +268,7 @@
     "sinDatos": "Sem dados",
     "todas": "Todas",
     "si": "Sim",
-    "no": "Não"
+    "no": "Não",
+    "acciones": "Ações"
   }
 }

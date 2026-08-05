@@ -144,7 +144,12 @@
     "advertencia": "関連するすべての商品も削除されます。",
     "eliminada": "店舗を削除しました",
     "error": "エラー",
-    "sinSucursales": "店舗なし"
+    "sinSucursales": "店舗なし",
+    "todas": "すべてのゾーン",
+    "buscar": "店舗番号で検索...",
+    "nombre": "名前",
+    "sinDireccion": "住所なし",
+    "noDeshacer": "この操作は取り消せません。"
   },
   "usuarios": {
     "titulo": "ユーザー",
@@ -166,7 +171,13 @@
     "noDeshacer": "この操作は取り消せません。",
     "eliminado": "ユーザーを削除しました",
     "error": "エラー",
-    "sinUsuarios": "ユーザーなし"
+    "sinUsuarios": "ユーザーなし",
+    "buscar": "名前またはメールで検索...",
+    "cambiarRol": "役割を変更",
+    "rolActualizado": "役割が更新されました",
+    "activado": "ユーザーが有効化されました",
+    "desactivado": "ユーザーが無効化されました",
+    "sinSucursal": "店舗なし"
   },
   "movimientos": {
     "titulo": "履歴",
@@ -175,9 +186,19 @@
     "editar": "編集",
     "eliminar": "削除",
     "filtrarSucursal": "店舗で絞り込む",
-    "todas": "すべて",
+    "todas": "すべての操作",
     "sinMovimientos": "履歴なし",
-    "error": "履歴の読み込みエラー"
+    "error": "履歴の読み込みエラー",
+    "creados": "作成",
+    "editados": "編集",
+    "eliminados": "削除",
+    "todasSucursales": "全店舗",
+    "buscar": "商品で検索...",
+    "desde": "から",
+    "hasta": "まで",
+    "limpiar": "フィルターをクリア",
+    "mostrando": "表示中",
+    "de": "件中"
   },
   "reportes": {
     "titulo": "レポート",
@@ -247,6 +268,7 @@
     "sinDatos": "データなし",
     "todas": "すべて",
     "si": "はい",
-    "no": "いいえ"
+    "no": "いいえ",
+    "acciones": "操作"
   }
 }

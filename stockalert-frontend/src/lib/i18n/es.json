@@ -144,7 +144,12 @@
     "advertencia": "Se eliminarán todos los productos asociados.",
     "eliminada": "Sucursal eliminada",
     "error": "Error",
-    "sinSucursales": "No hay sucursales"
+    "sinSucursales": "No hay sucursales",
+    "todas": "Todas las zonas",
+    "buscar": "Buscar por N° de tienda...",
+    "nombre": "Nombre",
+    "sinDireccion": "Sin dirección",
+    "noDeshacer": "Esta acción no se puede deshacer."
   },
   "usuarios": {
     "titulo": "Usuarios",
@@ -166,7 +171,13 @@
     "noDeshacer": "Esta acción no se puede deshacer.",
     "eliminado": "Usuario eliminado",
     "error": "Error",
-    "sinUsuarios": "No hay usuarios"
+    "sinUsuarios": "No hay usuarios",
+    "buscar": "Buscar por nombre o email...",
+    "cambiarRol": "Cambiar rol",
+    "rolActualizado": "Rol actualizado",
+    "activado": "Usuario activado",
+    "desactivado": "Usuario desactivado",
+    "sinSucursal": "Sin sucursal"
   },
   "movimientos": {
     "titulo": "Movimientos",
@@ -175,9 +186,19 @@
     "editar": "EDITAR",
     "eliminar": "ELIMINAR",
     "filtrarSucursal": "Filtrar por sucursal",
-    "todas": "Todas",
+    "todas": "Todas las acciones",
     "sinMovimientos": "No hay movimientos registrados",
-    "error": "Error al cargar movimientos"
+    "error": "Error al cargar movimientos",
+    "creados": "Creados",
+    "editados": "Editados",
+    "eliminados": "Eliminados",
+    "todasSucursales": "Todas las sucursales",
+    "buscar": "Buscar por producto...",
+    "desde": "Desde",
+    "hasta": "Hasta",
+    "limpiar": "Limpiar filtros",
+    "mostrando": "Mostrando",
+    "de": "de"
   },
   "reportes": {
     "titulo": "Reportes",
@@ -247,6 +268,7 @@
     "sinDatos": "Sin datos",
     "todas": "Todas",
     "si": "Sí",
-    "no": "No"
+    "no": "No",
+    "acciones": "Acciones"
   }
 }

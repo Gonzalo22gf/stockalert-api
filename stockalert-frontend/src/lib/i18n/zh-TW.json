@@ -144,7 +144,12 @@
     "advertencia": "所有相關產品將被刪除。",
     "eliminada": "門市已刪除",
     "error": "錯誤",
-    "sinSucursales": "暫無門市"
+    "sinSucursales": "暫無門市",
+    "todas": "所有區域",
+    "buscar": "按門市編號搜尋...",
+    "nombre": "名稱",
+    "sinDireccion": "無地址",
+    "noDeshacer": "此操作無法撤銷。"
   },
   "usuarios": {
     "titulo": "用戶",
@@ -166,7 +171,13 @@
     "noDeshacer": "此操作無法撤銷。",
     "eliminado": "用戶已刪除",
     "error": "錯誤",
-    "sinUsuarios": "暫無用戶"
+    "sinUsuarios": "暫無用戶",
+    "buscar": "按姓名或電子郵件搜尋...",
+    "cambiarRol": "更改角色",
+    "rolActualizado": "角色已更新",
+    "activado": "用戶已啟用",
+    "desactivado": "用戶已停用",
+    "sinSucursal": "無門市"
   },
   "movimientos": {
     "titulo": "動態",
@@ -175,9 +186,19 @@
     "editar": "編輯",
     "eliminar": "刪除",
     "filtrarSucursal": "依門市篩選",
-    "todas": "全部",
+    "todas": "所有操作",
     "sinMovimientos": "暫無動態記錄",
-    "error": "載入動態時發生錯誤"
+    "error": "載入動態時發生錯誤",
+    "creados": "已建立",
+    "editados": "已編輯",
+    "eliminados": "已刪除",
+    "todasSucursales": "所有門市",
+    "buscar": "按產品搜尋...",
+    "desde": "從",
+    "hasta": "到",
+    "limpiar": "清除篩選",
+    "mostrando": "顯示",
+    "de": "共"
   },
   "reportes": {
     "titulo": "報告",
@@ -247,6 +268,7 @@
     "sinDatos": "無資料",
     "todas": "全部",
     "si": "是",
-    "no": "否"
+    "no": "否",
+    "acciones": "操作"
   }
 }
