@@ -1,5 +1,7 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../features/auth/authStore";
+import SelectorIdioma from "./SelectorIdioma";
 import {
   LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound,
   ChevronRight, ChevronLeft, LogOut, BoxesIcon
@@ -30,6 +32,7 @@ function ItemNav({ to, Icono, label, soloAdmin, esAdmin, onNavegar, colapsado })
 }
 
 export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColapso }) {
+  const { t } = useTranslation();
   const usuario = useAuthStore((s) => s.usuario);
   const cerrarSesion = useAuthStore((s) => s.cerrarSesion);
   const esAdmin = usuario?.rol === "admin";
@@ -45,7 +48,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           abierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         } ${!abierto ? "md:hidden" : ""}`}
       >
-        {/* Logo + botón colapsar */}
+        {/* Logo + boton colapsar */}
         <div className={`flex items-center gap-2.5 px-2 pb-6 pt-1 ${colapsado ? "md:justify-center md:px-0" : ""}`}>
           <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand/30">
             <BoxesIcon size={18} strokeWidth={2} stroke="white" />
@@ -58,7 +61,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           )}
           <button
             onClick={onAlternarColapso}
-            title={colapsado ? "Expandir menú" : "Colapsar menú"}
+            title={colapsado ? t("nav.expandir") : t("nav.colapsar")}
             className="hidden shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-panel hover:text-white md:block"
           >
             {colapsado ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
@@ -66,21 +69,26 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
         </div>
 
         <nav className="flex flex-1 flex-col gap-[3px]">
-          {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">Principal</p>}
-          <ItemNav to="/" Icono={LayoutDashboard} label="Dashboard" onNavegar={onCerrar} colapsado={colapsado} />
-          <ItemNav to="/productos" Icono={Package} label="Productos" esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+          {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.principal")}</p>}
+          <ItemNav to="/" Icono={LayoutDashboard} label={t("nav.dashboard")} onNavegar={onCerrar} colapsado={colapsado} />
+          <ItemNav to="/productos" Icono={Package} label={t("nav.productos")} esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
           {esAdmin && (
             <>
-              {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">Análisis</p>}
-              <ItemNav to="/movimientos" Icono={Activity} label="Movimientos" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/sucursales" Icono={Store} label="Sucursales" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/usuarios" Icono={Users} label="Usuarios" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/reportes" Icono={TrendingUp} label="Reportes" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/links" Icono={Link} label="Links frecuentes" onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/codigo-acceso" Icono={KeyRound} label="Codigo de acceso" soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.analisis")}</p>}
+              <ItemNav to="/movimientos" Icono={Activity} label={t("nav.movimientos")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/sucursales" Icono={Store} label={t("nav.sucursales")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/usuarios" Icono={Users} label={t("nav.usuarios")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/reportes" Icono={TrendingUp} label={t("nav.reportes")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/links" Icono={Link} label={t("nav.links")} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/codigo-acceso" Icono={KeyRound} label={t("nav.codigoAcceso")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
             </>
           )}
         </nav>
+
+        {/* Selector de idioma */}
+        <div className="mt-2">
+          <SelectorIdioma colapsado={colapsado} />
+        </div>
 
         {/* Tarjeta de usuario */}
         <div className={`flex items-center gap-2.5 rounded-xl border border-border-soft bg-panel p-2.5 ${colapsado ? "md:justify-center md:p-2" : ""}`}>
@@ -91,21 +99,20 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
             <>
               <div className="min-w-0 flex-1">
                 <p className="truncate text-[12.5px] font-semibold text-white">{usuario?.nombre}</p>
-                <p className="text-[10.5px] text-slate-600">{esAdmin ? "Administrador" : "Jefe de sucursal"}</p>
+                <p className="text-[10.5px] text-slate-600">{esAdmin ? t("usuarios.admin") : t("usuarios.jefe")}</p>
                 {usuario?.empresa?.nombre && <p className="truncate text-[10px] text-slate-700">{usuario.empresa.nombre}</p>}
               </div>
-              <button onClick={cerrarSesion} title="Cerrar sesión" className="text-slate-600 transition-colors hover:text-red-400">
+              <button onClick={cerrarSesion} title={t("nav.cerrarSesion")} className="text-slate-600 transition-colors hover:text-red-400">
                 <LogOut size={15} strokeWidth={2.2} />
               </button>
             </>
           )}
         </div>
 
-        {/* Botón logout cuando está colapsado */}
         {colapsado && (
           <button
             onClick={cerrarSesion}
-            title="Cerrar sesión"
+            title={t("nav.cerrarSesion")}
             className="mt-2 hidden items-center justify-center rounded-lg p-2 text-slate-500 transition-colors hover:bg-panel hover:text-red-400 md:flex"
           >
             <LogOut size={16} strokeWidth={2.2} />

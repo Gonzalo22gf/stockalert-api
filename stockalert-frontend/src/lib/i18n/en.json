@@ -8,7 +8,11 @@
     "reportes": "Reports",
     "links": "Quick links",
     "codigoAcceso": "Access code",
-    "cerrarSesion": "Log out"
+    "cerrarSesion": "Log out",
+    "principal": "Main",
+    "analisis": "Analytics",
+    "expandir": "Expand menu",
+    "colapsar": "Collapse menu"
   },
   "topbar": {
     "accesosRapidos": "Quick access",

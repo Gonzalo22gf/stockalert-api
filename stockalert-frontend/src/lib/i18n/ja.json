@@ -8,7 +8,11 @@
     "reportes": "レポート",
     "links": "よく使うリンク",
     "codigoAcceso": "アクセスコード",
-    "cerrarSesion": "ログアウト"
+    "cerrarSesion": "ログアウト",
+    "principal": "メイン",
+    "analisis": "分析",
+    "expandir": "メニューを展開",
+    "colapsar": "メニューを折りたたむ"
   },
   "topbar": {
     "accesosRapidos": "クイックアクセス",

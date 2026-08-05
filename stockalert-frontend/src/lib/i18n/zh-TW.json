@@ -8,7 +8,11 @@
     "reportes": "報告",
     "links": "常用連結",
     "codigoAcceso": "訪問碼",
-    "cerrarSesion": "登出"
+    "cerrarSesion": "登出",
+    "principal": "主選單",
+    "analisis": "分析",
+    "expandir": "展開選單",
+    "colapsar": "收起選單"
   },
   "topbar": {
     "accesosRapidos": "快速訪問",
