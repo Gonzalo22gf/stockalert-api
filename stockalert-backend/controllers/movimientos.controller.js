@@ -1,7 +1,8 @@
 const logger = require("../utils/logger");
 const Movimiento = require("../models/Movimiento");
+const { AppError } = require("../utils/errors/AppError");
 
-const obtenerMovimientos = async (req, res) => {
+const obtenerMovimientos = async (req, res, next) => {
   try {
     let filtro = { empresa: req.empresaId };
     if (req.usuario.rol !== "admin") {
@@ -17,11 +18,8 @@ const obtenerMovimientos = async (req, res) => {
       .limit(100);
     res.json(movimientos);
   } catch (error) {
-    logger.error("ERROR OBTENER MOVIMIENTOS:", error);
-    res.status(500).json({ mensaje: "Error al obtener movimientos" });
+    next(error);
   }
 };
 
-module.exports = {
-  obtenerMovimientos
-};
+module.exports = { obtenerMovimientos };

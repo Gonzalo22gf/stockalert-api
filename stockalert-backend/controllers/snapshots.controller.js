@@ -2,6 +2,8 @@ const logger = require("../utils/logger");
 const Snapshot = require("../models/Snapshot");
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
+const Empresa = require("../models/Empresa");
+const { ForbiddenError } = require("../utils/errors/AppError");
 
 const CATEGORIAS_FIJAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
 
@@ -24,7 +26,6 @@ function claveDia(fecha) {
   return fecha.toISOString().slice(0, 10);
 }
 
-// Calcula el resumen de las sucursales de UNA empresa
 async function calcularResumenEmpresa(empresaId) {
   const sucursales = await Sucursal.find({ empresa: empresaId }).sort({ numero: 1 });
   const hoy = new Date();
@@ -61,10 +62,8 @@ async function calcularResumenEmpresa(empresaId) {
   return { detalle, totales };
 }
 
-// GENERAR SNAPSHOT DEL DIA — genera uno por empresa (idempotente)
-const generarSnapshot = async (req, res) => {
+const generarSnapshot = async (req, res, next) => {
   try {
-    const Empresa = require("../models/Empresa");
     const empresas = await Empresa.find({ activa: true });
     const hoy = new Date();
     const dia = claveDia(hoy);
@@ -72,7 +71,7 @@ const generarSnapshot = async (req, res) => {
     const resultados = [];
     for (const empresa of empresas) {
       const { detalle, totales } = await calcularResumenEmpresa(empresa._id);
-      const snapshot = await Snapshot.findOneAndUpdate(
+      await Snapshot.findOneAndUpdate(
         { diaClave: dia, empresa: empresa._id },
         { fecha: fechaMedianoche, diaClave: dia, empresa: empresa._id, totales, sucursales: detalle },
         { new: true, upsert: true, setDefaultsOnInsert: true }
@@ -81,17 +80,13 @@ const generarSnapshot = async (req, res) => {
     }
     res.json({ mensaje: "Snapshots generados", resultados });
   } catch (error) {
-    logger.error("ERROR GENERAR SNAPSHOT:", error);
-    res.status(500).json({ mensaje: "Error al generar snapshot" });
+    next(error);
   }
 };
 
-// LISTAR SNAPSHOTS en rango (solo admin) — solo de su empresa
-const obtenerHistorico = async (req, res) => {
+const obtenerHistorico = async (req, res, next) => {
   try {
-    if (req.usuario.rol !== "admin") {
-      return res.status(403).json({ mensaje: "No autorizado" });
-    }
+    if (req.usuario.rol !== "admin") throw new ForbiddenError();
     const { desde, hasta } = req.query;
     const filtro = { empresa: req.empresaId };
     if (desde || hasta) {
@@ -102,8 +97,7 @@ const obtenerHistorico = async (req, res) => {
     const snapshots = await Snapshot.find(filtro).sort({ fecha: 1 });
     res.json(snapshots);
   } catch (error) {
-    logger.error("ERROR HISTORICO:", error);
-    res.status(500).json({ mensaje: "Error al obtener historico" });
+    next(error);
   }
 };
 

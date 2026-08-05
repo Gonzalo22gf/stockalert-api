@@ -1,23 +1,20 @@
 const logger = require("../utils/logger");
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
+const { NotFoundError, ValidationError, ForbiddenError } = require("../utils/errors/AppError");
 
-// LISTAR TODAS — solo las de la empresa del usuario
-const obtenerSucursales = async (req, res) => {
+const obtenerSucursales = async (req, res, next) => {
   try {
     const sucursales = await Sucursal.find({ empresa: req.empresaId }).sort({ numero: 1 });
     res.json(sucursales);
   } catch (error) {
-    res.status(500).json({ mensaje: "Error al obtener sucursales" });
+    next(error);
   }
 };
 
-// RESUMEN (solo admin) — acotado a la empresa
-const obtenerResumenSucursales = async (req, res) => {
+const obtenerResumenSucursales = async (req, res, next) => {
   try {
-    if (req.usuario.rol !== "admin") {
-      return res.status(403).json({ mensaje: "No autorizado" });
-    }
+    if (req.usuario.rol !== "admin") throw new ForbiddenError();
     const sucursales = await Sucursal.find({ empresa: req.empresaId }).sort({ numero: 1 });
     const hoy = new Date();
     const resumen = await Promise.all(
@@ -30,70 +27,46 @@ const obtenerResumenSucursales = async (req, res) => {
           return diff >= 0 && diff <= 7;
         }).length;
         const stockCritico = productos.filter((p) => p.stock > 0 && p.stock <= 5).length;
-        const agotados     = productos.filter((p) => p.stock === 0).length;
+        const agotados = productos.filter((p) => p.stock === 0).length;
         const valorInventario = productos.reduce((t, p) => t + p.stock * p.precio, 0);
         return {
-          sucursal: {
-            _id:       sucursal._id,
-            zona:      sucursal.zona,
-            numero:    sucursal.numero,
-            nombre:    sucursal.nombre,
-            direccion: sucursal.direccion,
-            empresa:   sucursal.empresa
-          },
+          sucursal: { _id: sucursal._id, zona: sucursal.zona, numero: sucursal.numero, nombre: sucursal.nombre, direccion: sucursal.direccion, empresa: sucursal.empresa },
           totalProductos, vencidos, porVencer, stockCritico, agotados, valorInventario
         };
       })
     );
     res.json(resumen);
   } catch (error) {
-    res.status(500).json({ mensaje: "Error al obtener resumen de sucursales" });
+    next(error);
   }
 };
 
-// CREAR SUCURSAL (solo admin) — dentro de su empresa
-const crearSucursal = async (req, res) => {
+const crearSucursal = async (req, res, next) => {
   try {
     const { zona, numero, direccion } = req.body;
     if (zona === undefined || zona === null || numero === undefined || numero === null) {
-      return res.status(400).json({ mensaje: "Zona y número son obligatorios" });
+      throw new ValidationError("Zona y numero son obligatorios");
     }
-    // El numero es unico POR EMPRESA
     const yaExiste = await Sucursal.findOne({ numero: Number(numero), empresa: req.empresaId });
-    if (yaExiste) {
-      return res.status(400).json({ mensaje: "Ya existe una sucursal con ese número en tu empresa" });
-    }
-    const sucursal = await Sucursal.create({
-      zona: Number(zona),
-      numero: Number(numero),
-      direccion: direccion?.trim() || "",
-      empresa: req.empresaId
-    });
+    if (yaExiste) throw new ValidationError("Ya existe una sucursal con ese numero en tu empresa");
+    const sucursal = await Sucursal.create({ zona: Number(zona), numero: Number(numero), direccion: direccion?.trim() || "", empresa: req.empresaId });
     res.status(201).json({ mensaje: "Sucursal creada", sucursal });
   } catch (error) {
-    logger.error("ERROR CREAR SUCURSAL:", error);
-    res.status(500).json({ mensaje: error.message || "Error al crear sucursal" });
+    next(error);
   }
 };
 
-// EDITAR SUCURSAL (solo admin) — solo si es de su empresa
-const editarSucursal = async (req, res) => {
+const editarSucursal = async (req, res, next) => {
   try {
     const { zona, numero, direccion } = req.body;
     if (zona === undefined || zona === null || numero === undefined || numero === null) {
-      return res.status(400).json({ mensaje: "Zona y número son obligatorios" });
+      throw new ValidationError("Zona y numero son obligatorios");
     }
-    // Blindaje: la sucursal debe ser de la empresa del usuario
     const existente = await Sucursal.findOne({ _id: req.params.id, empresa: req.empresaId });
-    if (!existente) {
-      return res.status(404).json({ mensaje: "Sucursal no encontrada" });
-    }
-    // Si cambia el numero, que no choque con otra de la misma empresa
+    if (!existente) throw new NotFoundError("Sucursal");
     if (Number(numero) !== existente.numero) {
       const choque = await Sucursal.findOne({ numero: Number(numero), empresa: req.empresaId, _id: { $ne: existente._id } });
-      if (choque) {
-        return res.status(400).json({ mensaje: "Ya existe otra sucursal con ese número en tu empresa" });
-      }
+      if (choque) throw new ValidationError("Ya existe otra sucursal con ese numero en tu empresa");
     }
     existente.zona = Number(zona);
     existente.numero = Number(numero);
@@ -101,37 +74,21 @@ const editarSucursal = async (req, res) => {
     await existente.save();
     res.json({ mensaje: "Sucursal actualizada", sucursal: existente });
   } catch (error) {
-    logger.error("ERROR EDITAR SUCURSAL:", error);
-    res.status(500).json({ mensaje: "Error al editar sucursal" });
+    next(error);
   }
 };
 
-// ELIMINAR SUCURSAL + sus productos (solo admin) — solo si es de su empresa
-const eliminarSucursal = async (req, res) => {
+const eliminarSucursal = async (req, res, next) => {
   try {
-    if (req.usuario.rol !== "admin") {
-      return res.status(403).json({ mensaje: "No autorizado" });
-    }
+    if (req.usuario.rol !== "admin") throw new ForbiddenError();
     const sucursal = await Sucursal.findOne({ _id: req.params.id, empresa: req.empresaId });
-    if (!sucursal) {
-      return res.status(404).json({ mensaje: "Sucursal no encontrada" });
-    }
+    if (!sucursal) throw new NotFoundError("Sucursal");
     const resultadoProductos = await Producto.deleteMany({ sucursal: sucursal._id, empresa: req.empresaId });
     await Sucursal.findByIdAndDelete(sucursal._id);
-    res.json({
-      mensaje: "Sucursal eliminada",
-      productosEliminados: resultadoProductos.deletedCount
-    });
+    res.json({ mensaje: "Sucursal eliminada", productosEliminados: resultadoProductos.deletedCount });
   } catch (error) {
-    logger.error("ERROR ELIMINAR SUCURSAL:", error);
-    res.status(500).json({ mensaje: "Error al eliminar sucursal" });
+    next(error);
   }
 };
 
-module.exports = {
-  obtenerSucursales,
-  obtenerResumenSucursales,
-  crearSucursal,
-  editarSucursal,
-  eliminarSucursal
-};
+module.exports = { obtenerSucursales, obtenerResumenSucursales, crearSucursal, editarSucursal, eliminarSucursal };

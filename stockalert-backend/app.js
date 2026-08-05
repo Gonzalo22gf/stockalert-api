@@ -71,4 +71,7 @@ const swaggerUi = require("swagger-ui-express");
 const especificacionSwagger = require("./config/swagger");
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(especificacionSwagger));
 
+// Manejo centralizado de errores (SIEMPRE al final)
+app.use(require('./middleware/errorHandler'));
+
 module.exports = app;

@@ -1,62 +1,51 @@
 const logger = require("../utils/logger");
 const LinkFrecuente = require("../models/LinkFrecuente");
+const { NotFoundError, ValidationError } = require("../utils/errors/AppError");
 
-// LISTAR links de la empresa
-const listarLinks = async (req, res) => {
+const listarLinks = async (req, res, next) => {
   try {
     const links = await LinkFrecuente.find({ empresa: req.empresaId }).sort({ orden: 1, createdAt: 1 });
     res.json(links);
   } catch (error) {
-    logger.error("ERROR LISTAR LINKS:", error);
-    res.status(500).json({ mensaje: "Error al listar links" });
+    next(error);
   }
 };
 
-// CREAR link
-const crearLink = async (req, res) => {
+const crearLink = async (req, res, next) => {
   try {
     const { nombre, url } = req.body;
-    if (!nombre || !url) {
-      return res.status(400).json({ mensaje: "Nombre y URL son obligatorios" });
-    }
+    if (!nombre || !url) throw new ValidationError("Nombre y URL son obligatorios");
     const cantidad = await LinkFrecuente.countDocuments({ empresa: req.empresaId });
-    if (cantidad >= 10) {
-      return res.status(400).json({ mensaje: "Maximo 10 links por empresa" });
-    }
+    if (cantidad >= 10) throw new ValidationError("Maximo 10 links por empresa");
     const link = await LinkFrecuente.create({ nombre, url, empresa: req.empresaId, orden: cantidad });
     res.status(201).json(link);
   } catch (error) {
-    logger.error("ERROR CREAR LINK:", error);
-    res.status(500).json({ mensaje: "Error al crear link" });
+    next(error);
   }
 };
 
-// EDITAR link
-const editarLink = async (req, res) => {
+const editarLink = async (req, res, next) => {
   try {
     const { nombre, url } = req.body;
     const link = await LinkFrecuente.findOne({ _id: req.params.id, empresa: req.empresaId });
-    if (!link) return res.status(404).json({ mensaje: "Link no encontrado" });
+    if (!link) throw new NotFoundError("Link");
     if (nombre) link.nombre = nombre.trim();
     if (url) link.url = url.trim();
     await link.save();
     res.json(link);
   } catch (error) {
-    logger.error("ERROR EDITAR LINK:", error);
-    res.status(500).json({ mensaje: "Error al editar link" });
+    next(error);
   }
 };
 
-// BORRAR link
-const borrarLink = async (req, res) => {
+const borrarLink = async (req, res, next) => {
   try {
     const link = await LinkFrecuente.findOne({ _id: req.params.id, empresa: req.empresaId });
-    if (!link) return res.status(404).json({ mensaje: "Link no encontrado" });
+    if (!link) throw new NotFoundError("Link");
     await LinkFrecuente.findByIdAndDelete(link._id);
     res.json({ mensaje: "Link eliminado" });
   } catch (error) {
-    logger.error("ERROR BORRAR LINK:", error);
-    res.status(500).json({ mensaje: "Error al borrar link" });
+    next(error);
   }
 };
 
