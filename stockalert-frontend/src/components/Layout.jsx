@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import FabEscaner from "./FabEscaner";
+import FabEscaner from "../features/productos/FabEscaner";
 import { useInactividad } from "../hooks/useInactividad";
 
 const TITULOS = {

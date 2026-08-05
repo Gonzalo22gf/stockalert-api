@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../features/auth/authStore";
 
 const TIEMPO_LIMITE = 10 * 60 * 1000; // 10 minutos en ms
 

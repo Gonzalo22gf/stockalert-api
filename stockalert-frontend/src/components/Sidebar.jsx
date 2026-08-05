@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../features/auth/authStore";
 import {
   LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound,
   ChevronRight, ChevronLeft, LogOut, BoxesIcon

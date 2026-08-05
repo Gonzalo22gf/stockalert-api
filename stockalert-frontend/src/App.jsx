@@ -1,15 +1,15 @@
-import UsuariosPage from "./pages/UsuariosPage";
-import SucursalesPage from "./pages/SucursalesPage";
-import MovimientosPage from "./pages/MovimientosPage";
-import ProductosPage from "./pages/ProductosPage";
-import DashboardPage from "./pages/DashboardPage";
-import ReportesPage from "./pages/ReportesPage";
-import LinksPage from "./pages/LinksPage";
-import CodigoAccesoPage from "./pages/CodigoAccesoPage";
+import UsuariosPage from "./features/usuarios/UsuariosPage";
+import SucursalesPage from "./features/sucursales/SucursalesPage";
+import MovimientosPage from "./features/movimientos/MovimientosPage";
+import ProductosPage from "./features/productos/ProductosPage";
+import DashboardPage from "./features/dashboard/DashboardPage";
+import ReportesPage from "./features/reportes/ReportesPage";
+import LinksPage from "./features/empresa/LinksPage";
+import CodigoAccesoPage from "./features/auth/CodigoAccesoPage";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { useAuthStore } from "./store/authStore";
-import LoginPage from "./pages/LoginPage";
-import RestablecerPage from "./pages/RestablecerPage";
+import { useAuthStore } from "./features/auth/authStore";
+import LoginPage from "./features/auth/LoginPage";
+import RestablecerPage from "./features/auth/RestablecerPage";
 import Layout from "./components/Layout";
 
 function RutaProtegida({ children }) {

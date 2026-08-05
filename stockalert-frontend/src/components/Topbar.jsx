@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthStore } from "../store/authStore";
+import { useAuthStore } from "../features/auth/authStore";
 import { Zap, ChevronDown, Package, LayoutDashboard, ClipboardList, Store, Users, TrendingUp, Home, Calendar, Menu, Link, KeyRound } from "lucide-react";
-import { useLinks } from "../hooks/useLinks";
-import { usePerfilEmpresa } from "../hooks/useEmpresa";
+import { useLinks } from "../features/empresa/useLinks";
+import { usePerfilEmpresa } from "../features/empresa/useEmpresa";
 
 export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const usuario = useAuthStore((s) => s.usuario);
