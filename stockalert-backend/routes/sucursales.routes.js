@@ -11,6 +11,7 @@ const {
   eliminarSucursal
 } = require("../controllers/sucursales.controller");
 const { protegerRuta, soloAdmin } = require("../middleware/auth");
+const { validarLimiteSucursales } = require("../middleware/validarPlan");
 
 /**
  * @swagger
@@ -51,7 +52,7 @@ const { protegerRuta, soloAdmin } = require("../middleware/auth");
  *       403: { description: "No autorizado" }
  */
 router.get("/", protegerRuta, obtenerSucursales);
-router.post("/", validar(sucursalSchema), protegerRuta, soloAdmin, crearSucursal);
+router.post("/", validar(sucursalSchema), protegerRuta, soloAdmin, validarLimiteSucursales, crearSucursal);
 
 /**
  * @swagger

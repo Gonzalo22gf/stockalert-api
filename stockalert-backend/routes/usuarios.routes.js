@@ -16,6 +16,7 @@ const {
   eliminarUsuario
 } = require("../controllers/usuarios.controller");
 const { protegerRuta, soloAdmin } = require("../middleware/auth");
+const { validarLimiteUsuarios } = require("../middleware/validarPlan");
 
 // Rate limit estricto SOLO para login/registro (anti fuerza bruta)
 const limiteAuth = rateLimit({
@@ -56,7 +57,7 @@ const limiteAuth = rateLimit({
  *       400: { description: "Datos inválidos o email ya registrado" }
  *       429: { description: "Demasiados intentos (rate limit)" }
  */
-router.post("/registro", validar(registroSchema), limiteAuth, registrarUsuario);
+router.post("/registro", validarLimiteUsuarios, validar(registroSchema), limiteAuth, registrarUsuario);
 
 /**
  * @swagger
