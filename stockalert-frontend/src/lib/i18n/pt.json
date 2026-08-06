@@ -281,5 +281,15 @@
     "si": "Sim",
     "no": "Não",
     "acciones": "Ações"
+  },
+  "upgrade": {
+    "titulo": "Limite do plano atingido",
+    "limiteProductos": "Voce atingiu o limite de produtos do seu plano. Atualize para continuar.",
+    "limiteSucursales": "Voce atingiu o limite de filiais do seu plano. Atualize para continuar crescendo.",
+    "limiteUsuarios": "Voce atingiu o limite de usuarios do seu plano. Atualize para adicionar mais pessoas.",
+    "trialExpirado": "Seu periodo de teste de 15 dias expirou. Escolha um plano para continuar.",
+    "limiteGenerico": "Voce atingiu um limite do seu plano atual.",
+    "verPlanes": "Ver planos e precos",
+    "ahoreNo": "Agora nao"
   }
 }

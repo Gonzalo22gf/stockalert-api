@@ -281,5 +281,15 @@
     "si": "Sí",
     "no": "No",
     "acciones": "Acciones"
+  },
+  "upgrade": {
+    "titulo": "Limite de tu plan alcanzado",
+    "limiteProductos": "Alcanzaste el limite de productos de tu plan. Upgradea para seguir agregando.",
+    "limiteSucursales": "Alcanzaste el limite de sucursales de tu plan. Upgradea para seguir creciendo.",
+    "limiteUsuarios": "Alcanzaste el limite de usuarios de tu plan. Upgradea para sumar mas gente.",
+    "trialExpirado": "Tu periodo de prueba de 15 dias expiro. Elegí un plan para continuar usando StockAlert.",
+    "limiteGenerico": "Alcanzaste un limite de tu plan actual.",
+    "verPlanes": "Ver planes y precios",
+    "ahoreNo": "Ahora no"
   }
 }

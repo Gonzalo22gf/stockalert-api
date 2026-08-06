@@ -281,5 +281,15 @@
     "si": "是",
     "no": "否",
     "acciones": "操作"
+  },
+  "upgrade": {
+    "titulo": "已達到方案限制",
+    "limiteProductos": "您已達到方案的產品限制，請升級以繼續新增。",
+    "limiteSucursales": "您已達到方案的門市限制，請升級以繼續擴展。",
+    "limiteUsuarios": "您已達到方案的用戶限制，請升級以新增更多人員。",
+    "trialExpirado": "您的15天試用期已結束，請選擇方案以繼續使用。",
+    "limiteGenerico": "您已達到目前方案的限制。",
+    "verPlanes": "查看方案與價格",
+    "ahoreNo": "暫不"
   }
 }

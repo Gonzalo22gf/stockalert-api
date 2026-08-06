@@ -1,3 +1,5 @@
+import { PlanError } from "./PlanError";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 function obtenerToken() {
@@ -13,7 +15,13 @@ async function request(path, options = {}) {
   };
   const respuesta = await fetch(`${API_URL}${path}`, { ...options, headers });
   const data = await respuesta.json().catch(() => ({}));
-  if (!respuesta.ok) throw new Error(data.mensaje || "Error en la solicitud");
+  if (!respuesta.ok) {
+    // Si el backend devuelve un codigo de limite de plan, lanzar PlanError
+    if (data.codigo && ["LIMITE_PRODUCTOS","LIMITE_SUCURSALES","LIMITE_USUARIOS","TRIAL_EXPIRADO"].includes(data.codigo)) {
+      throw new PlanError(data.mensaje, data.codigo);
+    }
+    throw new Error(data.mensaje || "Error en la solicitud");
+  }
   return data;
 }
 

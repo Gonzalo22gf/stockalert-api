@@ -281,5 +281,15 @@
     "si": "Yes",
     "no": "No",
     "acciones": "Actions"
+  },
+  "upgrade": {
+    "titulo": "Plan limit reached",
+    "limiteProductos": "You have reached the product limit of your plan. Upgrade to keep adding.",
+    "limiteSucursales": "You have reached the branch limit of your plan. Upgrade to keep growing.",
+    "limiteUsuarios": "You have reached the user limit of your plan. Upgrade to add more people.",
+    "trialExpirado": "Your 15-day trial has expired. Choose a plan to keep using StockAlert.",
+    "limiteGenerico": "You have reached a limit of your current plan.",
+    "verPlanes": "View plans and pricing",
+    "ahoreNo": "Not now"
   }
 }
