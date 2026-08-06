@@ -7,7 +7,7 @@ const LinkService = {
 
   crear: async (empresaId, { nombre, url }) => {
     const cantidad = await LinkRepository.count(empresaId);
-    if (cantidad >= 10) throw new ValidationError("Maximo 10 links por empresa");
+    if (cantidad >= 30) throw new ValidationError("Maximo 30 links por empresa");
     return LinkRepository.create({ nombre, url, empresa: empresaId, orden: cantidad });
   },
 

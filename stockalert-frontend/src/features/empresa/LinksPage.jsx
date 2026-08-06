@@ -60,7 +60,7 @@ export default function LinksPage() {
     }
   }
 
-  const puedeAgregar = esAdmin && links.length < 10;
+  const puedeAgregar = esAdmin && links.length < 30;
 
   return (
     <div className="animate-rise space-y-6 max-w-2xl mx-auto">
@@ -138,7 +138,7 @@ export default function LinksPage() {
           ))}
         </div>
       )}
-      <p className="text-xs text-slate-600 text-center">{links.length}/10 links</p>
+      <p className="text-xs text-slate-600 text-center">{links.length}/30 links</p>
     </div>
   );
 }
