@@ -1,10 +1,11 @@
 # 📦 StockAlert
 
-**SaaS multi-empresa de inventario y control de vencimientos para supermercados.**
+**Plataforma SaaS de inventario y control de vencimientos para negocios con múltiples sucursales.**
 
 StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencimiento de sus productos en múltiples sucursales, con alertas automáticas, dashboard analítico y reportes históricos. Cada empresa tiene su espacio completamente aislado — los datos de un negocio jamás son visibles para otro.
 
-🔗 **Demo en vivo:** https://mistockalert.com
+🌐 **Landing:** https://mistockalert.com
+🚀 **App:** https://app.mistockalert.com
 📚 **API Docs (Swagger):** https://api.mistockalert.com/api-docs
 
 ---
@@ -20,8 +21,9 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Importación masiva** — carga de productos desde CSV/Excel.
 - **Alertas diarias por correo** — el administrador recibe el top 10 de tiendas en riesgo; cada jefe recibe el parte de su tienda.
 - **Reportes históricos** — captura automática diaria del estado de las tiendas, con visualización por período (diario, semanal, mensual, anual).
-- **Código de acceso por empresa** — cada empresa recibe un código único (ej: CARR-3354) para invitar a su equipo. Visible en el topbar, con página dedicada con instrucciones y botón de compartir nativo (Web Share API).
-- **Links frecuentes** — cada empresa guarda hasta 10 accesos rápidos. Los administradores los gestionan; los jefes los consultan.
+- **Internacionalización (i18n)** — interfaz disponible en 6 idiomas: Español, English, Português, 中文简体, 中文繁體, 日本語. Detección automática del idioma del navegador con selector manual.
+- **Código de acceso por empresa** — cada empresa recibe un código único para invitar a su equipo, con botón de compartir nativo (Web Share API).
+- **Links frecuentes** — cada empresa guarda hasta 30 accesos rápidos. Los administradores los gestionan; los jefes los consultan.
 - **Cierre automático por inactividad** — la sesión se cierra tras 10 minutos sin actividad.
 - **Seguridad** — JWT con empresa embebida, Zod en todos los endpoints, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos e invalidación de sesiones al cambiar contraseña.
 - **PWA instalable** — se instala desde el navegador en cualquier celular o computadora, con ícono propio y pantalla completa.
@@ -58,19 +60,19 @@ stockalert-frontend/src/
 │   ├── usuarios/
 │   ├── reportes/
 │   └── empresa/     → links frecuentes, widget empresa
-├── components/      → Layout, Sidebar, Topbar, ui/ (globales)
-└── lib/             → client HTTP, exportar Excel
+├── components/      → Layout, Sidebar, Topbar, ErrorBoundary, QueryState, ui/
+└── lib/             → client HTTP, exportar Excel, i18n/
 ```
 
 ---
 
 ## 🛠️ Stack tecnológico
 
-**Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx, lucide-react, vite-plugin-pwa.
+**Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx, lucide-react, react-i18next, vite-plugin-pwa.
 
 **Backend:** Node.js + Express, MongoDB + Mongoose, Zod, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize, Swagger, Pino.
 
-**Infraestructura:** dominio propio `mistockalert.com` (GitHub Pages + Render), MongoDB Atlas, GitHub Actions (CI/CD + snapshots diarios + alertas), Brevo (correo transaccional), Docker.
+**Infraestructura:** dominio propio `mistockalert.com` y `app.mistockalert.com` (GitHub Pages + Render), MongoDB Atlas, GitHub Actions (CI/CD + snapshots diarios + alertas), Brevo (correo transaccional), Docker.
 
 **Calidad:** 35 tests (Jest + Supertest + mongodb-memory-server): seguridad de API, lógica de negocio y aislamiento IDOR entre empresas. Dependabot activo para vigilancia de vulnerabilidades.
 
@@ -137,7 +139,7 @@ Requieren `Authorization: Bearer <token>` (salvo login/registro).
 - `POST /api/usuarios/login` — iniciar sesión
 - `GET /api/productos` — listar productos (filtrado automático por empresa)
 - `POST /api/productos` — crear producto
-- `GET /api/sucursales/resumen` — métricas por tienda
+- `GET /api/sucursales/resumen` — métricas por tienda (admin: todas; jefe: la suya)
 - `GET /api/empresa/perfil` — nombre y código de acceso de la empresa
 - `GET/POST/PUT/DELETE /api/links` — gestión de links frecuentes
 - `POST /api/snapshots/generar` — genera la foto del día (cron)
@@ -158,4 +160,4 @@ npm test
 
 ## 📄 Licencia
 
-Proyecto de portfolio. Uso educativo y demostrativo.
+Proyecto Full Stack desarrollado como demostración de una plataforma SaaS para gestión de inventario, vencimientos y múltiples sucursales.
