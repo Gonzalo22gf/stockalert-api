@@ -24,6 +24,7 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Internacionalización (i18n)** — interfaz disponible en 6 idiomas: Español, English, Português, 中文简体, 中文繁體, 日本語. Detección automática del idioma del navegador con selector manual.
 - **Código de acceso por empresa** — cada empresa recibe un código único para invitar a su equipo, con botón de compartir nativo (Web Share API).
 - **Links frecuentes** — cada empresa guarda hasta 30 accesos rápidos. Los administradores los gestionan; los jefes los consultan.
+- **Sistema de planes con feature flag** — lógica de Free/Starter/Pro/Business implementada y lista para activar. Incluye validación de límites por plan, trial de 15 días y modal de upgrade automático.
 - **Cierre automático por inactividad** — la sesión se cierra tras 10 minutos sin actividad.
 - **Seguridad** — JWT con empresa embebida, Zod en todos los endpoints, control de acceso por rol, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos e invalidación de sesiones al cambiar contraseña.
 - **PWA instalable** — se instala desde el navegador en cualquier celular o computadora, con ícono propio y pantalla completa.
@@ -41,7 +42,8 @@ stockalert-backend/
 ├── services/        → lógica de negocio pura (sin HTTP ni Mongoose)
 ├── repositories/    → queries MongoDB centralizadas
 ├── validators/      → schemas Zod por endpoint (validación antes de tocar la DB)
-├── middleware/      → auth, errorHandler centralizado, validar
+├── middleware/      → auth, errorHandler centralizado, validar, validarPlan
+├── config/          → planes.js con límites por plan (Free/Starter/Pro/Business)
 ├── utils/errors/    → AppError, NotFoundError, ForbiddenError, ValidationError
 ├── models/          → esquemas Mongoose
 └── routes/          → definición de rutas
@@ -60,8 +62,9 @@ stockalert-frontend/src/
 │   ├── usuarios/
 │   ├── reportes/
 │   └── empresa/     → links frecuentes, widget empresa
-├── components/      → Layout, Sidebar, Topbar, ErrorBoundary, QueryState, ui/
-└── lib/             → client HTTP, exportar Excel, i18n/
+├── components/      → Layout, Sidebar, Topbar, ErrorBoundary, ModalUpgrade, QueryState, ui/
+├── hooks/           → useInactividad, useCountUp, usePlanError
+└── lib/             → client HTTP, PlanError, exportar Excel, i18n/
 ```
 
 ---
@@ -75,6 +78,19 @@ stockalert-frontend/src/
 **Infraestructura:** dominio propio `mistockalert.com` y `app.mistockalert.com` (GitHub Pages + Render), MongoDB Atlas, GitHub Actions (CI/CD + snapshots diarios + alertas), Brevo (correo transaccional), Docker.
 
 **Calidad:** 35 tests (Jest + Supertest + mongodb-memory-server): seguridad de API, lógica de negocio y aislamiento IDOR entre empresas. Dependabot activo para vigilancia de vulnerabilidades.
+
+---
+
+## 💳 Sistema de planes
+
+| Plan | Precio | Productos | Sucursales | Usuarios |
+|------|--------|-----------|------------|----------|
+| Free (trial 15 días) | $0 | 30 | 1 | 3 |
+| Starter | $9/mes | 50 | 1 | 5 |
+| Pro | $29/mes | Ilimitados | 10 | 20 |
+| Business | $79/mes | Ilimitados | Ilimitadas | Ilimitados |
+
+La validación de planes está implementada y se activa con `PLANES_HABILITADOS=true` en el entorno. Sin esa variable, todos los usuarios tienen acceso completo (modo desarrollo).
 
 ---
 
@@ -126,6 +142,7 @@ JWT_SECRET=una_clave_secreta_larga_y_aleatoria
 CRON_SECRET=otra_clave_secreta_para_los_snapshots
 BREVO_API_KEY=tu_api_key_de_brevo
 EMAIL_USER=tu_remitente_verificado_en_brevo
+PLANES_HABILITADOS=false
 PORT=3000
 ```
 
@@ -138,7 +155,7 @@ Requieren `Authorization: Bearer <token>` (salvo login/registro).
 - `POST /api/usuarios/registro` — crear empresa o unirse por código de acceso
 - `POST /api/usuarios/login` — iniciar sesión
 - `GET /api/productos` — listar productos (filtrado automático por empresa)
-- `POST /api/productos` — crear producto
+- `POST /api/productos` — crear producto (valida límite de plan si habilitado)
 - `GET /api/sucursales/resumen` — métricas por tienda (admin: todas; jefe: la suya)
 - `GET /api/empresa/perfil` — nombre y código de acceso de la empresa
 - `GET/POST/PUT/DELETE /api/links` — gestión de links frecuentes
