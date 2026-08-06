@@ -61,9 +61,9 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
 
           {menuAbierto && (
             <>
-              <div className="fixed inset-0 z-10" onClick={() => setMenuAbierto(false)} />
+              <div className="fixed inset-0 z-[100]" onClick={() => setMenuAbierto(false)} />
               <div
-                className="absolute right-0 z-20 mt-2 w-52 animate-pop overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60"
+                className="absolute right-0 z-[110] mt-2 w-52 animate-pop overflow-hidden rounded-xl border border-[#2a2e3a] shadow-2xl shadow-black/60"
                 style={{ backgroundColor: "#13151c" }}
               >
                 {accesos
