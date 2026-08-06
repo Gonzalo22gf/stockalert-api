@@ -127,7 +127,7 @@ export default function LinksPage() {
                       <button onClick={() => manejarEditar(link)} className="text-slate-500 hover:text-amber-400 transition-colors" title={t("links.editar")}>
                         <Pencil size={15} />
                       </button>
-                      <button onClick={() => manejarBorrar(link._id, link.nombre)} className="text-slate-500 hover:text-red-400 transition-colors" title={t("links.borrar")}>
+                      <button onClick={() => manejarBorrar(link._id, link.nombre)} className="text-slate-500 hover:text-red-400 transition-colors disabled:opacity-40" title={t("links.borrar")} disabled={borrarLink.isPending}>
                         <Trash2 size={15} />
                       </button>
                     </>
