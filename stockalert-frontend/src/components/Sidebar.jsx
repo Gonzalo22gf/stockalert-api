@@ -36,6 +36,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
   const usuario = useAuthStore((s) => s.usuario);
   const cerrarSesion = useAuthStore((s) => s.cerrarSesion);
   const esAdmin = usuario?.rol === "admin";
+  const esFundador = ["gef.22@hotmail.com"].includes(usuario?.email?.toLowerCase());
   const anchoSidebar = colapsado ? "md:w-[72px]" : "md:w-[248px]";
 
   return (
@@ -80,6 +81,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
               <ItemNav to="/usuarios" Icono={Users} label={t("nav.usuarios")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/reportes" Icono={TrendingUp} label={t("nav.reportes")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/links" Icono={Link} label={t("nav.links")} onNavegar={onCerrar} colapsado={colapsado} />
+              {esFundador && <ItemNav to="/superadmin" Icono={ShieldCheck} label="Superadmin" onNavegar={onCerrar} colapsado={colapsado} />}
               <ItemNav to="/codigo-acceso" Icono={KeyRound} label={t("nav.codigoAcceso")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
             </>
           )}

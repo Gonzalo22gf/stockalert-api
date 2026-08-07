@@ -8,6 +8,7 @@ import LinksPage from "./features/empresa/LinksPage";
 import CodigoAccesoPage from "./features/auth/CodigoAccesoPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./features/auth/authStore";
+import SuperadminPage from "./features/superadmin/SuperadminPage";
 import LoginPage from "./features/auth/LoginPage";
 import RestablecerPage from "./features/auth/RestablecerPage";
 import Layout from "./components/Layout";
