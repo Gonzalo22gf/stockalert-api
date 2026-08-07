@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../features/auth/authStore";
 import SelectorIdioma from "./SelectorIdioma";
 import {
-  LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound,
+  LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound, ShieldCheck,
   ChevronRight, ChevronLeft, LogOut, BoxesIcon
 } from "lucide-react";
 
