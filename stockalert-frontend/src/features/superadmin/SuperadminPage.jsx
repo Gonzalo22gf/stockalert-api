@@ -1,3 +1,4 @@
+import { useAuthStore } from "../../features/auth/authStore";
 import { useMetricasSuperadmin, useEmpresasSuperadmin } from "./useSuperadmin";
 import { SkeletonKpis, SkeletonTabla } from "../../components/Skeleton";
 
@@ -36,7 +37,8 @@ function formatFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
-export default function SuperadminPage({ usuario }) {
+export default function SuperadminPage() {
+  const usuario = useAuthStore((s) => s.usuario);
   const esFundador = FUNDADORES.includes(usuario?.email?.toLowerCase());
   const { data: metricas, isLoading: cargandoMetricas } = useMetricasSuperadmin();
   const { data: empresas, isLoading: cargandoEmpresas } = useEmpresasSuperadmin();

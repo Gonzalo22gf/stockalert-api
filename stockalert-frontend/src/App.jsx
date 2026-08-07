@@ -38,6 +38,7 @@ export default function App() {
         <Route path="sucursales" element={<SucursalesPage />} />
         <Route path="usuarios" element={<UsuariosPage />} />
         <Route path="reportes" element={<ReportesPage />} />
+            <Route path="superadmin" element={<SuperadminPage />} />
         <Route path="links" element={<LinksPage />} />
         <Route path="codigo-acceso" element={<CodigoAccesoPage />} />
       </Route>
