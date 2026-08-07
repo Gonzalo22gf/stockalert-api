@@ -73,6 +73,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.principal")}</p>}
           <ItemNav to="/" Icono={LayoutDashboard} label={t("nav.dashboard")} onNavegar={onCerrar} colapsado={colapsado} />
           <ItemNav to="/productos" Icono={Package} label={t("nav.productos")} esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+          {esFundador && <ItemNav to="/superadmin" Icono={ShieldCheck} label="Superadmin" onNavegar={onCerrar} colapsado={colapsado} />}
           {esAdmin && (
             <>
               {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.analisis")}</p>}
@@ -81,7 +82,6 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
               <ItemNav to="/usuarios" Icono={Users} label={t("nav.usuarios")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/reportes" Icono={TrendingUp} label={t("nav.reportes")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/links" Icono={Link} label={t("nav.links")} onNavegar={onCerrar} colapsado={colapsado} />
-              {esFundador && <ItemNav to="/superadmin" Icono={ShieldCheck} label="Superadmin" onNavegar={onCerrar} colapsado={colapsado} />}
               <ItemNav to="/codigo-acceso" Icono={KeyRound} label={t("nav.codigoAcceso")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
             </>
           )}
