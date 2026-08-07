@@ -21,6 +21,8 @@ const origenesPermitidos = [
   "http://localhost:5173",
   "https://gonzalo22gf.github.io",
   "https://mistockalert.com",
+  "https://app.mistockalert.com",
+  "https://mistockalert.com",
   "https://www.mistockalert.com"
 ];
 app.use(
