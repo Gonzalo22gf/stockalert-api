@@ -47,4 +47,36 @@ const SuperadminService = {
   }
 };
 
+  // Desactiva/activa empresa - datos conservados
+  toggleActiva: async (empresaId) => {
+    const { NotFoundError } = require("../utils/errors/AppError");
+    const empresa = await Empresa.findById(empresaId);
+    if (!empresa) throw new NotFoundError("Empresa");
+    empresa.activa = !empresa.activa;
+    await empresa.save();
+    return { _id: empresa._id, nombre: empresa.nombre, activa: empresa.activa };
+  },
+
+  // Elimina empresa y TODOS sus datos - irreversible
+  eliminarTodo: async (empresaId) => {
+    const { NotFoundError } = require("../utils/errors/AppError");
+    const Movimiento = require("../models/Movimiento");
+    const Snapshot = require("../models/Snapshot");
+    const Link = require("../models/Link");
+    const empresa = await Empresa.findById(empresaId);
+    if (!empresa) throw new NotFoundError("Empresa");
+    const nombre = empresa.nombre;
+    await Promise.all([
+      Usuario.deleteMany({ empresa: empresaId }),
+      Producto.deleteMany({ empresa: empresaId }),
+      Sucursal.deleteMany({ empresa: empresaId }),
+      Movimiento.deleteMany({ empresa: empresaId }),
+      Snapshot.deleteMany({ empresa: empresaId }),
+      Link.deleteMany({ empresa: empresaId })
+    ]);
+    await Empresa.findByIdAndDelete(empresaId);
+    return { mensaje: "Empresa eliminada", nombre };
+  }
+};
+
 module.exports = SuperadminService;

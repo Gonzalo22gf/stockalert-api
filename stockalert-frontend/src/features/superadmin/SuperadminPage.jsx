@@ -1,6 +1,7 @@
 import { useAuthStore } from "../../features/auth/authStore";
-import { useMetricasSuperadmin, useEmpresasSuperadmin } from "./useSuperadmin";
+import { useMetricasSuperadmin, useEmpresasSuperadmin, useToggleEmpresa, useEliminarEmpresa } from "./useSuperadmin";
 import { SkeletonKpis, SkeletonTabla } from "../../components/Skeleton";
+import Swal from "sweetalert2";
 
 const FUNDADORES = ["gef.22@hotmail.com"];
 
@@ -42,6 +43,8 @@ export default function SuperadminPage() {
   const esFundador = FUNDADORES.includes(usuario?.email?.toLowerCase());
   const { data: metricas, isLoading: cargandoMetricas } = useMetricasSuperadmin();
   const { data: empresas, isLoading: cargandoEmpresas } = useEmpresasSuperadmin();
+  const toggleEmpresa = useToggleEmpresa();
+  const eliminarEmpresa = useEliminarEmpresa();
 
   if (!esFundador) {
     return (
@@ -51,6 +54,57 @@ export default function SuperadminPage() {
     );
   }
 
+  async function manejarToggle(empresa) {
+    const accion = empresa.activa ? "desactivar" : "activar";
+    const { isConfirmed } = await Swal.fire({
+      title: accion.charAt(0).toUpperCase() + accion.slice(1) + " empresa",
+      text: 'Vas a ' + accion + ' "' + empresa.nombre + '".',
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Sí, " + accion,
+      cancelButtonText: "Cancelar"
+    });
+    if (!isConfirmed) return;
+    try {
+      await toggleEmpresa.mutateAsync(empresa._id);
+      Swal.fire({ icon: "success", title: "Empresa " + (empresa.activa ? "desactivada" : "activada"), timer: 1500, showConfirmButton: false });
+    } catch (e) {
+      Swal.fire({ icon: "error", title: "Error", text: e.message });
+    }
+  }
+
+  async function manejarEliminar(empresa) {
+    const { isConfirmed: paso1 } = await Swal.fire({
+      title: "⚠️ Eliminar empresa",
+      html: "<b>" + empresa.nombre + "</b><br><br>Se eliminarán <b>todos</b> sus datos: usuarios, productos, sucursales, snapshots y movimientos.<br><br><span style='color:#ef4444'>Esta acción es <b>irreversible</b>.</span>",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Sí, eliminar todo",
+      cancelButtonText: "Cancelar",
+      confirmButtonColor: "#dc2626"
+    });
+    if (!paso1) return;
+    const { value: confirmacion } = await Swal.fire({
+      title: "Confirmación final",
+      text: 'Escribí el nombre exacto de la empresa para confirmar:',
+      input: "text",
+      inputPlaceholder: empresa.nombre,
+      showCancelButton: true,
+      confirmButtonText: "Eliminar definitivamente",
+      confirmButtonColor: "#dc2626"
+    });
+    if (confirmacion !== empresa.nombre) {
+      Swal.fire({ icon: "error", title: "Nombre incorrecto", text: "La empresa no fue eliminada." });
+      return;
+    }
+    try {
+      await eliminarEmpresa.mutateAsync(empresa._id);
+      Swal.fire({ icon: "success", title: "Empresa eliminada", text: empresa.nombre + " fue eliminada.", timer: 2000, showConfirmButton: false });
+    } catch (e) {
+      Swal.fire({ icon: "error", title: "Error", text: e.message });
+    }
+  }
+
   return (
     <div className="space-y-8 animate-rise">
       <div>
@@ -58,7 +112,6 @@ export default function SuperadminPage() {
         <p className="text-sm text-slate-400">Métricas globales de toda la plataforma.</p>
       </div>
 
-      {/* KPIs globales */}
       {cargandoMetricas ? <SkeletonKpis /> : (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
           <KpiSuperadmin etiqueta="Empresas" valor={metricas?.empresas} color="indigo" />
@@ -70,7 +123,6 @@ export default function SuperadminPage() {
         </div>
       )}
 
-      {/* Lista de empresas */}
       <div>
         <h2 className="mb-4 text-sm font-semibold text-white">Todas las empresas</h2>
         {cargandoEmpresas ? <SkeletonTabla filas={5} /> : (
@@ -81,11 +133,12 @@ export default function SuperadminPage() {
                   <th className="px-4 py-3">Empresa</th>
                   <th className="px-4 py-3">Código</th>
                   <th className="px-4 py-3 text-center">Plan</th>
+                  <th className="px-4 py-3 text-center">Estado</th>
                   <th className="px-4 py-3 text-center">Usuarios</th>
                   <th className="px-4 py-3 text-center">Sucursales</th>
                   <th className="px-4 py-3 text-center">Productos</th>
                   <th className="px-4 py-3">Registrada</th>
-                  <th className="px-4 py-3">Última actividad</th>
+                  <th className="px-4 py-3">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -94,11 +147,33 @@ export default function SuperadminPage() {
                     <td className="px-4 py-3 font-semibold text-white">{e.nombre}</td>
                     <td className="px-4 py-3 font-mono text-xs text-slate-400">{e.codigoAcceso}</td>
                     <td className="px-4 py-3 text-center"><BadgePlan plan={e.plan} /></td>
+                    <td className="px-4 py-3 text-center">
+                      <span className={"rounded-full px-2 py-0.5 text-[10px] font-semibold " + (e.activa ? "bg-green-500/15 text-green-400" : "bg-red-500/15 text-red-400")}>
+                        {e.activa ? "Activa" : "Inactiva"}
+                      </span>
+                    </td>
                     <td className="px-4 py-3 text-center text-slate-300">{e.usuarios}</td>
                     <td className="px-4 py-3 text-center text-slate-300">{e.sucursales}</td>
                     <td className="px-4 py-3 text-center text-slate-300">{e.productos}</td>
                     <td className="px-4 py-3 text-slate-400">{formatFecha(e.creadaEl)}</td>
-                    <td className="px-4 py-3 text-slate-400">{formatFecha(e.ultimaActividad)}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => manejarToggle(e)}
+                          disabled={toggleEmpresa.isPending}
+                          className={"rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors " + (e.activa ? "bg-amber-500/15 text-amber-400 hover:bg-amber-500/25" : "bg-green-500/15 text-green-400 hover:bg-green-500/25")}
+                        >
+                          {e.activa ? "Desactivar" : "Activar"}
+                        </button>
+                        <button
+                          onClick={() => manejarEliminar(e)}
+                          disabled={eliminarEmpresa.isPending}
+                          className="rounded-lg bg-red-500/10 px-2.5 py-1 text-[11px] font-semibold text-red-400 transition-colors hover:bg-red-500/20"
+                        >
+                          Eliminar
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
               </tbody>
