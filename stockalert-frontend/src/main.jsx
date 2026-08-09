@@ -1,3 +1,14 @@
+import posthog from "posthog-js";
+
+posthog.init("phc_B3stymbEMsCgZ9zcEiQPPdiu7hQCDJzDvrDoKix2VnPR", {
+  api_host: "https://us.i.posthog.com",
+  person_profiles: "identified_only",
+  capture_pageview: true,
+  loaded: (ph) => {
+    if (import.meta.env.MODE === "development") ph.opt_out_capturing();
+  }
+});
+
 import * as Sentry from "@sentry/react";
 
 Sentry.init({
