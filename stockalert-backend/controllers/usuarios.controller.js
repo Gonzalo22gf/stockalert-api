@@ -39,4 +39,8 @@ const editarUsuarioAdmin = async (req, res, next) => {
 const eliminarUsuario = async (req, res, next) => {
   try { res.json(await UsuarioService.eliminar(req.params.id, req.empresaId, req.usuario._id.toString())); } catch (e) { next(e); }
 };
-module.exports = { registrarUsuario, loginUsuario, obtenerPerfil, listarUsuarios, cambiarRol, cambiarEstado, cambiarSucursal, editarUsuarioAdmin, eliminarUsuario };
+const verificarEmail = async (req, res, next) => {
+  try { res.json(await UsuarioService.verificarEmail(req.query.token)); } catch (e) { next(e); }
+};
+
+module.exports = { registrarUsuario, loginUsuario, verificarEmail, obtenerPerfil, listarUsuarios, cambiarRol, cambiarEstado, cambiarSucursal, editarUsuarioAdmin, eliminarUsuario };

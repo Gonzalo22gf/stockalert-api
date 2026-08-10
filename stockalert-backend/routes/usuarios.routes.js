@@ -7,6 +7,7 @@ const rateLimit = require("express-rate-limit");
 const {
   registrarUsuario,
   loginUsuario,
+  verificarEmail,
   obtenerPerfil,
   listarUsuarios,
   cambiarRol,
@@ -93,6 +94,7 @@ router.post("/login", validar(loginSchema), limiteAuth, loginUsuario);
  *       200: { description: "Datos del usuario autenticado" }
  *       401: { description: "Token faltante o inválido" }
  */
+router.get("/verificar-email", verificarEmail);
 router.get("/perfil", protegerRuta, obtenerPerfil);
 
 /**

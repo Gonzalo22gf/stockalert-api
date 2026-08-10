@@ -10,6 +10,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./features/auth/authStore";
 import SuperadminPage from "./features/superadmin/SuperadminPage";
 import LoginPage from "./features/auth/LoginPage";
+import VerificarEmailPage from "./features/auth/VerificarEmailPage";
 import RestablecerPage from "./features/auth/RestablecerPage";
 import Layout from "./components/Layout";
 
@@ -24,6 +25,7 @@ export default function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       <Route path="/restablecer" element={<RestablecerPage />} />
+      <Route path="/verificar-email" element={<VerificarEmailPage />} />
       <Route
         path="/"
         element={

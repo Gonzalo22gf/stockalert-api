@@ -23,13 +23,13 @@ beforeAll(async () => {
   // Empresa A con su sucursal, admin y producto
   empresaA = await Empresa.create({ nombre: "EmpresaA" });
   sucursalA = await Sucursal.create({ zona: 1, numero: 1, empresa: empresaA._id });
-  await Usuario.create({ nombre: "Admin A", email: "a@test.com", password: hash, rol: "admin", sucursal: sucursalA._id, empresa: empresaA._id, activo: true });
+  await Usuario.create({ nombre: "Admin A", email: "a@test.com", password: hash, rol: "admin", sucursal: sucursalA._id, empresa: empresaA._id, activo: true, emailVerificado: true });
   productoA = await Producto.create({ nombre: "ProductoA", categoria: "Bebidas", stock: 10, precio: 100, vencimiento: new Date(Date.now() + 3 * 365 * 24 * 60 * 60 * 1000), usuario: (await Usuario.findOne({ email: "a@test.com" }))._id, sucursal: sucursalA._id, empresa: empresaA._id });
 
   // Empresa B con su sucursal, admin y producto
   empresaB = await Empresa.create({ nombre: "EmpresaB" });
   sucursalB = await Sucursal.create({ zona: 1, numero: 1, empresa: empresaB._id });
-  await Usuario.create({ nombre: "Admin B", email: "b@test.com", password: hash, rol: "admin", sucursal: sucursalB._id, empresa: empresaB._id, activo: true });
+  await Usuario.create({ nombre: "Admin B", email: "b@test.com", password: hash, rol: "admin", sucursal: sucursalB._id, empresa: empresaB._id, activo: true, emailVerificado: true });
   productoB = await Producto.create({ nombre: "ProductoB", categoria: "Bebidas", stock: 10, precio: 200, vencimiento: new Date(Date.now() + 3 * 365 * 24 * 60 * 60 * 1000), usuario: (await Usuario.findOne({ email: "b@test.com" }))._id, sucursal: sucursalB._id, empresa: empresaB._id });
 
   // Login de ambos para obtener tokens

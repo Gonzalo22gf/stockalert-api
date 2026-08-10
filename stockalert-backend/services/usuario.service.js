@@ -1,10 +1,18 @@
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const UsuarioRepository = require("../repositories/usuario.repository");
 const SucursalRepository = require("../repositories/sucursal.repository");
 const EmpresaRepository = require("../repositories/empresa.repository");
 const { validarPassword } = require("../utils/validarPassword");
+const { enviarCorreo } = require("./email");
+const { templateVerificacionEmail } = require("./email-templates");
 const { ValidationError, NotFoundError, ForbiddenError, UnauthorizedError, ConflictError } = require("../utils/errors/AppError");
+
+// Sanitiza el nombre: solo letras, numeros, espacios y acentos
+function sanitizarNombre(nombre) {
+  return nombre.trim().replace(/[<>"'%;()&+]/g, "").substring(0, 80);
+}
 
 function generarCodigoAcceso(nombreEmpresa) {
   const prefijo = nombreEmpresa.toUpperCase().replace(/[^A-Z]/g, "").substring(0, 4).padEnd(4, "X");
@@ -18,6 +26,8 @@ function generarToken(id, empresa, pwv) {
 const UsuarioService = {
   registrar: async ({ nombre, email, password, modo, nombreEmpresa, numeroSucursal }) => {
     const emailNormalizado = email.toLowerCase().trim();
+    const nombreSanitizado = sanitizarNombre(nombre);
+    if (!nombreSanitizado) throw new ValidationError("El nombre contiene caracteres invalidos");
     const errorPassword = validarPassword(password);
     if (errorPassword) throw new ValidationError(errorPassword);
     if (await UsuarioRepository.findByEmail(emailNormalizado)) throw new ConflictError("El usuario ya existe");
@@ -38,7 +48,26 @@ const UsuarioService = {
       if (!sucursal) throw new ValidationError("Esa sucursal no existe en la empresa indicada");
       rolAsignado = "jefe";
     }
-    const usuario = await UsuarioRepository.create({ nombre, email: emailNormalizado, password: passwordHasheado, rol: rolAsignado, sucursal: sucursal._id, empresa: empresa._id, activo: true });
+    const tokenVerificacion = crypto.randomBytes(32).toString("hex");
+    const tokenVerificacionExpira = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const usuario = await UsuarioRepository.create({
+      nombre: nombreSanitizado,
+      email: emailNormalizado,
+      password: passwordHasheado,
+      rol: rolAsignado,
+      sucursal: sucursal._id,
+      empresa: empresa._id,
+      activo: true,
+      emailVerificado: false,
+      tokenVerificacion,
+      tokenVerificacionExpira
+    });
+    const linkVerificacion = (process.env.APP_URL || "https://app.mistockalert.com") + "/verificar-email?token=" + tokenVerificacion;
+    enviarCorreo({
+      para: emailNormalizado,
+      asunto: "Verificá tu email — StockAlert",
+      html: templateVerificacionEmail(nombreSanitizado, linkVerificacion)
+    }).catch(() => {}); // No bloquear el registro si el correo falla
     return {
       _id: usuario._id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol,
       empresa: { _id: empresa._id, nombre: empresa.nombre, codigoAcceso: empresa.codigoAcceso },
@@ -56,6 +85,9 @@ const UsuarioService = {
       throw new ForbiddenError("Cuenta bloqueada temporalmente. Intenta de nuevo en " + min + " minuto(s).");
     }
     if (!usuario.activo) throw new ForbiddenError("Tu cuenta esta desactivada. Contacta al administrador.");
+    if (usuario.emailVerificado === false) {
+      throw new ForbiddenError("Debes verificar tu email antes de ingresar. Revisa tu correo y hace click en el link de activacion.");
+    }
     const passwordCorrecto = await bcrypt.compare(password, usuario.password);
     if (!passwordCorrecto) {
       usuario.intentosFallidos = (usuario.intentosFallidos || 0) + 1;
@@ -135,6 +167,18 @@ const UsuarioService = {
     Object.assign(objetivo, camposUpdate);
     await UsuarioRepository.save(objetivo);
     return UsuarioRepository.findById(objetivo._id);
+  },
+
+  verificarEmail: async (token) => {
+    if (!token) throw new ValidationError("Token invalido");
+    const usuario = await UsuarioRepository.findOne({ tokenVerificacion: token });
+    if (!usuario) throw new ValidationError("El link de verificacion es invalido o ya fue usado");
+    if (usuario.tokenVerificacionExpira < new Date()) throw new ValidationError("El link de verificacion expiro. Registrate de nuevo.");
+    usuario.emailVerificado = true;
+    usuario.tokenVerificacion = null;
+    usuario.tokenVerificacionExpira = null;
+    await UsuarioRepository.save(usuario);
+    return { mensaje: "Email verificado correctamente. Ya podes iniciar sesion." };
   },
 
   eliminar: async (id, empresaId, usuarioActualId) => {

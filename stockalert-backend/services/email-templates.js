@@ -58,4 +58,13 @@ function templateAdmin(ranking, nombreEmpresa) {
     "<hr><p style='color:#888;font-size:12px'>Aviso automatico de StockAlert.</p></div>";
 }
 
-module.exports = { templateJefe, templateAdmin };
+function templateVerificacionEmail(nombre, linkVerificacion) {
+  return "<div style='font-family:sans-serif;max-width:560px'>" +
+    "<h2>Bienvenido a StockAlert, " + nombre + "</h2>" +
+    "<p>Para activar tu cuenta hace click en el siguiente boton:</p>" +
+    "<a href='" + linkVerificacion + "' style='display:inline-block;background:#6366f1;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:bold;'>Verificar mi email</a>" +
+    "<p style='margin-top:16px;color:#888;font-size:12px'>Este link expira en 24 horas. Si no creaste una cuenta en StockAlert, ignora este correo.</p>" +
+    "<hr><p style='color:#888;font-size:12px'>StockAlert — Control de inventario y vencimientos.</p></div>";
+}
+
+module.exports = { templateJefe, templateAdmin, templateVerificacionEmail };
