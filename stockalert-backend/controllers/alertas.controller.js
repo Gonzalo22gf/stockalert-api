@@ -4,6 +4,7 @@ const Usuario = require("../models/Usuario");
 const Sucursal = require("../models/Sucursal");
 const Empresa = require("../models/Empresa");
 const { enviarCorreo } = require("../services/email");
+const PushService = require("../services/push.service");
 
 function clasificar(productos) {
   const hoy = new Date();
@@ -105,6 +106,11 @@ async function procesarEmpresa(empresa) {
     try {
       await enviarCorreo({ para: admin.email, asunto: "StockAlert - Top 10 tiendas en riesgo", html: htmlAdmin(ranking, empresa.nombre) });
       correosAdmins++;
+      // Push notification al admin
+      const resumen = ranking.length > 0
+        ? ranking[0].nombre + " tiene " + ranking[0].vencidos + " vencidos"
+        : "Sin alertas criticas hoy";
+      await PushService.notificarUsuario(admin._id, "StockAlert - Alertas diarias", resumen).catch(() => {});
     } catch (e) {
       logger.error("Fallo correo a admin " + admin.email + ":", e.message);
       fallidos++;
@@ -117,6 +123,13 @@ async function procesarEmpresa(empresa) {
     try {
       await enviarCorreo({ para: jefe.email, asunto: "StockAlert - Parte diario de tu tienda", html: htmlJefe(datos.sucursal, datos.resumen) });
       correosJefes++;
+      // Push notification al jefe
+      const r = datos.resumen;
+      const hayProblemas = r.vencidos.length + r.porVencer.length + r.stockCritico.length > 0;
+      if (hayProblemas) {
+        const msg = r.vencidos.length + " vencidos, " + r.porVencer.length + " por vencer, " + r.stockCritico.length + " stock critico";
+        await PushService.notificarUsuario(jefe._id, "StockAlert - Parte de tu tienda", msg).catch(() => {});
+      }
     } catch (e) {
       logger.error("Fallo correo a jefe " + jefe.email + ":", e.message);
       fallidos++;
