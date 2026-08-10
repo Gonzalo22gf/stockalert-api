@@ -97,7 +97,10 @@ export default function FormularioProducto({ esAdmin }) {
         <Input type="number" placeholder="Precio $" value={precio} onChange={(e) => setPrecio(e.target.value)} />
         <Input placeholder="N° de lote" value={lote} onChange={(e) => setLote(e.target.value)} />
         <Input type="number" placeholder="Stock" value={stock} onChange={(e) => setStock(e.target.value)} />
-        <Input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
+        <div className="flex flex-col gap-1">
+          <label className="text-xs font-medium text-slate-400">Fecha de vencimiento</label>
+          <Input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
+        </div>
         {esAdmin && (
           <Select className="sm:col-span-2 lg:col-span-3" value={sucursalId} onChange={(e) => setSucursalId(e.target.value)}>
             <option value="">Seleccioná la sucursal del producto</option>
