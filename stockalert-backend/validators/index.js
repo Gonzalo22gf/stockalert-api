@@ -4,7 +4,12 @@ const { z } = require("zod");
 const registroSchema = z.object({
   nombre: z.string().min(2, "El nombre debe tener al menos 2 caracteres").max(80),
   email: z.string().email("Email invalido"),
-  password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres"),
+  password: z.string()
+    .min(8, "La contrasena debe tener al menos 8 caracteres")
+    .max(100, "La contrasena no puede superar los 100 caracteres")
+    .regex(/[A-Z]/, "La contrasena debe tener al menos una mayuscula")
+    .regex(/[0-9]/, "La contrasena debe tener al menos un numero")
+    .regex(/[^A-Za-z0-9]/, "La contrasena debe tener al menos un caracter especial"),
   modo: z.enum(["crear", "unir"]).optional(),
   nombreEmpresa: z.string().min(2).max(100).optional(),
   numeroSucursal: z.union([z.string(), z.number()]).optional()
@@ -30,7 +35,13 @@ const cambiarSucursalSchema = z.object({
 const editarUsuarioSchema = z.object({
   nombre: z.string().min(2).max(80).optional(),
   email: z.string().email("Email invalido").optional(),
-  password: z.string().min(8).optional()
+  password: z.string()
+    .min(8, "La contrasena debe tener al menos 8 caracteres")
+    .max(100)
+    .regex(/[A-Z]/, "La contrasena debe tener al menos una mayuscula")
+    .regex(/[0-9]/, "La contrasena debe tener al menos un numero")
+    .regex(/[^A-Za-z0-9]/, "La contrasena debe tener al menos un caracter especial")
+    .optional()
 }).refine((d) => Object.keys(d).length > 0, { message: "No se enviaron campos para actualizar" });
 
 // ─── PRODUCTOS ───────────────────────────────────────────────────────────────
@@ -70,7 +81,12 @@ const olvidePasswordSchema = z.object({
 
 const restablecerPasswordSchema = z.object({
   token: z.string().min(1, "El token es obligatorio"),
-  password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres")
+  password: z.string()
+    .min(8, "La contrasena debe tener al menos 8 caracteres")
+    .max(100, "La contrasena no puede superar los 100 caracteres")
+    .regex(/[A-Z]/, "La contrasena debe tener al menos una mayuscula")
+    .regex(/[0-9]/, "La contrasena debe tener al menos un numero")
+    .regex(/[^A-Za-z0-9]/, "La contrasena debe tener al menos un caracter especial")
 });
 
 const pushTokenSchema = z.object({
