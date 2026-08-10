@@ -55,13 +55,9 @@ export function useInactividad() {
     eventos.forEach((e) => window.addEventListener(e, registrarActividad, { passive: true }));
     document.addEventListener("visibilitychange", onVisibilityChange);
 
-    // Arrancar — chequear si ya expiro al montar
-    const ultimaActividad = parseInt(localStorage.getItem(CLAVE_ULTIMA_ACTIVIDAD) || "0");
-    if (ultimaActividad > 0 && Date.now() - ultimaActividad >= TIEMPO_LIMITE) {
-      cerrarPorInactividad();
-    } else {
-      registrarActividad();
-    }
+    // Al montar siempre registrar actividad — el chequeo de expiracion
+    // solo aplica cuando la app vuelve del background, no al iniciar sesion
+    registrarActividad();
 
     return () => {
       clearTimeout(timerRef.current);
