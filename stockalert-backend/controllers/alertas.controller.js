@@ -4,6 +4,7 @@ const Usuario = require("../models/Usuario");
 const Sucursal = require("../models/Sucursal");
 const Empresa = require("../models/Empresa");
 const { enviarCorreo } = require("../services/email");
+const { templateJefe, templateAdmin } = require("../services/email-templates");
 const PushService = require("../services/push.service");
 
 function clasificar(productos) {
@@ -22,59 +23,67 @@ function clasificar(productos) {
   return { vencidos, porVencer, stockCritico, agotados };
 }
 
-function nombreSucursal(s) { return "Zona " + s.zona + ", " + s.numero; }
-function fmtFecha(f) { return new Date(f).toLocaleDateString("es-AR"); }
-
-function htmlJefe(sucursal, r) {
-  const todoOk = r.vencidos.length === 0 && r.porVencer.length === 0 && r.stockCritico.length === 0 && r.agotados.length === 0;
-  let html = "<div style='font-family:sans-serif;max-width:560px'>";
-  html += "<h2>Parte diario de tu tienda - StockAlert</h2>";
-  html += "<p><b>Sucursal:</b> " + nombreSucursal(sucursal) + "</p><hr>";
-  if (todoOk) {
-    html += "<p>OK - sin productos vencidos ni stock critico.</p>";
-  } else {
-    html += "<p>Vencidos: " + r.vencidos.length + "</p>";
-    html += "<p>Por vencer (7 dias): " + r.porVencer.length + "</p>";
-    html += "<p>Stock critico: " + r.stockCritico.length + "</p>";
-    html += "<p>Agotados: " + r.agotados.length + "</p><hr>";
-    if (r.vencidos.length > 0) {
-      html += "<h3>Vencidos</h3><ul>";
-      r.vencidos.forEach((p) => { html += "<li>" + p.nombre + " - vencio el " + fmtFecha(p.vencimiento) + " - stock: " + p.stock + "</li>"; });
-      html += "</ul>";
-    }
-    if (r.porVencer.length > 0) {
-      html += "<h3>Por vencer</h3><ul>";
-      r.porVencer.forEach((p) => { html += "<li>" + p.nombre + " - vence el " + fmtFecha(p.vencimiento) + " - stock: " + p.stock + "</li>"; });
-      html += "</ul>";
-    }
-    if (r.stockCritico.length > 0) {
-      html += "<h3>Stock critico</h3><ul>";
-      r.stockCritico.forEach((p) => { html += "<li>" + p.nombre + " - quedan " + p.stock + "</li>"; });
-      html += "</ul>";
-    }
-    if (r.agotados.length > 0) {
-      html += "<h3>Agotados</h3><ul>";
-      r.agotados.forEach((p) => { html += "<li>" + p.nombre + "</li>"; });
-      html += "</ul>";
-    }
-  }
-  html += "<hr><p style='color:#888;font-size:12px'>Aviso automatico de StockAlert.</p></div>";
-  return html;
+function nombreSucursal(s) {
+  return "Zona " + s.zona + ", " + s.numero;
 }
 
-function htmlAdmin(ranking, nombreEmpresa) {
-  let html = "<div style='font-family:sans-serif;max-width:560px'>";
-  html += "<h2>Top 10 tiendas en riesgo - " + nombreEmpresa + " - StockAlert</h2><hr>";
-  if (ranking.length === 0) {
-    html += "<p>Ninguna tienda tiene riesgos hoy.</p>";
-  } else {
-    ranking.forEach((t, i) => {
-      html += "<p><b>" + (i + 1) + ". " + t.nombre + "</b><br>";
-      html += "Vencidos: <b>" + t.vencidos + "</b> - Por vencer: <b>" + t.porVencer + "</b> - Stock critico: <b>" + t.stockCritico + "</b> - Agotados: <b>" + t.agotados + "</b></p>";
+function calcularRanking(sucursales, productos) {
+  return sucursales
+    .map((s) => {
+      const propios = productos.filter((p) => String(p.sucursal) === String(s._id));
+      const r = clasificar(propios);
+      return {
+        nombre: nombreSucursal(s),
+        vencidos: r.vencidos.length,
+        porVencer: r.porVencer.length,
+        stockCritico: r.stockCritico.length,
+        agotados: r.agotados.length,
+        sucursal: s,
+        resumen: r
+      };
+    })
+    .filter((t) => t.vencidos + t.porVencer + t.stockCritico + t.agotados > 0)
+    .sort((a, b) => b.vencidos - a.vencidos || b.porVencer - a.porVencer || b.stockCritico - a.stockCritico);
+}
+
+async function notificarAdmin(admin, ranking, nombreEmpresa) {
+  if (!admin.email) return { ok: false };
+  try {
+    await enviarCorreo({
+      para: admin.email,
+      asunto: "StockAlert - Top 10 tiendas en riesgo",
+      html: templateAdmin(ranking.slice(0, 10), nombreEmpresa)
     });
+    const resumenPush = ranking.length > 0
+      ? ranking[0].nombre + " tiene " + ranking[0].vencidos + " vencidos"
+      : "Sin alertas criticas hoy";
+    await PushService.notificarUsuario(admin._id, "StockAlert - Alertas diarias", resumenPush).catch(() => {});
+    return { ok: true };
+  } catch (e) {
+    logger.error("Fallo notificacion a admin " + admin.email + ":", e.message);
+    return { ok: false };
   }
-  html += "<hr><p style='color:#888;font-size:12px'>Aviso automatico de StockAlert.</p></div>";
-  return html;
+}
+
+async function notificarJefe(jefe, datosSucursal) {
+  if (!jefe.sucursal?._id || !jefe.email) return { ok: false };
+  try {
+    await enviarCorreo({
+      para: jefe.email,
+      asunto: "StockAlert - Parte diario de tu tienda",
+      html: templateJefe(datosSucursal.sucursal, datosSucursal.resumen)
+    });
+    const r = datosSucursal.resumen;
+    const hayProblemas = r.vencidos.length + r.porVencer.length + r.stockCritico.length > 0;
+    if (hayProblemas) {
+      const msg = r.vencidos.length + " vencidos, " + r.porVencer.length + " por vencer, " + r.stockCritico.length + " stock critico";
+      await PushService.notificarUsuario(jefe._id, "StockAlert - Parte de tu tienda", msg).catch(() => {});
+    }
+    return { ok: true };
+  } catch (e) {
+    logger.error("Fallo notificacion a jefe " + jefe.email + ":", e.message);
+    return { ok: false };
+  }
 }
 
 async function procesarEmpresa(empresa) {
@@ -84,68 +93,29 @@ async function procesarEmpresa(empresa) {
     Usuario.find({ rol: "jefe", activo: { $ne: false }, empresa: empresa._id }).populate("sucursal"),
     Usuario.find({ rol: "admin", activo: { $ne: false }, empresa: empresa._id })
   ]);
-  const porSucursal = new Map();
-  for (const s of sucursales) {
-    const propios = productos.filter((p) => String(p.sucursal) === String(s._id));
-    porSucursal.set(String(s._id), { sucursal: s, resumen: clasificar(propios) });
-  }
-  const ranking = [...porSucursal.values()]
-    .map(({ sucursal, resumen }) => ({
-      nombre: nombreSucursal(sucursal),
-      vencidos: resumen.vencidos.length,
-      porVencer: resumen.porVencer.length,
-      stockCritico: resumen.stockCritico.length,
-      agotados: resumen.agotados.length
-    }))
-    .filter((t) => t.vencidos + t.porVencer + t.stockCritico + t.agotados > 0)
-    .sort((a, b) => b.vencidos - a.vencidos || b.porVencer - a.porVencer || b.stockCritico - a.stockCritico)
-    .slice(0, 10);
-  let correosAdmins = 0, correosJefes = 0, fallidos = 0;
-  for (const admin of admins) {
-    if (!admin.email) continue;
-    try {
-      await enviarCorreo({ para: admin.email, asunto: "StockAlert - Top 10 tiendas en riesgo", html: htmlAdmin(ranking, empresa.nombre) });
-      correosAdmins++;
-      // Push notification al admin
-      const resumen = ranking.length > 0
-        ? ranking[0].nombre + " tiene " + ranking[0].vencidos + " vencidos"
-        : "Sin alertas criticas hoy";
-      await PushService.notificarUsuario(admin._id, "StockAlert - Alertas diarias", resumen).catch(() => {});
-    } catch (e) {
-      logger.error("Fallo correo a admin " + admin.email + ":", e.message);
-      fallidos++;
-    }
-  }
-  for (const jefe of jefes) {
-    if (!jefe.sucursal?._id || !jefe.email) continue;
-    const datos = porSucursal.get(String(jefe.sucursal._id));
-    if (!datos) continue;
-    try {
-      await enviarCorreo({ para: jefe.email, asunto: "StockAlert - Parte diario de tu tienda", html: htmlJefe(datos.sucursal, datos.resumen) });
-      correosJefes++;
-      // Push notification al jefe
-      const r = datos.resumen;
-      const hayProblemas = r.vencidos.length + r.porVencer.length + r.stockCritico.length > 0;
-      if (hayProblemas) {
-        const msg = r.vencidos.length + " vencidos, " + r.porVencer.length + " por vencer, " + r.stockCritico.length + " stock critico";
-        await PushService.notificarUsuario(jefe._id, "StockAlert - Parte de tu tienda", msg).catch(() => {});
-      }
-    } catch (e) {
-      logger.error("Fallo correo a jefe " + jefe.email + ":", e.message);
-      fallidos++;
-    }
-  }
-  return { empresa: empresa.nombre, correosAdmins, correosJefes, fallidos };
+
+  const ranking = calcularRanking(sucursales, productos);
+  const porSucursalId = Object.fromEntries(
+    ranking.map((r) => [String(r.sucursal._id), r])
+  );
+
+  const resultadosAdmin = await Promise.all(admins.map((a) => notificarAdmin(a, ranking, empresa.nombre)));
+  const resultadosJefe = await Promise.all(
+    jefes.map((j) => notificarJefe(j, porSucursalId[String(j.sucursal?._id)]))
+  );
+
+  return {
+    empresa: empresa.nombre,
+    correosAdmins: resultadosAdmin.filter((r) => r.ok).length,
+    correosJefes: resultadosJefe.filter((r) => r.ok).length,
+    fallidos: [...resultadosAdmin, ...resultadosJefe].filter((r) => !r.ok).length
+  };
 }
 
 const enviarAlertasDiarias = async (req, res, next) => {
   try {
     const empresas = await Empresa.find({ activa: true });
-    const resultados = [];
-    for (const empresa of empresas) {
-      const r = await procesarEmpresa(empresa);
-      resultados.push(r);
-    }
+    const resultados = await Promise.all(empresas.map(procesarEmpresa));
     logger.info("Alertas diarias enviadas: " + resultados.length + " empresas procesadas");
     res.json({ mensaje: "Alertas diarias enviadas", resultados });
   } catch (error) {
