@@ -5,7 +5,7 @@ import SelectorIdioma from "./SelectorIdioma";
 import { usePush } from "../hooks/usePush";
 import { Bell, BellOff } from "lucide-react";
 import {
-  LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound, ShieldCheck,
+  LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound, ShieldCheck, CreditCard,
   ChevronRight, ChevronLeft, LogOut, BoxesIcon
 } from "lucide-react";
 
