@@ -2,9 +2,12 @@ const Empresa = require("../models/Empresa");
 const Usuario = require("../models/Usuario");
 const Producto = require("../models/Producto");
 const Sucursal = require("../models/Sucursal");
+const Movimiento = require("../models/Movimiento");
+const Snapshot = require("../models/Snapshot");
+const Link = require("../models/LinkFrecuente");
+const { NotFoundError } = require("../utils/errors/AppError");
 
 const SuperadminService = {
-  // Metricas globales de toda la plataforma
   metricas: async () => {
     const [empresas, usuarios, productos, sucursales] = await Promise.all([
       Empresa.countDocuments(),
@@ -20,7 +23,6 @@ const SuperadminService = {
     return { empresas, usuarios, productos, sucursales, empresasNuevas, usuariosNuevos };
   },
 
-  // Lista de empresas con sus metricas
   listarEmpresas: async () => {
     const empresas = await Empresa.find().sort({ createdAt: -1 }).lean();
     return Promise.all(empresas.map(async (empresa) => {
@@ -39,17 +41,12 @@ const SuperadminService = {
         activa: empresa.activa,
         creadaEl: empresa.createdAt,
         ultimaActividad: ultimoUsuario?.updatedAt || empresa.createdAt,
-        usuarios,
-        sucursales,
-        productos
+        usuarios, sucursales, productos
       };
     }));
-  }
-};
+  },
 
-  // Desactiva/activa empresa - datos conservados
   toggleActiva: async (empresaId) => {
-    const { NotFoundError } = require("../utils/errors/AppError");
     const empresa = await Empresa.findById(empresaId);
     if (!empresa) throw new NotFoundError("Empresa");
     empresa.activa = !empresa.activa;
@@ -57,12 +54,7 @@ const SuperadminService = {
     return { _id: empresa._id, nombre: empresa.nombre, activa: empresa.activa };
   },
 
-  // Elimina empresa y TODOS sus datos - irreversible
   eliminarTodo: async (empresaId) => {
-    const { NotFoundError } = require("../utils/errors/AppError");
-    const Movimiento = require("../models/Movimiento");
-    const Snapshot = require("../models/Snapshot");
-    const Link = require("../models/Link");
     const empresa = await Empresa.findById(empresaId);
     if (!empresa) throw new NotFoundError("Empresa");
     const nombre = empresa.nombre;
