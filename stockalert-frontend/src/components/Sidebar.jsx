@@ -2,6 +2,8 @@ import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../features/auth/authStore";
 import SelectorIdioma from "./SelectorIdioma";
+import { usePush } from "../hooks/usePush";
+import { Bell, BellOff } from "lucide-react";
 import {
   LayoutDashboard, Package, Activity, Store, Users, TrendingUp, Link, KeyRound, ShieldCheck,
   ChevronRight, ChevronLeft, LogOut, BoxesIcon
@@ -36,6 +38,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
   const usuario = useAuthStore((s) => s.usuario);
   const cerrarSesion = useAuthStore((s) => s.cerrarSesion);
   const esAdmin = usuario?.rol === "admin";
+  const { activado, cargando, activar, desactivar } = usePush();
   const esFundador = ["gef.22@hotmail.com"].includes(usuario?.email?.toLowerCase());
   const anchoSidebar = colapsado ? "md:w-[72px]" : "md:w-[248px]";
 
@@ -89,7 +92,16 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
 
         {/* Selector de idioma */}
         <div className="mt-2">
-          <SelectorIdioma colapsado={colapsado} />
+          <button
+          onClick={activado ? desactivar : activar}
+          disabled={cargando}
+          title={activado ? "Desactivar notificaciones" : "Activar notificaciones"}
+          className={"flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-[12.5px] font-medium transition-colors " + (activado ? "text-brand-400 hover:bg-base/60" : "text-slate-500 hover:bg-base/60 hover:text-slate-300")}
+        >
+          {activado ? <Bell size={15} /> : <BellOff size={15} />}
+          {!colapsado && (activado ? "Notificaciones ON" : "Notificaciones OFF")}
+        </button>
+        <SelectorIdioma colapsado={colapsado} />
         </div>
 
         {/* Tarjeta de usuario */}
