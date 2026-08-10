@@ -1,80 +1,59 @@
-import EmptyState from "../../components/EmptyState";
-import { SkeletonCards } from "../../components/Skeleton";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
-import { useProductos, useEliminarProducto, useCrearProducto } from "./useProductos";
+import { useProductos, useEliminarProducto } from "./useProductos";
 import { useSucursales } from "../sucursales/useSucursales";
+import { useFiltradorProductos } from "./useFiltradorProductos";
+import { useImportarProductos } from "./useImportarProductos";
+import { CATEGORIAS } from "./productos.utils";
+import FiltrosProductos from "./FiltrosProductos";
 import FormularioProducto from "./FormularioProducto";
 import ProductoCard from "./ProductoCard";
 import ProductosTabla from "./ProductosTabla";
 import ModalEditarProducto from "./ModalEditarProducto";
-import { exportarProductosExcel, leerArchivoProductos } from "../../lib/exportar";
+import EmptyState from "../../components/EmptyState";
+import { SkeletonCards } from "../../components/Skeleton";
+import { Select } from "../../components/ui/Input";
 import Boton from "../../components/ui/Boton";
-import { Input, Select } from "../../components/ui/Input";
-
-const CATEGORIAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
-
-function estadoVencimiento(vencimiento) {
-  const dias = Math.ceil((new Date(vencimiento) - new Date()) / (1000 * 60 * 60 * 24));
-  if (dias < 0) return "vencido";
-  if (dias <= 7) return "por-vencer";
-  return "buen-estado";
-}
 
 export default function ProductosPage() {
   const usuario = useAuthStore((s) => s.usuario);
   const esAdmin = usuario?.rol === "admin";
-
   const [searchParams] = useSearchParams();
-
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
-  const [busqueda, setBusqueda] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState("");
-  const [filtroCategoria, setFiltroCategoria] = useState("");
-  const [orden, setOrden] = useState("");
-  const [productoEditando, setProductoEditando] = useState(null);
   const [formAbierto, setFormAbierto] = useState(false);
+  const [productoEditando, setProductoEditando] = useState(null);
   const [vista, setVista] = useState(() => {
-    try {
-      return localStorage.getItem("vistaProductos") || "tabla";
-    } catch {
-      return "tabla";
-    }
+    try { return localStorage.getItem("vistaProductos") || "tabla"; } catch { return "tabla"; }
   });
-
-  function cambiarVista(v) {
-    setVista(v);
-    try {
-      localStorage.setItem("vistaProductos", v);
-    } catch {}
-  }
 
   useEffect(() => {
     const sucursalUrl = searchParams.get("sucursal");
-    if (sucursalUrl && esAdmin) {
-      setSucursalSeleccionada(sucursalUrl);
-    }
+    if (sucursalUrl && esAdmin) setSucursalSeleccionada(sucursalUrl);
   }, [searchParams, esAdmin]);
 
   const { data: sucursales } = useSucursales(esAdmin);
   const { data: productos, isLoading, isError } = useProductos(esAdmin ? sucursalSeleccionada : undefined);
   const eliminarProducto = useEliminarProducto();
-  const crearProducto = useCrearProducto();
-  const inputArchivoRef = useRef(null);
+  const { filtros, setFiltro, limpiar, hayFiltrosActivos, resultado } = useFiltradorProductos(productos);
+  const { inputRef, abrirSelector, manejarArchivo } = useImportarProductos({ esAdmin, sucursalSeleccionada });
+
+  const categoriasDisponibles = [...new Set([...CATEGORIAS, ...(productos || []).map((p) => p.categoria).filter(Boolean)])];
+
+  function cambiarVista(v) {
+    setVista(v);
+    try { localStorage.setItem("vistaProductos", v); } catch {}
+  }
 
   async function manejarEliminar(producto) {
-    const resultado = await Swal.fire({
-      title: "¿Eliminar producto?",
-      text: "\"" + producto.nombre + "\" se va a eliminar permanentemente.",
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Sí, eliminar",
-      cancelButtonText: "Cancelar"
+    const { isConfirmed } = await Swal.fire({
+      title: "Eliminar producto?",
+      text: producto.nombre + " se va a eliminar permanentemente.",
+      icon: "warning", showCancelButton: true,
+      confirmButtonText: "Si, eliminar", cancelButtonText: "Cancelar"
     });
-    if (!resultado.isConfirmed) return;
-
+    if (!isConfirmed) return;
     try {
       await eliminarProducto.mutateAsync(producto._id);
       Swal.fire({ icon: "success", title: "Eliminado", timer: 1300, showConfirmButton: false });
@@ -83,231 +62,50 @@ export default function ProductosPage() {
     }
   }
 
-  function manejarEditar(producto) {
-    setProductoEditando(producto);
-  }
-
-  async function manejarImportar(e) {
-    const archivo = e.target.files?.[0];
-    if (!archivo) return;
-
-    if (esAdmin && !sucursalSeleccionada) {
-      Swal.fire({ icon: "warning", title: "Seleccioná una sucursal", text: "Elegí una sucursal antes de importar." });
-      e.target.value = "";
-      return;
-    }
-
-    try {
-      const productosImportados = await leerArchivoProductos(archivo);
-      const validos = productosImportados.filter((p) => p.nombre && p.categoria && p.vencimiento);
-
-      if (validos.length === 0) {
-        Swal.fire({ icon: "warning", title: "Archivo vacío o inválido", text: "Revisá las columnas: Nombre, Categoría, Precio, Stock, Lote, Vencimiento." });
-        e.target.value = "";
-        return;
-      }
-
-      const confirmacion = await Swal.fire({
-        title: "¿Importar " + validos.length + " productos?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonText: "Sí, importar",
-        cancelButtonText: "Cancelar"
-      });
-      if (!confirmacion.isConfirmed) {
-        e.target.value = "";
-        return;
-      }
-
-      let exitosos = 0;
-      let fallidos = 0;
-      for (const p of validos) {
-        try {
-          await crearProducto.mutateAsync({
-            ...p,
-            lotes: [{ numero: p.lote, stock: p.stock, vencimiento: p.vencimiento }],
-            ...(esAdmin ? { sucursal: sucursalSeleccionada } : {})
-          });
-          exitosos++;
-        } catch {
-          fallidos++;
-        }
-      }
-
-      Swal.fire({
-        icon: "success",
-        title: "Importación completada",
-        text: exitosos + " productos importados" + (fallidos > 0 ? ", " + fallidos + " fallaron" : "") + "."
-      });
-    } catch (error) {
-      Swal.fire({ icon: "error", title: "Error", text: error.message });
-    } finally {
-      e.target.value = "";
-    }
-  }
-
-  const categoriasDisponibles = [...new Set([...CATEGORIAS, ...(productos || []).map((p) => p.categoria).filter(Boolean)])];
-
-  let productosFiltrados = (productos || []).filter((p) => {
-    const texto = busqueda.toLowerCase();
-    const coincideBusqueda =
-      p.nombre.toLowerCase().includes(texto) ||
-      (p.lote || "").toLowerCase().includes(texto) ||
-      (p.codigoBarras || "").toLowerCase().includes(texto) ||
-      (p.sucursal?.nombre || "").toLowerCase().includes(texto);
-
-    const coincideCategoria = filtroCategoria ? p.categoria === filtroCategoria : true;
-
-    let coincideEstado = true;
-    if (filtroEstado === "vencido") coincideEstado = estadoVencimiento(p.vencimiento) === "vencido";
-    else if (filtroEstado === "por-vencer") coincideEstado = estadoVencimiento(p.vencimiento) === "por-vencer";
-    else if (filtroEstado === "buen-estado") coincideEstado = estadoVencimiento(p.vencimiento) === "buen-estado";
-    else if (filtroEstado === "stock-bajo") coincideEstado = Number(p.stock) > 0 && Number(p.stock) <= 10;
-    else if (filtroEstado === "agotado") coincideEstado = Number(p.stock) <= 0;
-
-    return coincideBusqueda && coincideCategoria && coincideEstado;
-  });
-
-  if (orden === "alfabetico") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => a.nombre.localeCompare(b.nombre));
-  } else if (orden === "alfabetico-desc") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => b.nombre.localeCompare(a.nombre));
-  } else if (orden === "fecha") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => new Date(a.vencimiento) - new Date(b.vencimiento));
-  } else if (orden === "fecha-lejana") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => new Date(b.vencimiento) - new Date(a.vencimiento));
-  } else if (orden === "stock") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => Number(a.stock) - Number(b.stock));
-  } else if (orden === "stock-alto") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => Number(b.stock) - Number(a.stock));
-  } else if (orden === "precio") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => Number(a.precio) - Number(b.precio));
-  } else if (orden === "precio-alto") {
-    productosFiltrados = [...productosFiltrados].sort((a, b) => Number(b.precio) - Number(a.precio));
-  }
-
-  const hayFiltrosActivos = busqueda || filtroEstado || filtroCategoria || orden;
-
-  function limpiarFiltros() {
-    setBusqueda("");
-    setFiltroEstado("");
-    setFiltroCategoria("");
-    setOrden("");
-  }
-
   return (
     <div className="space-y-6">
-      {/* Encabezado: sucursal (admin) + botón agregar producto */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         {esAdmin ? (
           <div className="flex items-center gap-3">
             <label className="text-sm text-slate-400">Sucursal</label>
             <Select value={sucursalSeleccionada} onChange={(e) => setSucursalSeleccionada(e.target.value)} className="w-auto">
               <option value="">Todas las sucursales</option>
-              {(sucursales || []).map((s) => (
-                <option key={s._id} value={s._id}>{s.nombre}</option>
-              ))}
+              {(sucursales || []).map((s) => <option key={s._id} value={s._id}>{s.nombre}</option>)}
             </Select>
           </div>
-        ) : (
-          <div />
-        )}
+        ) : <div />}
         <Boton onClick={() => setFormAbierto((v) => !v)}>
-          {formAbierto ? "✕ Cerrar formulario" : "+ Agregar producto"}
+          {formAbierto ? "x Cerrar formulario" : "+ Agregar producto"}
         </Boton>
       </div>
 
       {formAbierto && <FormularioProducto esAdmin={esAdmin} />}
 
-      {/* Barra de filtros */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
-        <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
-          <Input
-            type="text"
-            placeholder="Buscar por nombre, lote, EAN o sucursal..."
-            value={busqueda}
-            onChange={(e) => setBusqueda(e.target.value)}
-            className="md:col-span-4"
-          />
-          <Select value={filtroCategoria} onChange={(e) => setFiltroCategoria(e.target.value)} className="md:col-span-3">
-            <option value="">Todas las categorías</option>
-            {categoriasDisponibles.map((c) => (
-              <option key={c} value={c}>{c}</option>
-            ))}
-          </Select>
-          <Select value={filtroEstado} onChange={(e) => setFiltroEstado(e.target.value)} className="md:col-span-3">
-            <option value="">Todos los estados</option>
-            <option value="buen-estado">En buen estado</option>
-            <option value="por-vencer">Por vencer</option>
-            <option value="vencido">Vencido</option>
-            <option value="stock-bajo">Stock bajo</option>
-            <option value="agotado">Agotado</option>
-          </Select>
-          <Select value={orden} onChange={(e) => setOrden(e.target.value)} className="md:col-span-2">
-            <option value="">Ordenar por...</option>
-            <option value="alfabetico">Nombre (A-Z)</option>
-            <option value="alfabetico-desc">Nombre (Z-A)</option>
-            <option value="fecha">Vence primero</option>
-            <option value="fecha-lejana">Vence último</option>
-            <option value="stock">Stock (menor)</option>
-            <option value="stock-alto">Stock (mayor)</option>
-            <option value="precio">Precio (menor)</option>
-            <option value="precio-alto">Precio (mayor)</option>
-          </Select>
-          <div className="flex flex-wrap gap-2 md:col-span-12">
-            <Boton variante="success" tamano="sm" onClick={() => exportarProductosExcel(productosFiltrados)} disabled={!productosFiltrados || productosFiltrados.length === 0}>
-              Excel
-            </Boton>
-            <Boton variante="secondary" tamano="sm" onClick={() => inputArchivoRef.current?.click()}>
-              Importar
-            </Boton>
-            {hayFiltrosActivos && (
-              <Boton variante="ghost" tamano="sm" onClick={limpiarFiltros}>
-                ✕ Limpiar filtros
-              </Boton>
-            )}
-            {/* Toggle de vista */}
-            <div className="ml-auto flex overflow-hidden rounded-lg border border-slate-700">
-              <button
-                onClick={() => cambiarVista("tabla")}
-                className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "tabla" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}
-                title="Ver como tabla"
-              >
-                Tabla
-              </button>
-              <button
-                onClick={() => cambiarVista("cards")}
-                className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "cards" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}
-                title="Ver como tarjetas"
-              >
-                Tarjetas
-              </button>
-            </div>
-            <input ref={inputArchivoRef} type="file" accept=".csv,.xlsx,.xls" onChange={manejarImportar} className="hidden" />
-          </div>
-        </div>
-      </div>
+      <FiltrosProductos
+        filtros={filtros}
+        setFiltro={setFiltro}
+        limpiar={limpiar}
+        hayFiltrosActivos={hayFiltrosActivos}
+        categorias={categoriasDisponibles}
+        productosFiltrados={resultado}
+        vista={vista}
+        onCambiarVista={cambiarVista}
+        onImportar={manejarArchivo}
+        inputImportarRef={inputRef}
+      />
 
       {isLoading && <SkeletonCards cantidad={8} />}
       {isError && <p className="text-sm text-red-400">No se pudieron cargar los productos.</p>}
-
       {!isLoading && !isError && (
         <>
-          <p className="text-xs text-slate-500">Mostrando {productosFiltrados.length} de {productos?.length || 0} productos</p>
-
-          {productosFiltrados.length === 0 ? (
-            <EmptyState
-              icono="📦"
-              titulo="No hay productos para mostrar"
-              descripcion="Probá ajustar los filtros, o agregá un producto nuevo con el botón de arriba."
-            />
+          <p className="text-xs text-slate-500">Mostrando {resultado.length} de {productos?.length || 0} productos</p>
+          {resultado.length === 0 ? (
+            <EmptyState icono="📦" titulo="No hay productos para mostrar" descripcion="Proba ajustar los filtros, o agrega un producto nuevo." />
           ) : vista === "tabla" ? (
-            <ProductosTabla productos={productosFiltrados} esAdmin={esAdmin} onEditar={manejarEditar} onEliminar={manejarEliminar} />
+            <ProductosTabla productos={resultado} esAdmin={esAdmin} onEditar={setProductoEditando} onEliminar={manejarEliminar} />
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-              {productosFiltrados.map((producto) => (
-                <ProductoCard key={producto._id} producto={producto} esAdmin={esAdmin} onEditar={manejarEditar} onEliminar={manejarEliminar} />
-              ))}
+              {resultado.map((p) => <ProductoCard key={p._id} producto={p} esAdmin={esAdmin} onEditar={setProductoEditando} onEliminar={manejarEliminar} />)}
             </div>
           )}
         </>
