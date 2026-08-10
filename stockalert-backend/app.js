@@ -68,6 +68,7 @@ app.use("/api/movimientos", require("./routes/movimientos.routes"));
 app.use("/api/links", require("./routes/links.routes"));
 app.use("/api/empresa", require("./routes/empresa.routes"));
 app.use("/api/superadmin", require("./routes/superadmin.routes"));
+app.use("/api/push", require("./routes/push.routes"));
 
 // Documentación interactiva de la API (Swagger)
 const swaggerUi = require("swagger-ui-express");
