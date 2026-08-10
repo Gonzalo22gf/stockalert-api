@@ -9,6 +9,7 @@ import CodigoAccesoPage from "./features/auth/CodigoAccesoPage";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./features/auth/authStore";
 import SuperadminPage from "./features/superadmin/SuperadminPage";
+import PlanesPage from "./features/planes/PlanesPage";
 import LoginPage from "./features/auth/LoginPage";
 import VerificarEmailPage from "./features/auth/VerificarEmailPage";
 import RestablecerPage from "./features/auth/RestablecerPage";
@@ -41,6 +42,7 @@ export default function App() {
         <Route path="usuarios" element={<UsuariosPage />} />
         <Route path="reportes" element={<ReportesPage />} />
             <Route path="superadmin" element={<SuperadminPage />} />
+            <Route path="planes" element={<PlanesPage />} />
         <Route path="links" element={<LinksPage />} />
         <Route path="codigo-acceso" element={<CodigoAccesoPage />} />
       </Route>

@@ -38,7 +38,12 @@ app.use(
   })
 );
 
-app.use(express.json({ limit: "1mb" }));
+app.use((req, res, next) => {
+  express.json({
+    limit: "1mb",
+    verify: (req, res, buf) => { req.rawBody = buf; }
+  })(req, res, next);
+});
 app.use(mongoSanitize());
 
 const limiteGeneral = rateLimit({
@@ -67,6 +72,7 @@ app.use("/api/movimientos", require("./routes/movimientos.routes"));
 app.use("/api/links", require("./routes/links.routes"));
 app.use("/api/empresa", require("./routes/empresa.routes"));
 app.use("/api/superadmin", require("./routes/superadmin.routes"));
+app.use("/api/lemon", require("./routes/lemon.routes"));
 app.use("/api/push", require("./routes/push.routes"));
 
 // Documentación interactiva de la API (Swagger)
