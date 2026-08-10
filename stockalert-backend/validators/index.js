@@ -73,7 +73,13 @@ const restablecerPasswordSchema = z.object({
   password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres")
 });
 
+const pushTokenSchema = z.object({
+  token: z.string().min(10, "Token invalido"),
+  dispositivo: z.string().optional().default("web")
+});
+
 module.exports = {
+  pushTokenSchema,
   registroSchema, loginSchema, cambiarRolSchema, cambiarEstadoSchema,
   cambiarSucursalSchema, editarUsuarioSchema, productoSchema, sucursalSchema,
   linkSchema, olvidePasswordSchema, restablecerPasswordSchema

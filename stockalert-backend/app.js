@@ -22,7 +22,6 @@ const origenesPermitidos = [
   "https://gonzalo22gf.github.io",
   "https://mistockalert.com",
   "https://app.mistockalert.com",
-  "https://mistockalert.com",
   "https://www.mistockalert.com"
 ];
 app.use(
@@ -34,7 +33,7 @@ app.use(
         callback(null, false);
       }
     },
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]
   })
 );

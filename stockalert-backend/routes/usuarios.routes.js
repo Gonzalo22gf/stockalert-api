@@ -134,7 +134,7 @@ router.get("/", protegerRuta, soloAdmin, listarUsuarios);
  *       403: { description: "No autorizado" }
  *       404: { description: "Usuario no encontrado" }
  */
-router.put("/:id/rol", protegerRuta, soloAdmin, cambiarRol);
+router.put("/:id/rol", protegerRuta, soloAdmin, validar(cambiarRolSchema), cambiarRol);
 
 /**
  * @swagger
@@ -160,7 +160,7 @@ router.put("/:id/rol", protegerRuta, soloAdmin, cambiarRol);
  *       200: { description: "Estado actualizado" }
  *       403: { description: "No autorizado" }
  */
-router.put("/:id/estado", protegerRuta, soloAdmin, cambiarEstado);
+router.put("/:id/estado", protegerRuta, soloAdmin, validar(cambiarEstadoSchema), cambiarEstado);
 
 /**
  * @swagger
@@ -186,7 +186,7 @@ router.put("/:id/estado", protegerRuta, soloAdmin, cambiarEstado);
  *       200: { description: "Sucursal actualizada" }
  *       403: { description: "No autorizado" }
  */
-router.put("/:id/sucursal", protegerRuta, soloAdmin, cambiarSucursal);
+router.put("/:id/sucursal", protegerRuta, soloAdmin, validar(cambiarSucursalSchema), cambiarSucursal);
 
 /**
  * @swagger
