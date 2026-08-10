@@ -53,30 +53,14 @@ app.use(
   })
 );
 
-app.use((req, res, next) => {
-  express.json({
-    limit: "1mb",
-    strict: true, // Solo acepta arrays y objetos — no strings o numeros en el root
-    verify: (req, res, buf) => {
-      req.rawBody = buf;
-      // Limitar profundidad de anidacion JSON
-      try {
-        const parsed = JSON.parse(buf.toString());
-        const profundidad = (obj, nivel = 0) => {
-          if (nivel > 10) throw new Error("JSON demasiado anidado");
-          if (typeof obj === "object" && obj !== null) {
-            Object.values(obj).forEach((v) => profundidad(v, nivel + 1));
-          }
-        };
-        profundidad(parsed);
-      } catch (e) {
-        if (e.message === "JSON demasiado anidado") {
-          throw e;
-        }
-      }
-    }
-  })(req, res, next);
+// Capturar rawBody solo para el webhook de Lemon Squeezy
+app.use("/api/lemon/webhook", express.raw({ type: "application/json" }), (req, res, next) => {
+  req.rawBody = req.body;
+  req.body = JSON.parse(req.body);
+  next();
 });
+// Parser JSON normal para todo lo demas
+app.use(express.json({ limit: "1mb" }));
 app.use(mongoSanitize());
 app.use(hpp()); // Previene HTTP Parameter Pollution
 

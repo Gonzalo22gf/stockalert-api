@@ -60,7 +60,7 @@ const { protegerRuta } = require("../middleware/auth");
  *       401: { description: "No autenticado" }
  */
 router.get("/", protegerRuta, obtenerProductos);
-router.post("/", validar(productoSchema), protegerRuta, crearProducto);
+router.post("/", protegerRuta, validar(productoSchema), crearProducto);
 
 /**
  * @swagger
@@ -104,7 +104,7 @@ router.post("/", validar(productoSchema), protegerRuta, crearProducto);
  *       200: { description: "Producto eliminado" }
  *       404: { description: "Producto no encontrado" }
  */
-router.put("/:id", validar(productoSchema), protegerRuta, actualizarProducto);
+router.put("/:id", protegerRuta, validar(productoSchema), actualizarProducto);
 router.delete("/:id", protegerRuta, eliminarProducto);
 
 module.exports = router;
