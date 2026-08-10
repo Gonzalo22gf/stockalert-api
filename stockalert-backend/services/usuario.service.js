@@ -1,4 +1,5 @@
 const bcrypt = require("bcryptjs");
+const logger = require("../utils/logger");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const UsuarioRepository = require("../repositories/usuario.repository");
@@ -95,9 +96,11 @@ const UsuarioService = {
         usuario.bloqueadoHasta = new Date(Date.now() + 15 * 60 * 1000);
         usuario.intentosFallidos = 0;
         await UsuarioRepository.save(usuario);
+        logger.warn({ evento: "cuenta_bloqueada", email: usuario.email }, "Cuenta bloqueada por intentos fallidos");
         throw new ForbiddenError("Demasiados intentos fallidos. Cuenta bloqueada 15 minutos.");
       }
       await UsuarioRepository.save(usuario);
+      logger.warn({ evento: "intento_fallido", email: usuario.email, intentos: usuario.intentosFallidos }, "Intento de login fallido");
       throw new UnauthorizedError("Credenciales incorrectas");
     }
     usuario.intentosFallidos = 0;

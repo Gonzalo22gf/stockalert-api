@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const mongoSanitize = require("express-mongo-sanitize");
+const hpp = require("hpp");
 
 dotenv.config();
 
@@ -15,7 +16,21 @@ app.set("trust proxy", 1);
 // ───────────────────────────────
 // SEGURIDAD
 // ───────────────────────────────
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://api.mistockalert.com"],
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      upgradeInsecureRequests: []
+    }
+  },
+  crossOriginEmbedderPolicy: false
+}));
 
 const origenesPermitidos = [
   "http://localhost:5173",
@@ -41,10 +56,29 @@ app.use(
 app.use((req, res, next) => {
   express.json({
     limit: "1mb",
-    verify: (req, res, buf) => { req.rawBody = buf; }
+    strict: true, // Solo acepta arrays y objetos — no strings o numeros en el root
+    verify: (req, res, buf) => {
+      req.rawBody = buf;
+      // Limitar profundidad de anidacion JSON
+      try {
+        const parsed = JSON.parse(buf.toString());
+        const profundidad = (obj, nivel = 0) => {
+          if (nivel > 10) throw new Error("JSON demasiado anidado");
+          if (typeof obj === "object" && obj !== null) {
+            Object.values(obj).forEach((v) => profundidad(v, nivel + 1));
+          }
+        };
+        profundidad(parsed);
+      } catch (e) {
+        if (e.message === "JSON demasiado anidado") {
+          throw e;
+        }
+      }
+    }
   })(req, res, next);
 });
 app.use(mongoSanitize());
+app.use(hpp()); // Previene HTTP Parameter Pollution
 
 const limiteGeneral = rateLimit({
   windowMs: 15 * 60 * 1000,
