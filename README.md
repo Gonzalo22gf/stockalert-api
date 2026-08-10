@@ -2,7 +2,7 @@
 
 **Plataforma SaaS de inventario y control de vencimientos para negocios con múltiples sucursales.**
 
-StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencimiento de sus productos en múltiples sucursales, con alertas automáticas, dashboard analítico, reportes históricos y notificaciones push. Cada empresa tiene su espacio completamente aislado — los datos de un negocio jamás son visibles para otro.
+StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencimiento de sus productos en múltiples sucursales, con alertas automáticas, dashboard analítico, reportes históricos y notificaciones push. Cada empresa tiene su espacio completamente aislado.
 
 🌐 **Landing:** https://mistockalert.com
 🚀 **App:** https://app.mistockalert.com
@@ -12,24 +12,24 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 
 ## ✨ Características
 
-- **Multi-empresa (SaaS)** — cada negocio crea su cuenta y opera en su propio espacio aislado. Registro en dos modos: crear empresa nueva o unirse a una existente por código de acceso.
-- **Verificación de email** — al registrarse el usuario recibe un link de activación. No puede ingresar hasta verificar su cuenta.
-- **Gestión multi-sucursal** — inventario independiente por tienda, con roles diferenciados: el administrador ve todas las sucursales, el jefe de sucursal ve solo la suya.
-- **Dashboard por rol** — el administrador ve métricas globales con filtro por sucursal; el jefe ve automáticamente los KPIs de su propia tienda.
-- **Control de vencimientos** — clasificación automática: en buen estado, por vencer (≤7 días) y vencidos.
-- **Exportación a Excel** — inventario, acciones urgentes y top 10 en riesgo con EAN, anchos automáticos, fila de totales y valor en riesgo. Reportes históricos multi-hoja.
-- **Escáner de códigos de barras (EAN)** — carga rápida de productos desde la cámara del celular.
+- **Multi-empresa (SaaS)** — registro autoservicio. Crear empresa nueva o unirse con código de acceso.
+- **Verificación de email** — al registrarse llega un link de activación. Sin verificar, no se puede ingresar.
+- **Gestión multi-sucursal** — inventario independiente por tienda. Admin ve todo, jefe ve solo su sucursal.
+- **Dashboard por rol** — métricas globales para admin, KPIs propios para jefe.
+- **Control de vencimientos** — clasificación automática: buen estado, por vencer (≤7 días), vencidos.
+- **Exportación a Excel** — inventario, acciones urgentes, top 10 en riesgo con EAN y valor en riesgo.
+- **Escáner EAN** — carga rápida de productos desde la cámara del celular.
 - **Importación masiva** — carga de productos desde CSV/Excel.
-- **Alertas diarias por correo + push** — el administrador recibe el top 10 de tiendas en riesgo; cada jefe recibe el parte de su tienda. Ambos también reciben notificaciones push en el celular.
-- **Notificaciones push (PWA)** — botón de activación en el sidebar. Funciona en Android, iPhone (iOS 16.4+) y desktop via Firebase Cloud Messaging.
-- **Reportes históricos** — captura automática diaria del estado de las tiendas, con visualización por período.
-- **Internacionalización (i18n)** — interfaz disponible en 6 idiomas: Español, English, Português, 中文简体, 中文繁體, 日本語.
-- **Panel superadmin** — panel exclusivo para el fundador: métricas globales, lista de empresas, acciones de activar/desactivar y eliminar con doble confirmación.
-- **Sistema de planes con feature flag** — lógica de Free/Starter/Pro/Business implementada y lista para activar con una variable de entorno. Incluye validación de límites, trial de 15 días y modal de upgrade automático.
-- **Cierre automático por inactividad** — la sesión se cierra tras 10 minutos sin actividad, incluso cuando la app está en background.
-- **Seguridad** — JWT con passwordVersion, verificación de email, sanitización de inputs, Zod en todos los endpoints, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos, contraseñas con mayúscula + número + carácter especial obligatorios.
-- **PWA instalable** — se instala desde el navegador en cualquier celular o computadora.
-- **Monitoreo** — Uptime Robot (2 monitores), Sentry (rastreo de errores), PostHog (analítica de usuarios), Cloudflare (DNS + DDoS + SSL).
+- **Alertas diarias por correo + push** — admin recibe top 10 tiendas en riesgo; jefe recibe el parte de su tienda. Ambos reciben notificaciones push en el celular.
+- **Notificaciones push (PWA)** — Firebase Cloud Messaging. Botón de activación en el sidebar.
+- **Reportes históricos** — captura automática diaria con visualización por período.
+- **i18n** — 6 idiomas: Español, English, Português, 中文简体, 中文繁體, 日本語.
+- **Panel superadmin** — métricas globales, lista de empresas, activar/desactivar/eliminar con doble confirmación. Acceso exclusivo por email de fundador.
+- **Sistema de planes** — Free/Starter($9)/Pro($29)/Business($79). Integración con Lemon Squeezy lista para activar. Modal de upgrade automático al llegar al límite.
+- **Cierre automático por inactividad** — 10 minutos sin actividad, incluso desde background (visibilitychange).
+- **Seguridad en capas** — JWT con passwordVersion, verificación de email, sanitización de inputs, Zod en todos los endpoints, HPP, CSP estricto, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos, contraseñas con mayúscula + número + carácter especial.
+- **PWA instalable** — Android, iPhone (iOS 16.4+) y desktop.
+- **Monitoreo** — Uptime Robot, Sentry, PostHog, Cloudflare.
 
 ---
 
@@ -39,19 +39,28 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 
 ```
 stockalert-backend/
-├── controllers/     → reciben request, llaman al service, devuelven response (~20 líneas c/u)
-├── services/        → lógica de negocio pura (sin HTTP ni Mongoose)
-│   ├── email-templates.js  → responsabilidad única: genera HTML de emails
-│   ├── snapshot.service.js → cálculo de snapshots diarios
-│   ├── push.service.js     → notificaciones push via Firebase FCM
-│   └── superadmin.service.js
-├── repositories/    → queries MongoDB centralizadas
-├── validators/      → schemas Zod por endpoint
-├── middleware/      → auth, errorHandler, validar, validarPlan, protegerCron, soloFundador
-├── config/          → planes.js (límites por plan), firebase.js (FCM admin)
-├── utils/errors/    → AppError, NotFoundError, ForbiddenError, ValidationError
-├── models/          → esquemas Mongoose
-└── routes/          → definición de rutas
+├── controllers/          → orquestan: reciben request, llaman al service, devuelven response
+├── services/
+│   ├── email-templates.js    → responsabilidad única: genera HTML de emails
+│   ├── snapshot.service.js   → cálculo de snapshots diarios
+│   ├── push.service.js       → notificaciones push via Firebase FCM
+│   ├── lemon.service.js      → checkout y webhook de Lemon Squeezy
+│   └── superadmin.service.js → métricas globales del panel fundador
+├── repositories/         → queries MongoDB centralizadas
+├── validators/           → schemas Zod por endpoint
+├── middleware/
+│   ├── auth.js           → JWT + soloAdmin
+│   ├── soloFundador.js   → protege panel superadmin por email
+│   ├── protegerCron.js   → protege endpoints de GitHub Actions
+│   ├── validarPlan.js    → feature flag PLANES_HABILITADOS
+│   └── errorHandler.js   → manejo centralizado de errores
+├── config/
+│   ├── planes.js         → límites por plan (Free/Starter/Pro/Business)
+│   ├── firebase.js       → Firebase Admin SDK con guard para tests
+│   └── lemon.js          → Lemon Squeezy config y variant IDs
+├── utils/errors/         → AppError, NotFoundError, ForbiddenError, ValidationError
+├── models/               → esquemas Mongoose
+└── routes/               → definición de rutas
 ```
 
 ### Frontend — organizado por features
@@ -59,23 +68,24 @@ stockalert-backend/
 ```
 stockalert-frontend/src/
 ├── features/
-│   ├── auth/        → login, registro, verificación email, authStore
-│   ├── dashboard/   → KPIs, panel de riesgo, gráficos, snapshots
-│   ├── productos/   → dividido en 5 archivos con responsabilidad única:
-│   │   ├── productos.utils.js         → funciones puras (estadoVencimiento, filtrar, ordenar)
-│   │   ├── useFiltradorProductos.js   → estado de filtros encapsulado
-│   │   ├── useImportarProductos.js    → lógica de importación Excel
-│   │   ├── FiltrosProductos.jsx       → solo JSX barra de filtros
-│   │   └── ProductosPage.jsx          → ~90 líneas, solo coordina
+│   ├── auth/         → login, registro, verificación email, authStore
+│   ├── dashboard/    → KPIs, panel de riesgo, gráficos, snapshots
+│   ├── productos/    → 5 archivos con responsabilidad única:
+│   │   ├── productos.utils.js        → funciones puras
+│   │   ├── useFiltradorProductos.js  → estado de filtros
+│   │   ├── useImportarProductos.js   → lógica de importación
+│   │   ├── FiltrosProductos.jsx      → solo JSX barra de filtros
+│   │   └── ProductosPage.jsx         → ~90 líneas, solo coordina
 │   ├── movimientos/
 │   ├── sucursales/
 │   ├── usuarios/
 │   ├── reportes/
-│   ├── empresa/     → links frecuentes, widget empresa
-│   └── superadmin/  → SuperadminPage, useSuperadmin, superadmin.api
-├── components/      → Layout, Sidebar, Topbar, ErrorBoundary, ModalUpgrade, QueryState
-├── hooks/           → useInactividad (con visibilitychange), useCountUp, usePlanError, usePush
-└── lib/             → client HTTP, PlanError, exportar Excel, firebase.js, i18n/
+│   ├── empresa/      → links frecuentes, widget empresa
+│   ├── planes/       → PlanesPage, usePlanes, planes.api
+│   └── superadmin/   → SuperadminPage, useSuperadmin, superadmin.api
+├── components/       → Layout, Sidebar, Topbar, ErrorBoundary, ModalUpgrade
+├── hooks/            → useInactividad, useCountUp, usePlanError, usePush
+└── lib/              → client HTTP, PlanError, exportar Excel, firebase.js, i18n/
 ```
 
 ---
@@ -84,11 +94,9 @@ stockalert-frontend/src/
 
 **Frontend:** React + Vite, Tailwind CSS, React Query, Zustand, Chart.js, html5-qrcode, SheetJS/xlsx, lucide-react, react-i18next, vite-plugin-pwa, firebase, posthog-js, @sentry/react.
 
-**Backend:** Node.js + Express, MongoDB + Mongoose, Zod, JWT, bcrypt, Helmet, express-rate-limit, express-mongo-sanitize, Swagger, Pino, firebase-admin.
+**Backend:** Node.js + Express, MongoDB + Mongoose, Zod, JWT, bcrypt, Helmet, hpp, express-rate-limit, express-mongo-sanitize, Swagger, Pino, firebase-admin, @lemonsqueezy/lemonsqueezy.js.
 
-**Infraestructura:** dominio propio mistockalert.com y app.mistockalert.com (GitHub Pages + Render), MongoDB Atlas, GitHub Actions (CI/CD + snapshots diarios + alertas), Brevo (correo transaccional), Cloudflare (DNS + DDoS + SSL), Uptime Robot, Sentry, PostHog, Docker.
-
-**Calidad:** 35 tests (Jest + Supertest + mongodb-memory-server): seguridad de API, lógica de negocio y aislamiento IDOR entre empresas.
+**Infraestructura:** GitHub Pages + Render, MongoDB Atlas, GitHub Actions (CI/CD + snapshots + alertas), Brevo, Cloudflare, Uptime Robot, Sentry, PostHog, Docker.
 
 ---
 
@@ -101,7 +109,7 @@ stockalert-frontend/src/
 | Pro | $29/mes | Ilimitados | 10 | 20 |
 | Business | $79/mes | Ilimitados | Ilimitadas | Ilimitados |
 
-La validación de planes está implementada y se activa con `PLANES_HABILITADOS=true` en el entorno. Sin esa variable, todos los usuarios tienen acceso completo.
+Pagos via **Lemon Squeezy** (acepta tarjetas de cualquier país). Integración completa lista para activar con `LEMON_HABILITADO=true` + `PLANES_HABILITADOS=true` en Render.
 
 ---
 
@@ -109,15 +117,39 @@ La validación de planes está implementada y se activa con `PLANES_HABILITADOS=
 
 - JWT con invalidación automática al cambiar contraseña (passwordVersion)
 - Verificación de email obligatoria al registrarse
-- Contraseñas: mínimo 8 caracteres, mayúscula, número y carácter especial
+- Contraseñas: mínimo 8 caracteres, mayúscula, número y carácter especial obligatorios
 - Sanitización de inputs (nombre y email) antes de persistir
-- Zod en todos los endpoints — validación estricta de tipos
+- Zod en todos los endpoints
+- HPP — protección contra HTTP Parameter Pollution
+- CSP estricto via Helmet
 - Rate limiting: 200 req/15min general, 10 intentos login, 5 recovery
-- Bloqueo temporal 15 minutos tras 5 intentos fallidos de login
+- Bloqueo temporal 15 minutos tras 5 intentos fallidos + logs en Sentry
 - Sanitización NoSQL con express-mongo-sanitize
-- CORS restringido a dominios propios
-- Helmet con headers de seguridad
-- Aislamiento IDOR verificado con 8 tests automáticos: una empresa no puede ver datos de otra por ningún camino
+- CORS restringido a dominios propios (incluye PATCH)
+- Aislamiento IDOR verificado con tests automáticos
+
+---
+
+## 🧪 Tests
+
+```bash
+cd stockalert-backend
+npm test
+```
+
+**99 tests en 9 suites** — cobertura completa de seguridad, lógica de negocio y aislamiento:
+
+| Suite | Tests | Cubre |
+|-------|-------|-------|
+| api.test.js | 8 | Health check, rutas protegidas, cron |
+| aislamiento.test.js | 8 | IDOR entre empresas |
+| auth.test.js | 13 | Registro, login, verificación email |
+| clasificar.test.js | 9 | Lógica de alertas |
+| recursos.test.js | 21 | Links, sucursales, productos, movimientos |
+| seguridad.test.js | 7 | Bloqueo, recuperación, cron |
+| usuarios-admin.test.js | 11 | Roles, desactivar, eliminar |
+| validacion.test.js | 14 | Inputs Zod en todos los endpoints |
+| validarPassword.test.js | 8 | Reglas de contraseña |
 
 ---
 
@@ -135,8 +167,6 @@ npm install
 npm run dev
 ```
 
-El frontend corre en http://localhost:5173/
-
 ---
 
 ## 🐳 Docker
@@ -145,43 +175,35 @@ El frontend corre en http://localhost:5173/
 docker compose up --build
 ```
 
-Levanta backend en http://localhost:3000 y MongoDB local.
-
 ---
 
 ## 🔑 Variables de entorno
 
-Crear `.env` en `stockalert-backend/`:
-
 ```env
-MONGO_URI=tu_cadena_de_conexion_mongodb
-JWT_SECRET=una_clave_secreta_larga_y_aleatoria
-CRON_SECRET=otra_clave_secreta_para_los_snapshots
-BREVO_API_KEY=tu_api_key_de_brevo
-EMAIL_USER=tu_remitente_verificado_en_brevo
-FIREBASE_PROJECT_ID=stockalert-fd4d0
-FIREBASE_CLIENT_EMAIL=firebase-adminsdk@stockalert-fd4d0.iam.gserviceaccount.com
-FIREBASE_PRIVATE_KEY=-----BEGIN PRIVATE KEY-----...
-FIREBASE_VAPID_KEY=tu_vapid_key
-FUNDADORES_EMAILS=tu@email.com
+MONGO_URI=
+JWT_SECRET=
+CRON_SECRET=
+BREVO_API_KEY=
+EMAIL_USER=
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
+FIREBASE_VAPID_KEY=
+FUNDADORES_EMAILS=
 APP_URL=https://app.mistockalert.com
+LEMON_API_KEY=
+LEMON_STORE_ID=449050
+LEMON_VARIANT_STARTER=2001100
+LEMON_VARIANT_PRO=2001102
+LEMON_VARIANT_BUSINESS=2001104
+LEMON_WEBHOOK_SECRET=
+LEMON_HABILITADO=false
 PLANES_HABILITADOS=false
 PORT=3000
 ```
 
 ---
 
-## 🧪 Tests
-
-```bash
-cd stockalert-backend
-npm test
-```
-
-35 tests en 4 suites: seguridad de la API, lógica de negocio, validación de contraseñas y aislamiento IDOR entre empresas.
-
----
-
 ## 📄 Licencia
 
-Proyecto Full Stack desarrollado como demostración de una plataforma SaaS para gestión de inventario, vencimientos y múltiples sucursales.
+Proyecto Full Stack — plataforma SaaS de inventario para negocios con múltiples sucursales.
