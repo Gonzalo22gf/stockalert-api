@@ -6,7 +6,7 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 
 🌐 **Landing:** https://mistockalert.com
 🚀 **App:** https://app.mistockalert.com
-📚 **API Docs (Swagger):** https://api.mistockalert.com/api-docs
+📚 **API Docs (Swagger):** https://api.mistockalert.com/api-docs — todos los endpoints documentados (Alertas, Empresa, Links, Pagos, Productos, Push, Snapshots, Sucursales, Superadmin, Usuarios)
 
 ---
 
