@@ -49,7 +49,7 @@ export default function PlanesPage() {
               <span className="text-sm text-slate-500">/mes</span>
             </div>
             <ul className="space-y-2 flex-1">
-              {plan.features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-slate-300"><span className="text-indigo-400">checkmark</span>{f}</li>)}
+              {plan.features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-slate-300"><span className="text-indigo-400">✓</span>{f}</li>)}
             </ul>
             <button onClick={() => irACheckout(plan.id)} disabled={cargando === plan.id} className={"w-full rounded-xl py-3 text-sm font-semibold transition-colors " + (plan.destacado ? "bg-indigo-500 text-white hover:bg-indigo-400" : "border border-slate-700 text-slate-300 hover:bg-slate-800")}>
               {cargando === plan.id ? "Redirigiendo..." : "Suscribirme"}
