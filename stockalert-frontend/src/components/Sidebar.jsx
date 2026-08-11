@@ -85,7 +85,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
               <ItemNav to="/usuarios" Icono={Users} label={t("nav.usuarios")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/reportes" Icono={TrendingUp} label={t("nav.reportes")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/links" Icono={Link} label={t("nav.links")} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/planes" Icono={CreditCard} label="Planes" onNavegar={onCerrar} colapsado={colapsado} />
+              {esAdmin && <ItemNav to="/planes" Icono={CreditCard} label="Planes" onNavegar={onCerrar} colapsado={colapsado} />}
               <ItemNav to="/codigo-acceso" Icono={KeyRound} label={t("nav.codigoAcceso")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
             </>
           )}
