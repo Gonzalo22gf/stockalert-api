@@ -18,7 +18,7 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Dashboard por rol** — métricas globales para admin, KPIs propios para jefe.
 - **Control de vencimientos** — clasificación automática: buen estado, por vencer (≤7 días), vencidos.
 - **Exportación a Excel** — inventario, acciones urgentes, top 10 en riesgo con EAN y valor en riesgo.
-- **Escáner EAN** — carga rápida de productos desde la cámara del celular.
+- **Escáner EAN con autocompletado** — escanea el código de barras y autocompleta nombre y categoría via Open Food Facts + UPC Item DB.
 - **Importación masiva** — carga de productos desde CSV/Excel.
 - **Alertas diarias por correo + push** — admin recibe top 10 tiendas en riesgo; jefe recibe el parte de su tienda. Ambos reciben notificaciones push en el celular.
 - **Notificaciones push (PWA)** — Firebase Cloud Messaging. Botón de activación en el sidebar.
@@ -28,6 +28,7 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Sistema de planes** — Free/Starter($9)/Pro($29)/Business($79). Integración con Lemon Squeezy lista para activar. Modal de upgrade automático al llegar al límite.
 - **Cierre automático por inactividad** — 10 minutos sin actividad, incluso desde background (visibilitychange).
 - **Seguridad en capas** — JWT con passwordVersion, verificación de email, sanitización de inputs, Zod en todos los endpoints, HPP, CSP estricto, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos, contraseñas con mayúscula + número + carácter especial.
+- **Recuperación de contraseña** — token de un solo uso con expiración de 24hs, rate limit de 5 requests por IP cada 15 minutos.
 - **PWA instalable** — Android, iPhone (iOS 16.4+) y desktop.
 - **Monitoreo** — Uptime Robot, Sentry, PostHog, Cloudflare.
 
@@ -74,6 +75,7 @@ stockalert-frontend/src/
 │   │   ├── productos.utils.js        → funciones puras
 │   │   ├── useFiltradorProductos.js  → estado de filtros
 │   │   ├── useImportarProductos.js   → lógica de importación
+│   │   ├── useOpenFoodFacts.js       → autocompletado EAN (Open Food Facts + UPC Item DB)
 │   │   ├── FiltrosProductos.jsx      → solo JSX barra de filtros
 │   │   └── ProductosPage.jsx         → ~90 líneas, solo coordina
 │   ├── movimientos/
@@ -98,6 +100,8 @@ stockalert-frontend/src/
 
 **Infraestructura:** GitHub Pages + Render, MongoDB Atlas, GitHub Actions (CI/CD + snapshots + alertas), Brevo, Cloudflare, Uptime Robot, Sentry, PostHog, Docker.
 
+**APIs externas gratuitas:** Open Food Facts + UPC Item DB (autocompletado de productos por EAN).
+
 ---
 
 ## 💳 Sistema de planes
@@ -118,15 +122,15 @@ Pagos via **Lemon Squeezy** (acepta tarjetas de cualquier país). Integración c
 - JWT con invalidación automática al cambiar contraseña (passwordVersion)
 - Verificación de email obligatoria al registrarse
 - Contraseñas: mínimo 8 caracteres, mayúscula, número y carácter especial obligatorios
-- Sanitización de inputs (nombre y email) antes de persistir
+- Sanitización de inputs antes de persistir
 - Zod en todos los endpoints
 - HPP — protección contra HTTP Parameter Pollution
 - CSP estricto via Helmet
 - Rate limiting: 200 req/15min general, 10 intentos login, 5 recovery
-- Bloqueo temporal 15 minutos tras 5 intentos fallidos + logs en Sentry
+- Bloqueo temporal 15 minutos tras 5 intentos fallidos
 - Sanitización NoSQL con express-mongo-sanitize
-- CORS restringido a dominios propios (incluye PATCH)
-- Aislamiento IDOR verificado con tests automáticos
+- CORS restringido a dominios propios
+- Recuperación de contraseña: token de un solo uso, expira en 24hs, rate limit 5/15min
 
 ---
 
@@ -137,7 +141,7 @@ cd stockalert-backend
 npm test
 ```
 
-**99 tests en 9 suites** — cobertura completa de seguridad, lógica de negocio y aislamiento:
+**117 tests en 10 suites** — cobertura completa:
 
 | Suite | Tests | Cubre |
 |-------|-------|-------|
@@ -145,6 +149,7 @@ npm test
 | aislamiento.test.js | 8 | IDOR entre empresas |
 | auth.test.js | 13 | Registro, login, verificación email |
 | clasificar.test.js | 9 | Lógica de alertas |
+| integracion.test.js | 17 | Snapshots, push, superadmin, lemon, recuperación |
 | recursos.test.js | 21 | Links, sucursales, productos, movimientos |
 | seguridad.test.js | 7 | Bloqueo, recuperación, cron |
 | usuarios-admin.test.js | 11 | Roles, desactivar, eliminar |
@@ -156,15 +161,8 @@ npm test
 ## 🚀 Instalación local
 
 ```bash
-# Backend
-cd stockalert-backend
-npm install
-npm run dev
-
-# Frontend
-cd stockalert-frontend
-npm install
-npm run dev
+cd stockalert-backend && npm install && npm run dev
+cd stockalert-frontend && npm install && npm run dev
 ```
 
 ---
