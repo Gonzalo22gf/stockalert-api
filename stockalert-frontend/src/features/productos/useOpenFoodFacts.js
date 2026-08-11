@@ -23,22 +23,46 @@ function mapearCategoria(categoriasTags) {
   return "";
 }
 
-export async function buscarProductoPorEAN(ean) {
+async function buscarEnOpenFoodFacts(ean) {
   try {
-    const res = await fetch(
-      "https://world.openfoodfacts.org/api/v0/product/" + ean + ".json"
-    );
+    const res = await fetch("https://world.openfoodfacts.org/api/v0/product/" + ean + ".json");
     if (!res.ok) return null;
     const data = await res.json();
     if (data.status !== 1 || !data.product) return null;
-
     const p = data.product;
+    const nombre = p.product_name_es || p.product_name || "";
+    if (!nombre) return null;
     return {
-      nombre: p.product_name || p.product_name_es || "",
+      nombre,
       categoria: mapearCategoria(p.categories_tags),
       imagen: p.image_url || ""
     };
   } catch {
     return null;
   }
+}
+
+async function buscarEnUPCItemDB(ean) {
+  try {
+    const res = await fetch("https://api.upcitemdb.com/prod/trial/lookup?upc=" + ean);
+    if (!res.ok) return null;
+    const data = await res.json();
+    if (!data.items?.length) return null;
+    const item = data.items[0];
+    return {
+      nombre: item.title || "",
+      categoria: "",
+      imagen: item.images?.[0] || ""
+    };
+  } catch {
+    return null;
+  }
+}
+
+export async function buscarProductoPorEAN(ean) {
+  // Intentar primero Open Food Facts
+  const resultado = await buscarEnOpenFoodFacts(ean);
+  if (resultado) return resultado;
+  // Fallback: UPC Item DB (mejor cobertura latinoamericana)
+  return await buscarEnUPCItemDB(ean);
 }
