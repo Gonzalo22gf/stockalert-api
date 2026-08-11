@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { buscarProductoPorEAN } from "./useOpenFoodFacts";
 import Swal from "sweetalert2";
 import { useCrearProducto } from "./useProductos";
 import { useSucursales } from "../sucursales/useSucursales";
@@ -20,6 +21,7 @@ export default function FormularioProducto({ esAdmin }) {
   const [vencimiento, setVencimiento] = useState("");
   const [sucursalId, setSucursalId] = useState("");
   const [escanerAbierto, setEscanerAbierto] = useState(false);
+  const [buscandoEAN, setBuscandoEAN] = useState(false);
 
   function limpiarForm() {
     setEan("");
@@ -32,10 +34,24 @@ export default function FormularioProducto({ esAdmin }) {
     setSucursalId("");
   }
 
-  function manejarDetectado(codigo) {
+  async function manejarDetectado(codigo) {
     setEan(codigo);
     setEscanerAbierto(false);
-    Swal.fire({ icon: "success", title: "Código detectado", text: codigo, timer: 1400, showConfirmButton: false });
+    setBuscandoEAN(true);
+    try {
+      const datos = await buscarProductoPorEAN(codigo);
+      if (datos) {
+        if (datos.nombre && !nombre) setNombre(datos.nombre);
+        if (datos.categoria && !categoria) setCategoria(datos.categoria);
+        Swal.fire({ icon: "success", title: "Producto encontrado", text: datos.nombre || codigo, timer: 1800, showConfirmButton: false });
+      } else {
+        Swal.fire({ icon: "info", title: "EAN detectado", text: codigo + " — completá los datos manualmente.", timer: 1800, showConfirmButton: false });
+      }
+    } catch {
+      Swal.fire({ icon: "info", title: "EAN detectado", text: codigo, timer: 1400, showConfirmButton: false });
+    } finally {
+      setBuscandoEAN(false);
+    }
   }
 
   async function manejarSubmit(e) {
@@ -83,7 +99,7 @@ export default function FormularioProducto({ esAdmin }) {
           onClick={() => setEscanerAbierto(true)}
           className="shrink-0 rounded-lg border border-green-600/40 bg-green-600/10 px-4 py-2 text-sm font-semibold text-green-400 hover:bg-green-600/20"
         >
-          📷 Escanear EAN
+          {buscandoEAN ? "Buscando..." : "📷 Escanear EAN"}
         </button>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
