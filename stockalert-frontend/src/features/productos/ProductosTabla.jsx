@@ -64,7 +64,7 @@ function MenuAcciones({ producto, onEditar, onEliminar }) {
 
 const POR_PAGINA = 15;
 
-export default function ProductosTabla({ productos, esAdmin, onEditar, onEliminar }) {
+export default function ProductosTabla({ productos, esAdmin, onEditar, onEliminar, seleccionados = [], onToggle, onToggleTodos }) {
   const [orden, setOrden] = useState({ campo: "nombre", dir: "asc" });
   const [pagina, setPagina] = useState(1);
 
@@ -123,6 +123,14 @@ export default function ProductosTabla({ productos, esAdmin, onEditar, onElimina
               <Th campo="stock" className="text-center">Stock</Th>
               <Th campo="precio" className="text-right">Precio</Th>
               <Th campo="vencimiento">Vence</Th>
+              <th className="px-4 py-3 w-10">
+                <input
+                  type="checkbox"
+                  className="rounded border-slate-600"
+                  checked={seleccionados.length === productos.length && productos.length > 0}
+                  onChange={() => onToggleTodos && onToggleTodos(productos.map((p) => p._id))}
+                />
+              </th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3 text-right">Acciones</th>
             </tr>
@@ -133,6 +141,14 @@ export default function ProductosTabla({ productos, esAdmin, onEditar, onElimina
               const estadoStock = obtenerEstadoStock(p.stock);
               return (
                 <tr key={p._id} className="bg-slate-950/50 transition-colors hover:bg-slate-900/50">
+                  <td className="px-4 py-2.5 w-10">
+                    <input
+                      type="checkbox"
+                      className="rounded border-slate-600"
+                      checked={seleccionados.includes(p._id)}
+                      onChange={() => onToggle && onToggle(p._id)}
+                    />
+                  </td>
                   <td className="px-4 py-2.5 font-semibold text-white">
                     {p.nombre}
                     {p.lote && <span className="ml-2 text-[10px] text-slate-600">Lote {p.lote}</span>}

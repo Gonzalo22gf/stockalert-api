@@ -3,6 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
 import { useProductos, useEliminarProducto } from "./useProductos";
+import { eliminarVariosProductos } from "./productos.api";
 import { useSucursales } from "../sucursales/useSucursales";
 import { useFiltradorProductos } from "./useFiltradorProductos";
 import { useImportarProductos } from "./useImportarProductos";
@@ -36,7 +37,7 @@ export default function ProductosPage() {
   const { data: sucursales } = useSucursales(esAdmin);
   const { data: productos, isLoading, isError } = useProductos(esAdmin ? sucursalSeleccionada : undefined);
   const eliminarProducto = useEliminarProducto();
-  const { filtros, setFiltro, limpiar, hayFiltrosActivos, resultado } = useFiltradorProductos(productos);
+  const { filtros, setFiltro, limpiar, hayFiltrosActivos, resultado, seleccionados, toggleSeleccion, toggleTodos, limpiarSeleccion } = useFiltradorProductos(productos);
   const { inputRef, abrirSelector, manejarArchivo } = useImportarProductos({ esAdmin, sucursalSeleccionada });
 
   const categoriasDisponibles = [...new Set([...CATEGORIAS, ...(productos || []).map((p) => p.categoria).filter(Boolean)])];
@@ -44,6 +45,23 @@ export default function ProductosPage() {
   function cambiarVista(v) {
     setVista(v);
     try { localStorage.setItem("vistaProductos", v); } catch {}
+  }
+
+  async function manejarEliminarSeleccionados() {
+    const { isConfirmed } = await Swal.fire({
+      title: "Eliminar " + seleccionados.length + " productos?",
+      text: "Esta accion es permanente y no se puede deshacer.",
+      icon: "warning", showCancelButton: true,
+      confirmButtonText: "Si, eliminar todos", cancelButtonText: "Cancelar"
+    });
+    if (!isConfirmed) return;
+    try {
+      await eliminarVariosProductos(seleccionados);
+      limpiarSeleccion();
+      Swal.fire({ icon: "success", title: "Eliminados", timer: 1300, showConfirmButton: false });
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Error", text: error.message });
+    }
   }
 
   async function manejarEliminar(producto) {
@@ -92,6 +110,8 @@ export default function ProductosPage() {
         onCambiarVista={cambiarVista}
         onImportar={manejarArchivo}
         inputImportarRef={inputRef}
+        seleccionados={seleccionados}
+        onEliminarSeleccionados={manejarEliminarSeleccionados}
       />
 
       {isLoading && <SkeletonCards cantidad={8} />}
@@ -102,7 +122,7 @@ export default function ProductosPage() {
           {resultado.length === 0 ? (
             <EmptyState icono="📦" titulo="No hay productos para mostrar" descripcion="Proba ajustar los filtros, o agrega un producto nuevo." />
           ) : vista === "tabla" ? (
-            <ProductosTabla productos={resultado} esAdmin={esAdmin} onEditar={setProductoEditando} onEliminar={manejarEliminar} />
+            <ProductosTabla productos={resultado} esAdmin={esAdmin} onEditar={setProductoEditando} onEliminar={manejarEliminar} seleccionados={seleccionados} onToggle={toggleSeleccion} onToggleTodos={toggleTodos} />
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {resultado.map((p) => <ProductoCard key={p._id} producto={p} esAdmin={esAdmin} onEditar={setProductoEditando} onEliminar={manejarEliminar} />)}

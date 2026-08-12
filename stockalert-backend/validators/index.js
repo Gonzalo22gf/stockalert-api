@@ -94,9 +94,13 @@ const pushTokenSchema = z.object({
   dispositivo: z.string().optional().default("web")
 });
 
+const bulkDeleteSchema = z.object({
+  ids: z.array(z.string().min(1)).min(1, "Debe seleccionar al menos un producto").max(100, "Maximo 100 productos a la vez")
+});
+
 module.exports = {
   pushTokenSchema,
   registroSchema, loginSchema, cambiarRolSchema, cambiarEstadoSchema,
-  cambiarSucursalSchema, editarUsuarioSchema, productoSchema, sucursalSchema,
+  cambiarSucursalSchema, editarUsuarioSchema, productoSchema, sucursalSchema, bulkDeleteSchema,
   linkSchema, olvidePasswordSchema, restablecerPasswordSchema
 };

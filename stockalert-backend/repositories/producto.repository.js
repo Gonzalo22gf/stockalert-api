@@ -24,6 +24,9 @@ const ProductoRepository = {
 
   delete: (id) => Producto.findByIdAndDelete(id),
 
+  encontrarPorIds: (ids, empresaId) =>
+    Producto.find({ _id: { $in: ids }, empresa: empresaId }),
+
   registrarMovimiento: (datos) => Movimiento.create(datos)
 };
 

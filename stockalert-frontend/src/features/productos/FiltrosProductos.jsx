@@ -27,7 +27,8 @@ export default function FiltrosProductos({
   filtros, setFiltro, limpiar, hayFiltrosActivos,
   categorias, productosFiltrados,
   vista, onCambiarVista,
-  onImportar, inputImportarRef
+  onImportar, inputImportarRef,
+  seleccionados, onEliminarSeleccionados
 }) {
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
@@ -77,6 +78,11 @@ export default function FiltrosProductos({
           {hayFiltrosActivos && (
             <Boton variante="ghost" tamano="sm" onClick={limpiar}>
               x Limpiar filtros
+            </Boton>
+          )}
+          {seleccionados?.length > 0 && (
+            <Boton variante="danger" tamano="sm" onClick={onEliminarSeleccionados}>
+              Eliminar {seleccionados.length} seleccionados
             </Boton>
           )}
           <div className="ml-auto flex overflow-hidden rounded-lg border border-slate-700">

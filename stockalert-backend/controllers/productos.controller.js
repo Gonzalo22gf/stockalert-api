@@ -17,4 +17,7 @@ const actualizarProducto = async (req, res, next) => {
 const eliminarProducto = async (req, res, next) => {
   try { res.json(await ProductoService.eliminar(req.params.id, req.empresaId, req.usuario)); } catch (e) { next(e); }
 };
-module.exports = { obtenerProductos, crearProducto, actualizarProducto, eliminarProducto };
+const eliminarVariosProductos = async (req, res, next) => {
+  try { res.json(await ProductoService.eliminarVarios(req.body.ids, req.empresaId, req.usuario)); } catch (e) { next(e); }
+};
+module.exports = { obtenerProductos, crearProducto, actualizarProducto, eliminarProducto, eliminarVariosProductos };

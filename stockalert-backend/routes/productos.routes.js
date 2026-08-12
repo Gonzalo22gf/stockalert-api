@@ -1,13 +1,14 @@
 const express = require("express");
 const router = express.Router();
 const validar = require("../middleware/validar");
-const { productoSchema } = require("../validators/index");
+const { productoSchema, bulkDeleteSchema } = require("../validators/index");
 
 const {
   obtenerProductos,
   crearProducto,
   actualizarProducto,
-  eliminarProducto
+  eliminarProducto,
+  eliminarVariosProductos
 } = require("../controllers/productos.controller");
 const { protegerRuta } = require("../middleware/auth");
 
@@ -106,5 +107,31 @@ router.post("/", protegerRuta, validar(productoSchema), crearProducto);
  */
 router.put("/:id", protegerRuta, validar(productoSchema), actualizarProducto);
 router.delete("/:id", protegerRuta, eliminarProducto);
+
+/**
+ * @swagger
+ * /api/productos/bulk-delete:
+ *   delete:
+ *     summary: Eliminar multiples productos a la vez (maximo 100)
+ *     tags: [Productos]
+ *     security: [{ bearerAuth: [] }]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [ids]
+ *             properties:
+ *               ids:
+ *                 type: array
+ *                 items: { type: string }
+ *                 example: ["id1", "id2"]
+ *     responses:
+ *       200: { description: "Productos eliminados" }
+ *       400: { description: "IDs invalidos o lista vacia" }
+ *       404: { description: "Uno o mas productos no encontrados" }
+ */
+router.delete("/bulk-delete", protegerRuta, validar(bulkDeleteSchema), eliminarVariosProductos);
 
 module.exports = router;

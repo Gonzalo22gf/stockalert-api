@@ -8,3 +8,4 @@ export const crearProducto = (producto) => apiPost("/api/productos", producto);
 export const actualizarProducto = (id, producto) => apiPut(`/api/productos/${id}`, producto);
 
 export const eliminarProducto = (id) => apiDelete(`/api/productos/${id}`);
+export const eliminarVariosProductos = (ids) => apiDelete("/api/productos/bulk-delete", { ids });
