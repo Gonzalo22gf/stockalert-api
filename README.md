@@ -29,6 +29,9 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Cierre automático por inactividad** — 10 minutos sin actividad, incluso desde background (visibilitychange).
 - **Seguridad en capas** — JWT con passwordVersion, verificación de email, sanitización de inputs, Zod en todos los endpoints, HPP, CSP estricto, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos, contraseñas con mayúscula + número + carácter especial.
 - **Recuperación de contraseña** — token de un solo uso con expiración de 24hs, rate limit de 5 requests por IP cada 15 minutos.
+- **Filtro por rango de fecha de vencimiento** — filtrá productos que vencen entre dos fechas específicas, integrado en la barra de filtros existente.
+- **Bulk delete** — seleccioná múltiples productos con checkboxes y eliminá todos de una. Incluye validación IDOR y movimiento de baja automático por cada producto.
+- **Dashboard de desperdicios** — gráfico de barras semanal con productos vencidos en los últimos 30 días. Solo visible para admins. Usa datos de snapshots existentes.
 - **PWA instalable** — Android, iPhone (iOS 16.4+) y desktop.
 - **Monitoreo** — Uptime Robot, Sentry, PostHog, Cloudflare.
 
