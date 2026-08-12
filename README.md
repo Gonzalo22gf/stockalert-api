@@ -144,7 +144,7 @@ cd stockalert-backend
 npm test
 ```
 
-**117 tests en 10 suites** — cobertura completa:
+**132 tests en 11 suites** — cobertura completa:
 
 | Suite | Tests | Cubre |
 |-------|-------|-------|
@@ -153,6 +153,7 @@ npm test
 | auth.test.js | 13 | Registro, login, verificación email |
 | clasificar.test.js | 9 | Lógica de alertas |
 | integracion.test.js | 17 | Snapshots, push, superadmin, lemon, recuperación |
+| integracion2.test.js | 15 | Bulk delete + IDOR, headers de seguridad, respuestas sin password |
 | recursos.test.js | 21 | Links, sucursales, productos, movimientos |
 | seguridad.test.js | 7 | Bloqueo, recuperación, cron |
 | usuarios-admin.test.js | 11 | Roles, desactivar, eliminar |
