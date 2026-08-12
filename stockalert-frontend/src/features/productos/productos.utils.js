@@ -10,7 +10,7 @@ export function estadoVencimiento(vencimiento) {
   return "buen-estado";
 }
 
-export function filtrarProductos(productos, { busqueda, filtroEstado, filtroCategoria }) {
+export function filtrarProductos(productos, { busqueda, filtroEstado, filtroCategoria, filtroFechaDesde, filtroFechaHasta }) {
   return (productos || []).filter((p) => {
     const texto = busqueda.toLowerCase();
     const coincideBusqueda =
@@ -28,7 +28,10 @@ export function filtrarProductos(productos, { busqueda, filtroEstado, filtroCate
     else if (filtroEstado === "stock-bajo")  coincideEstado = Number(p.stock) > 0 && Number(p.stock) <= 10;
     else if (filtroEstado === "agotado")     coincideEstado = Number(p.stock) <= 0;
 
-    return coincideBusqueda && coincideCategoria && coincideEstado;
+    const fechaVenc = new Date(p.vencimiento);
+    const coincideFechaDesde = filtroFechaDesde ? fechaVenc >= new Date(filtroFechaDesde) : true;
+    const coincideFechaHasta = filtroFechaHasta ? fechaVenc <= new Date(filtroFechaHasta + "T23:59:59") : true;
+    return coincideBusqueda && coincideCategoria && coincideEstado && coincideFechaDesde && coincideFechaHasta;
   });
 }
 

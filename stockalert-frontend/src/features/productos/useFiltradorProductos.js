@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { filtrarProductos, ordenarProductos } from "./productos.utils";
 
-const ESTADO_INICIAL = { busqueda: "", filtroEstado: "", filtroCategoria: "", orden: "" };
+const ESTADO_INICIAL = { busqueda: "", filtroEstado: "", filtroCategoria: "", orden: "", filtroFechaDesde: "", filtroFechaHasta: "" };
 
 export function useFiltradorProductos(productos) {
   const [filtros, setFiltros] = useState(ESTADO_INICIAL);

@@ -49,6 +49,24 @@ export default function FiltrosProductos({
         <Select value={filtros.orden} onChange={(e) => setFiltro("orden", e.target.value)} className="md:col-span-2">
           {OPCIONES_ORDEN.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
         </Select>
+        <div className="flex flex-wrap items-center gap-2 md:col-span-6">
+          <label className="text-xs text-slate-400 whitespace-nowrap">Vence desde:</label>
+          <Input
+            type="date"
+            value={filtros.filtroFechaDesde}
+            onChange={(e) => setFiltro("filtroFechaDesde", e.target.value)}
+            className="flex-1"
+          />
+        </div>
+        <div className="flex flex-wrap items-center gap-2 md:col-span-6">
+          <label className="text-xs text-slate-400 whitespace-nowrap">Vence hasta:</label>
+          <Input
+            type="date"
+            value={filtros.filtroFechaHasta}
+            onChange={(e) => setFiltro("filtroFechaHasta", e.target.value)}
+            className="flex-1"
+          />
+        </div>
         <div className="flex flex-wrap gap-2 md:col-span-12">
           <Boton variante="success" tamano="sm" onClick={() => exportarProductosExcel(productosFiltrados)} disabled={!productosFiltrados?.length}>
             Excel
