@@ -7,6 +7,7 @@ import { SkeletonKpis } from "../../components/Skeleton";
 import KpiCard from "./KpiCard";
 import PanelRiesgo from "./PanelRiesgo";
 import GraficosDashboard from "./GraficosDashboard";
+import GraficoDesperdicios from "./GraficoDesperdicios";
 
 export default function DashboardPage() {
   const { t } = useTranslation();
