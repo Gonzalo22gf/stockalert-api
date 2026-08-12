@@ -99,4 +99,21 @@ const ProductoService = {
   }
 };
 
+ProductoService.eliminarVarios = async function(ids, empresaId, usuario) {
+  const productos = await ProductoRepository.encontrarPorIds(ids, empresaId);
+  if (productos.length !== ids.length) {
+    throw new NotFoundError("Uno o mas productos no encontrados");
+  }
+  await Promise.all(productos.map(async (p) => {
+    await ProductoRepository.registrarMovimiento({
+      producto: p._id, nombreProducto: p.nombre, lote: p.lote || "",
+      accion: "ELIMINAR", usuario: usuario._id, sucursal: p.sucursal, empresa: empresaId,
+      detalle: "Eliminacion masiva por " + usuario.nombre,
+      cambios: { nombre: p.nombre, categoria: p.categoria, stock: p.stock, precio: p.precio, vencimiento: p.vencimiento, codigoBarras: p.codigoBarras || "", lote: p.lote || "", lotes: p.lotes || [] }
+    });
+    await ProductoRepository.delete(p._id);
+  }));
+  return { eliminados: productos.length };
+};
+
 module.exports = ProductoService;

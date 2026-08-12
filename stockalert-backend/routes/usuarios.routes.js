@@ -20,7 +20,9 @@ const { protegerRuta, soloAdmin } = require("../middleware/auth");
 const { validarLimiteUsuarios } = require("../middleware/validarPlan");
 
 // Rate limit estricto SOLO para login/registro (anti fuerza bruta)
-const limiteAuth = rateLimit({
+// En tests el limiter se desactiva: los suites hacen muchos logins desde la misma IP
+// y agotarian la cuota, devolviendo 429 y rompiendo tests que no tienen que ver con esto.
+const limiteAuth = process.env.NODE_ENV === "test" ? (req, res, next) => next() : rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
   standardHeaders: true,

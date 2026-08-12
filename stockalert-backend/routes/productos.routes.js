@@ -105,9 +105,6 @@ router.post("/", protegerRuta, validar(productoSchema), crearProducto);
  *       200: { description: "Producto eliminado" }
  *       404: { description: "Producto no encontrado" }
  */
-router.put("/:id", protegerRuta, validar(productoSchema), actualizarProducto);
-router.delete("/:id", protegerRuta, eliminarProducto);
-
 /**
  * @swagger
  * /api/productos/bulk-delete:
@@ -133,5 +130,8 @@ router.delete("/:id", protegerRuta, eliminarProducto);
  *       404: { description: "Uno o mas productos no encontrados" }
  */
 router.delete("/bulk-delete", protegerRuta, validar(bulkDeleteSchema), eliminarVariosProductos);
+
+router.put("/:id", protegerRuta, validar(productoSchema), actualizarProducto);
+router.delete("/:id", protegerRuta, eliminarProducto);
 
 module.exports = router;
