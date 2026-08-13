@@ -65,7 +65,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
       )}
       <aside
         className={`fixed z-40 flex h-dvh w-[248px] flex-col overflow-y-auto border-r border-border-soft bg-base p-[14px] transition-all duration-300 md:static md:z-auto md:translate-x-0 ${anchoSidebar} ${
-          abierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
+          abierto ? "translate-x-0" : "max-md:-translate-x-full"
         }`}
       >
         <div className={`flex items-center gap-2.5 px-2 pb-6 pt-1 ${colapsado ? "md:justify-center md:px-0" : ""}`}>
