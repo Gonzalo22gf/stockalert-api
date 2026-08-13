@@ -144,7 +144,7 @@ cd stockalert-backend
 npm test
 ```
 
-**132 tests en 11 suites** — cobertura completa:
+**Backend: 132 tests en 11 suites** — cobertura completa:
 
 | Suite | Tests | Cubre |
 |-------|-------|-------|
@@ -159,6 +159,13 @@ npm test
 | usuarios-admin.test.js | 11 | Roles, desactivar, eliminar |
 | validacion.test.js | 14 | Inputs Zod en todos los endpoints |
 | validarPassword.test.js | 8 | Reglas de contraseña |
+
+**Frontend: 32 tests con Vitest** — lógica de productos:
+
+| Suite | Tests | Cubre |
+|-------|-------|-------|
+| productos.utils.test.js | 23 | Filtrado, orden y rango de fechas de vencimiento |
+| useFiltradorProductos.test.js | 9 | Selección múltiple (checkboxes del bulk delete) |
 
 ---
 
