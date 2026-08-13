@@ -1,4 +1,5 @@
-import { NavLink } from "react-router-dom";
+import { useRef, useState, useLayoutEffect } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../features/auth/authStore";
 import SelectorIdioma from "./SelectorIdioma";
@@ -18,11 +19,11 @@ function ItemNav({ to, Icono, label, soloAdmin, esAdmin, onNavegar, colapsado })
       onClick={onNavegar}
       title={colapsado ? label : undefined}
       className={({ isActive }) =>
-        `relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
+        `nav-item relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13.5px] font-medium transition-all duration-200 ${
           colapsado ? "justify-center" : ""
         } ${
           isActive
-            ? "bg-brand/10 text-indigo-300 before:absolute before:-left-[14px] before:top-1/2 before:h-[18px] before:w-[3px] before:-translate-y-1/2 before:rounded-r before:bg-brand"
+            ? "is-active bg-brand/10 text-brand-400"
             : "text-slate-400 hover:bg-panel hover:text-white"
         }`
       }
@@ -35,12 +36,27 @@ function ItemNav({ to, Icono, label, soloAdmin, esAdmin, onNavegar, colapsado })
 
 export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColapso }) {
   const { t } = useTranslation();
+  const location = useLocation();
   const usuario = useAuthStore((s) => s.usuario);
   const cerrarSesion = useAuthStore((s) => s.cerrarSesion);
   const esAdmin = usuario?.rol === "admin";
   const { activado, cargando, activar, desactivar } = usePush();
   const esFundador = ["gef.22@hotmail.com"].includes(usuario?.email?.toLowerCase());
   const anchoSidebar = colapsado ? "md:w-[72px]" : "md:w-[248px]";
+
+  const navRef = useRef(null);
+  const [indicador, setIndicador] = useState({ top: 0, alto: 0, visible: false });
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    if (!nav) return;
+    const activo = nav.querySelector(".nav-item.is-active");
+    if (activo) {
+      setIndicador({ top: activo.offsetTop, alto: activo.offsetHeight, visible: true });
+    } else {
+      setIndicador((prev) => ({ ...prev, visible: false }));
+    }
+  }, [location.pathname, colapsado, esAdmin, esFundador]);
 
   return (
     <>
@@ -52,7 +68,6 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           abierto ? "translate-x-0" : "-translate-x-full md:translate-x-0"
         } ${!abierto ? "md:hidden" : ""}`}
       >
-        {/* Logo + boton colapsar */}
         <div className={`flex items-center gap-2.5 px-2 pb-6 pt-1 ${colapsado ? "md:justify-center md:px-0" : ""}`}>
           <div className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-gradient-to-br from-brand-500 to-brand-600 shadow-lg shadow-brand/30">
             <BoxesIcon size={18} strokeWidth={2} stroke="white" />
@@ -72,7 +87,12 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           </button>
         </div>
 
-        <nav className="flex flex-1 flex-col gap-[3px]">
+        <nav ref={navRef} className="relative flex flex-1 flex-col gap-[3px]">
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-[14px] w-[3px] rounded-r bg-brand transition-all duration-300 ease-out"
+            style={{ top: indicador.top, height: indicador.alto, opacity: indicador.visible ? 1 : 0 }}
+          />
           {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.principal")}</p>}
           <ItemNav to="/" Icono={LayoutDashboard} label={t("nav.dashboard")} onNavegar={onCerrar} colapsado={colapsado} />
           <ItemNav to="/productos" Icono={Package} label={t("nav.productos")} esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
@@ -91,21 +111,19 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           )}
         </nav>
 
-        {/* Selector de idioma */}
         <div className="mt-2">
           <button
-          onClick={activado ? desactivar : activar}
-          disabled={cargando}
-          title={activado ? "Desactivar notificaciones" : "Activar notificaciones"}
-          className={"flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-[12.5px] font-medium transition-colors " + (activado ? "text-brand-400 hover:bg-base/60" : "text-slate-500 hover:bg-base/60 hover:text-slate-300")}
-        >
-          {activado ? <Bell size={15} /> : <BellOff size={15} />}
-          {!colapsado && (activado ? "Notificaciones ON" : "Notificaciones OFF")}
-        </button>
-        <SelectorIdioma colapsado={colapsado} />
+            onClick={activado ? desactivar : activar}
+            disabled={cargando}
+            title={activado ? "Desactivar notificaciones" : "Activar notificaciones"}
+            className={"flex w-full items-center gap-2.5 rounded-lg px-2 py-2 text-[12.5px] font-medium transition-colors " + (activado ? "text-brand-400 hover:bg-base/60" : "text-slate-500 hover:bg-base/60 hover:text-slate-300")}
+          >
+            {activado ? <Bell size={15} /> : <BellOff size={15} />}
+            {!colapsado && (activado ? "Notificaciones ON" : "Notificaciones OFF")}
+          </button>
+          <SelectorIdioma colapsado={colapsado} />
         </div>
 
-        {/* Tarjeta de usuario */}
         <div className={`flex items-center gap-2.5 rounded-xl border border-border-soft bg-panel p-2.5 ${colapsado ? "md:justify-center md:p-2" : ""}`}>
           <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-600 text-[13px] font-bold text-white">
             {usuario?.nombre?.[0]?.toUpperCase() || "U"}
@@ -123,7 +141,6 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
             </>
           )}
         </div>
-
         {colapsado && (
           <button
             onClick={cerrarSesion}
