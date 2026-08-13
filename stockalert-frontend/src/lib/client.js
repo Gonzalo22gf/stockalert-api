@@ -29,4 +29,4 @@ export const apiGet    = (path)        => request(path, { method: "GET" });
 export const apiPost   = (path, body)  => request(path, { method: "POST",   body: JSON.stringify(body) });
 export const apiPut    = (path, body)  => request(path, { method: "PUT",    body: JSON.stringify(body) });
 export const apiPatch  = (path, body)  => request(path, { method: "PATCH",  body: JSON.stringify(body) });
-export const apiDelete = (path)        => request(path, { method: "DELETE" });
+export const apiDelete = (path, body)  => request(path, { method: "DELETE", ...(body !== undefined ? { body: JSON.stringify(body) } : {}) });

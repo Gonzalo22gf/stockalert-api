@@ -50,6 +50,15 @@ describe("Bulk delete", () => {
     expect(res.statusCode).toBe(400);
   });
 
+  test("bulk delete de lista vacia devuelve el mensaje real de Zod, no el fallback", async () => {
+    const { token } = await crearAdmin();
+    const res = await request(app).delete("/api/productos/bulk-delete").set("Authorization", "Bearer " + token).send({ ids: [] });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.mensaje).not.toBe("Datos invalidos");
+    expect(res.body.mensaje.toLowerCase()).toContain("producto");
+  });
+
+
   test("bulk delete de productos propios funciona", async () => {
     const { token, sucursal } = await crearAdmin();
     const p1 = await crearProducto(token, sucursal._id);
