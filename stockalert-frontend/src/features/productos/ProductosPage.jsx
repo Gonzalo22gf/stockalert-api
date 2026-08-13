@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
-import { useProductos, useEliminarProducto } from "./useProductos";
-import { eliminarVariosProductos } from "./productos.api";
+import { useProductos, useEliminarProducto, useBulkDelete } from "./useProductos";
 import { useSucursales } from "../sucursales/useSucursales";
 import { useFiltradorProductos } from "./useFiltradorProductos";
 import { useImportarProductos } from "./useImportarProductos";
@@ -37,6 +36,7 @@ export default function ProductosPage() {
   const { data: sucursales } = useSucursales(esAdmin);
   const { data: productos, isLoading, isError } = useProductos(esAdmin ? sucursalSeleccionada : undefined);
   const eliminarProducto = useEliminarProducto();
+  const bulkDelete = useBulkDelete();
   const { filtros, setFiltro, limpiar, hayFiltrosActivos, resultado, seleccionados, toggleSeleccion, toggleTodos, limpiarSeleccion } = useFiltradorProductos(productos);
   const { inputRef, abrirSelector, manejarArchivo } = useImportarProductos({ esAdmin, sucursalSeleccionada });
 
@@ -56,7 +56,7 @@ export default function ProductosPage() {
     });
     if (!isConfirmed) return;
     try {
-      await eliminarVariosProductos(seleccionados);
+      await bulkDelete.mutateAsync(seleccionados);
       limpiarSeleccion();
       Swal.fire({ icon: "success", title: "Eliminados", timer: 1300, showConfirmButton: false });
     } catch (error) {

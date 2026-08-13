@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { obtenerProductos, crearProducto, actualizarProducto, eliminarProducto } from "./productos.api";
+import { obtenerProductos, crearProducto, actualizarProducto, eliminarProducto, eliminarVariosProductos } from "./productos.api";
 
 export function useProductos(sucursalId) {
   return useQuery({
@@ -36,6 +36,18 @@ export function useEliminarProducto() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: eliminarProducto,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["productos"] });
+      queryClient.invalidateQueries({ queryKey: ["sucursales", "resumen"] });
+      queryClient.invalidateQueries({ queryKey: ["movimientos"] });
+    }
+  });
+}
+
+export function useBulkDelete() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (ids) => eliminarVariosProductos(ids),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["productos"] });
       queryClient.invalidateQueries({ queryKey: ["sucursales", "resumen"] });
