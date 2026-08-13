@@ -31,5 +31,13 @@ export default defineConfig({
   base: "/",
   server: {
     port: 5173
+  },
+  test: {
+    globals: true,
+    // Entorno node por defecto: la mayoria de la logica es pura y no toca el DOM.
+    // Los tests que necesitan DOM declaran jsdom con un comentario // @vitest-environment jsdom
+    environment: "node",
+    pool: "forks",
+    setupFiles: "./src/test/setup.js"
   }
 });
