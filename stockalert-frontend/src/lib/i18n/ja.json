@@ -121,7 +121,8 @@
     "confirmEliminar": "商品を削除しますか？",
     "noDeshacer": "この操作は取り消せません。",
     "eliminado": "商品を削除しました",
-    "error": "エラー"
+    "error": "エラー",
+    "sucursal": "店舗"
   },
   "sucursales": {
     "titulo": "店舗",

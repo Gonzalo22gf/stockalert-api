@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 function obtenerEstado(vencimiento) {
   const hoy = new Date();
@@ -65,6 +66,7 @@ function MenuAcciones({ producto, onEditar, onEliminar }) {
 const POR_PAGINA = 15;
 
 export default function ProductosTabla({ productos, esAdmin, onEditar, onEliminar, seleccionados = [], onToggle, onToggleTodos }) {
+  const { t } = useTranslation();
   const [orden, setOrden] = useState({ campo: "nombre", dir: "asc" });
   const [pagina, setPagina] = useState(1);
 
@@ -117,12 +119,12 @@ export default function ProductosTabla({ productos, esAdmin, onEditar, onElimina
         <table className="w-full text-sm">
           <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
             <tr>
-              <Th campo="nombre">Producto</Th>
-              <Th campo="categoria">Categoría</Th>
-              {esAdmin && <Th campo="sucursal">Sucursal</Th>}
-              <Th campo="stock" className="text-center">Stock</Th>
-              <Th campo="precio" className="text-right">Precio</Th>
-              <Th campo="vencimiento">Vence</Th>
+              <Th campo="nombre">{t("productos.nombre")}</Th>
+              <Th campo="categoria">{t("productos.categoria")}</Th>
+              {esAdmin && <Th campo="sucursal">{t("productos.sucursal")}</Th>}
+              <Th campo="stock" className="text-center">{t("productos.stock")}</Th>
+              <Th campo="precio" className="text-right">{t("productos.precio")}</Th>
+              <Th campo="vencimiento">{t("productos.vencimiento")}</Th>
               <th className="px-4 py-3 w-10">
                 <input
                   type="checkbox"

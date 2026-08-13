@@ -121,7 +121,8 @@
     "confirmEliminar": "Excluir produto?",
     "noDeshacer": "Esta ação não pode ser desfeita.",
     "eliminado": "Produto excluído",
-    "error": "Erro"
+    "error": "Erro",
+    "sucursal": "Filial"
   },
   "sucursales": {
     "titulo": "Filiais",

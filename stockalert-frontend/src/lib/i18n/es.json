@@ -121,7 +121,8 @@
     "confirmEliminar": "¿Eliminar producto?",
     "noDeshacer": "Esta acción no se puede deshacer.",
     "eliminado": "Producto eliminado",
-    "error": "Error"
+    "error": "Error",
+    "sucursal": "Sucursal"
   },
   "sucursales": {
     "titulo": "Sucursales",

@@ -121,7 +121,8 @@
     "confirmEliminar": "刪除產品？",
     "noDeshacer": "此操作無法撤銷。",
     "eliminado": "產品已刪除",
-    "error": "錯誤"
+    "error": "錯誤",
+    "sucursal": "分店"
   },
   "sucursales": {
     "titulo": "門市",

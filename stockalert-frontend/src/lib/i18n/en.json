@@ -121,7 +121,8 @@
     "confirmEliminar": "Delete product?",
     "noDeshacer": "This action cannot be undone.",
     "eliminado": "Product deleted",
-    "error": "Error"
+    "error": "Error",
+    "sucursal": "Branch"
   },
   "sucursales": {
     "titulo": "Branches",
