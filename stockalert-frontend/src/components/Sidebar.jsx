@@ -81,7 +81,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           <button
             onClick={onAlternarColapso}
             title={colapsado ? t("nav.expandir") : t("nav.colapsar")}
-            className="hidden shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-panel hover:text-white md:block"
+            className={`shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-panel hover:text-white ${colapsado ? "hidden" : "hidden md:block"}`}
           >
             {colapsado ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
