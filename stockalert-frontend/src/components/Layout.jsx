@@ -61,7 +61,10 @@ export default function Layout() {
         onAlternarColapso={alternarColapso}
       />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar titulo={titulo} subtitulo={subtitulo} onToggleSidebar={() => setSidebarAbierto((v) => !v)} />
+        <Topbar titulo={titulo} subtitulo={subtitulo} onToggleSidebar={() => {
+          if (window.innerWidth >= 768) alternarColapso();
+          else setSidebarAbierto((v) => !v);
+        }} />
         <main className="flex-1 overflow-y-auto px-4 py-5 md:px-7 md:py-6">
           <Outlet />
         </main>
