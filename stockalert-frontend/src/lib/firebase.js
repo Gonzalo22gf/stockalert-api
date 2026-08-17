@@ -20,7 +20,16 @@ export async function solicitarPermisoPush() {
   try {
     const permiso = await Notification.requestPermission();
     if (permiso !== "granted") return null;
-    const token = await getToken(messaging, { vapidKey: VAPID_KEY });
+    // Registrar el SW de Firebase explicitamente para que no choque con el SW de la PWA.
+    // Sin esto, en Android+PWA el token se registra contra el SW equivocado y nunca llega nada.
+    let swReg;
+    if ("serviceWorker" in navigator) {
+      swReg = await navigator.serviceWorker.register("/firebase-messaging-sw.js", { scope: "/firebase-cloud-messaging-push-scope" });
+    }
+    const token = await getToken(messaging, {
+      vapidKey: VAPID_KEY,
+      serviceWorkerRegistration: swReg
+    });
     return token;
   } catch (e) {
     console.error("Error al obtener token push:", e);
