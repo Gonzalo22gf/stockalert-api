@@ -70,7 +70,11 @@
     "bajoUmbral": "低於閾值",
     "valorInventario": "庫存價值",
     "totalEnStock": "庫存總額",
-    "noCargar": "無法載入儀表板。"
+    "noCargar": "無法載入儀表板。",
+    "riesgoTitulo": "⚠️ 風險最高的10家門店",
+    "riesgoSubtitulo": "已過期 + 即將過期 + 庫存緊張",
+    "riesgoMensaje1": "此圖表比較所有門店。",
+    "riesgoMensaje2": "請在上方選擇\"所有分店\"。"
   },
   "panelRiesgo": {
     "accionesUrgentes": "緊急操作",

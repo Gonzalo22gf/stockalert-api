@@ -70,7 +70,11 @@
     "bajoUmbral": "below threshold",
     "valorInventario": "Inventory value",
     "totalEnStock": "total in stock",
-    "noCargar": "Could not load dashboard."
+    "noCargar": "Could not load dashboard.",
+    "riesgoTitulo": "⚠️ Top 10 stores at risk",
+    "riesgoSubtitulo": "Expired + expiring soon + critical stock",
+    "riesgoMensaje1": "This chart compares all stores.",
+    "riesgoMensaje2": "Choose \"All branches\" above."
   },
   "panelRiesgo": {
     "accionesUrgentes": "Urgent actions",

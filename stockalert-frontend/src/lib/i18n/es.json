@@ -70,7 +70,11 @@
     "bajoUmbral": "bajo umbral",
     "valorInventario": "Valor inventario",
     "totalEnStock": "total en stock",
-    "noCargar": "No se pudo cargar el dashboard."
+    "noCargar": "No se pudo cargar el dashboard.",
+    "riesgoTitulo": "⚠️ 10 tiendas con más riesgo",
+    "riesgoSubtitulo": "Vencidos + por vencer + stock crítico",
+    "riesgoMensaje1": "Este gráfico compara todas las tiendas.",
+    "riesgoMensaje2": "Elegí \"Todas las sucursales\" arriba."
   },
   "panelRiesgo": {
     "accionesUrgentes": "Acciones urgentes",

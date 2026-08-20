@@ -70,7 +70,11 @@
     "bajoUmbral": "閾値以下",
     "valorInventario": "在庫価値",
     "totalEnStock": "在庫合計",
-    "noCargar": "ダッシュボードを読み込めませんでした。"
+    "noCargar": "ダッシュボードを読み込めませんでした。",
+    "riesgoTitulo": "⚠️ リスクの高い店舗トップ10",
+    "riesgoSubtitulo": "期限切れ + 期限間近 + 在庫危機",
+    "riesgoMensaje1": "このグラフはすべての店舗を比較します。",
+    "riesgoMensaje2": "上部で「すべての店舗」を選択してください。"
   },
   "panelRiesgo": {
     "accionesUrgentes": "緊急対応",

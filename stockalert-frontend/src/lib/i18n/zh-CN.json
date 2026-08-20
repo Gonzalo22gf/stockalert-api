@@ -70,7 +70,11 @@
     "bajoUmbral": "低于阈值",
     "valorInventario": "库存价值",
     "totalEnStock": "库存总额",
-    "noCargar": "无法加载仪表盘。"
+    "noCargar": "无法加载仪表盘。",
+    "riesgoTitulo": "⚠️ 风险最高的10家门店",
+    "riesgoSubtitulo": "已过期 + 即将过期 + 库存紧张",
+    "riesgoMensaje1": "此图表比较所有门店。",
+    "riesgoMensaje2": "请在上方选择\"所有分店\"。"
   },
   "panelRiesgo": {
     "accionesUrgentes": "紧急操作",

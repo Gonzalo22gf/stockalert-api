@@ -1,4 +1,5 @@
 import { Doughnut, Bar } from "react-chartjs-2";
+import { useTranslation } from "react-i18next";
 import {
   Chart as ChartJS,
   ArcElement,
@@ -38,6 +39,7 @@ const tooltipEstilo = {
 };
 
 export default function GraficosDashboard({ productos, resumenSucursales }) {
+  const { t } = useTranslation();
   if (!productos || productos.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-panel/50 px-6 py-14 text-center">
@@ -271,15 +273,15 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
         </Tarjeta>
 
         {hayResumen && topRiesgo.length > 0 ? (
-          <Tarjeta titulo="⚠️ 10 tiendas con más riesgo" subtitulo="Vencidos + por vencer + stock crítico">
+          <Tarjeta titulo={t("dashboard.riesgoTitulo")} subtitulo={t("dashboard.riesgoSubtitulo")}>
             <div className="h-64">
               <Doughnut data={datosDonaRiesgo} options={opcionesDonaRiesgo} />
             </div>
           </Tarjeta>
         ) : (
-          <Tarjeta titulo="⚠️ 10 tiendas con más riesgo" subtitulo="Seleccioná 'Todas las sucursales' para ver esto">
+          <Tarjeta titulo={t("dashboard.riesgoTitulo")} subtitulo={t("dashboard.riesgoSubtitulo")}>
             <div className="flex h-64 items-center justify-center text-center text-xs text-slate-500">
-              Este gráfico compara todas las tiendas.<br />Elegí "Todas las sucursales" arriba.
+              {t("dashboard.riesgoMensaje1")}<br />{t("dashboard.riesgoMensaje2")}
             </div>
           </Tarjeta>
         )}

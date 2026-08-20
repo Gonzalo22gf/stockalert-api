@@ -70,7 +70,11 @@
     "bajoUmbral": "abaixo do limite",
     "valorInventario": "Valor do inventário",
     "totalEnStock": "total em estoque",
-    "noCargar": "Não foi possível carregar o dashboard."
+    "noCargar": "Não foi possível carregar o dashboard.",
+    "riesgoTitulo": "⚠️ 10 lojas com mais risco",
+    "riesgoSubtitulo": "Vencidos + a vencer + estoque crítico",
+    "riesgoMensaje1": "Este gráfico compara todas as lojas.",
+    "riesgoMensaje2": "Escolha \"Todas as filiais\" acima."
   },
   "panelRiesgo": {
     "accionesUrgentes": "Ações urgentes",
