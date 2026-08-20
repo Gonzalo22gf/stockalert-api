@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { useActualizarProducto } from "./useProductos";
 import Boton from "../../components/ui/Boton";
@@ -12,6 +13,7 @@ function fechaParaInput(vencimiento) {
 }
 
 export default function ModalEditarProducto({ producto, onCerrar }) {
+  const { t } = useTranslation();
   const actualizarProducto = useActualizarProducto();
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
@@ -74,9 +76,9 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs text-slate-400">Categoría</label>
+              <label className="mb-1 block text-xs text-slate-400">{t("productos.categoria")}</label>
               <Select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
-                <option value="">Categoría</option>
+                <option value="">{t("productos.categoria")}</option>
                 {CATEGORIAS.map((c) => (
                   <option key={c} value={c}>{c}</option>
                 ))}

@@ -122,7 +122,8 @@
     "noDeshacer": "Esta acción no se puede deshacer.",
     "eliminado": "Producto eliminado",
     "error": "Error",
-    "sucursal": "Sucursal"
+    "sucursal": "Sucursal",
+    "todasSucursales": "Todas las sucursales"
   },
   "sucursales": {
     "titulo": "Sucursales",
@@ -292,5 +293,30 @@
     "limiteGenerico": "Alcanzaste un limite de tu plan actual.",
     "verPlanes": "Ver planes y precios",
     "ahoreNo": "Ahora no"
+  },
+  "filtros": {
+    "todasCategorias": "Todas las categorías",
+    "estadoTodos": "Todos los estados",
+    "stockBajo": "Stock bajo",
+    "agotado": "Agotado",
+    "ordenarPor": "Ordenar por...",
+    "nombreAZ": "Nombre (A-Z)",
+    "nombreZA": "Nombre (Z-A)",
+    "vencePrimero": "Vence primero",
+    "venceUltimo": "Vence último",
+    "stockMenor": "Stock (menor)",
+    "stockMayor": "Stock (mayor)",
+    "precioMenor": "Precio (menor)",
+    "precioMayor": "Precio (mayor)"
+  },
+  "form": {
+    "ean": "EAN / Código de barras",
+    "nombreProducto": "Nombre del producto",
+    "precio": "Precio $",
+    "lote": "N° de lote",
+    "stock": "Stock",
+    "seleccionaSucursal": "Seleccioná la sucursal del producto",
+    "elegiSucursal": "Seleccioná una sucursal",
+    "elegiSucursalTexto": "Elegí a qué sucursal pertenece el producto."
   }
 }

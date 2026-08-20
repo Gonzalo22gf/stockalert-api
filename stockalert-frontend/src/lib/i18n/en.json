@@ -122,7 +122,8 @@
     "noDeshacer": "This action cannot be undone.",
     "eliminado": "Product deleted",
     "error": "Error",
-    "sucursal": "Branch"
+    "sucursal": "Branch",
+    "todasSucursales": "All branches"
   },
   "sucursales": {
     "titulo": "Branches",
@@ -292,5 +293,30 @@
     "limiteGenerico": "You have reached a limit of your current plan.",
     "verPlanes": "View plans and pricing",
     "ahoreNo": "Not now"
+  },
+  "filtros": {
+    "todasCategorias": "All categories",
+    "estadoTodos": "All statuses",
+    "stockBajo": "Low stock",
+    "agotado": "Out of stock",
+    "ordenarPor": "Sort by...",
+    "nombreAZ": "Name (A-Z)",
+    "nombreZA": "Name (Z-A)",
+    "vencePrimero": "Expires first",
+    "venceUltimo": "Expires last",
+    "stockMenor": "Stock (low)",
+    "stockMayor": "Stock (high)",
+    "precioMenor": "Price (low)",
+    "precioMayor": "Price (high)"
+  },
+  "form": {
+    "ean": "EAN / Barcode",
+    "nombreProducto": "Product name",
+    "precio": "Price $",
+    "lote": "Batch number",
+    "stock": "Stock",
+    "seleccionaSucursal": "Select the product branch",
+    "elegiSucursal": "Select a branch",
+    "elegiSucursalTexto": "Choose which branch the product belongs to."
   }
 }

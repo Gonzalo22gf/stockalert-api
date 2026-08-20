@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { buscarProductoPorEAN } from "./useOpenFoodFacts";
 import Swal from "sweetalert2";
 import { useCrearProducto } from "./useProductos";
@@ -10,6 +11,7 @@ import { Input, Select } from "../../components/ui/Input";
 const CATEGORIAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
 
 export default function FormularioProducto({ esAdmin }) {
+  const { t } = useTranslation();
   const crearProducto = useCrearProducto();
   const { data: sucursales } = useSucursales(esAdmin);
   const [ean, setEan] = useState("");
@@ -61,7 +63,7 @@ export default function FormularioProducto({ esAdmin }) {
       return;
     }
     if (esAdmin && !sucursalId) {
-      Swal.fire({ icon: "warning", title: "Seleccioná una sucursal", text: "Elegí a qué sucursal pertenece el producto." });
+      Swal.fire({ icon: "warning", title: t("form.elegiSucursal"), text: t("form.elegiSucursalTexto") });
       return;
     }
     const nuevoProducto = {
@@ -90,7 +92,7 @@ export default function FormularioProducto({ esAdmin }) {
       <div className="mb-3 flex flex-col gap-2 sm:flex-row">
         <Input
           className="flex-1"
-          placeholder="EAN / Código de barras"
+          placeholder={t("form.ean")}
           value={ean}
           onChange={(e) => setEan(e.target.value)}
         />
@@ -103,23 +105,23 @@ export default function FormularioProducto({ esAdmin }) {
         </button>
       </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <Input placeholder="Nombre del producto" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+        <Input placeholder={t("form.nombreProducto")} value={nombre} onChange={(e) => setNombre(e.target.value)} />
         <Select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
-          <option value="">Categoría</option>
+          <option value="">{t("productos.categoria")}</option>
           {CATEGORIAS.map((c) => (
             <option key={c} value={c}>{c}</option>
           ))}
         </Select>
-        <Input type="number" placeholder="Precio $" value={precio} onChange={(e) => setPrecio(e.target.value)} />
-        <Input placeholder="N° de lote" value={lote} onChange={(e) => setLote(e.target.value)} />
-        <Input type="number" placeholder="Stock" value={stock} onChange={(e) => setStock(e.target.value)} />
+        <Input type="number" placeholder={t("form.precio")} value={precio} onChange={(e) => setPrecio(e.target.value)} />
+        <Input placeholder={t("form.lote")} value={lote} onChange={(e) => setLote(e.target.value)} />
+        <Input type="number" placeholder={t("form.stock")} value={stock} onChange={(e) => setStock(e.target.value)} />
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-slate-400">Fecha de vencimiento</label>
           <Input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
         </div>
         {esAdmin && (
           <Select className="sm:col-span-2 lg:col-span-3" value={sucursalId} onChange={(e) => setSucursalId(e.target.value)}>
-            <option value="">Seleccioná la sucursal del producto</option>
+            <option value="">{t("form.seleccionaSucursal")}</option>
             {(sucursales || []).map((s) => (
               <option key={s._id} value={s._id}>{s.nombre}</option>
             ))}

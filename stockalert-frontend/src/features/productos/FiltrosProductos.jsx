@@ -1,26 +1,27 @@
 import { Input, Select } from "../../components/ui/Input";
 import Boton from "../../components/ui/Boton";
 import { exportarProductosExcel } from "../../lib/exportar";
+import { useTranslation } from "react-i18next";
 
 const OPCIONES_ESTADO = [
-  { value: "", label: "Todos los estados" },
-  { value: "buen-estado", label: "En buen estado" },
-  { value: "por-vencer", label: "Por vencer" },
-  { value: "vencido", label: "Vencido" },
-  { value: "stock-bajo", label: "Stock bajo" },
-  { value: "agotado", label: "Agotado" }
+  { value: "", key: "filtros.estadoTodos" },
+  { value: "buen-estado", key: "productos.buenEstado" },
+  { value: "por-vencer", key: "productos.porVencer" },
+  { value: "vencido", key: "productos.vencido" },
+  { value: "stock-bajo", key: "filtros.stockBajo" },
+  { value: "agotado", key: "filtros.agotado" }
 ];
 
 const OPCIONES_ORDEN = [
-  { value: "", label: "Ordenar por..." },
-  { value: "alfabetico", label: "Nombre (A-Z)" },
-  { value: "alfabetico-desc", label: "Nombre (Z-A)" },
-  { value: "fecha", label: "Vence primero" },
-  { value: "fecha-lejana", label: "Vence ultimo" },
-  { value: "stock", label: "Stock (menor)" },
-  { value: "stock-alto", label: "Stock (mayor)" },
-  { value: "precio", label: "Precio (menor)" },
-  { value: "precio-alto", label: "Precio (mayor)" }
+  { value: "", key: "filtros.ordenarPor" },
+  { value: "alfabetico", key: "filtros.nombreAZ" },
+  { value: "alfabetico-desc", key: "filtros.nombreZA" },
+  { value: "fecha", key: "filtros.vencePrimero" },
+  { value: "fecha-lejana", key: "filtros.venceUltimo" },
+  { value: "stock", key: "filtros.stockMenor" },
+  { value: "stock-alto", key: "filtros.stockMayor" },
+  { value: "precio", key: "filtros.precioMenor" },
+  { value: "precio-alto", key: "filtros.precioMayor" }
 ];
 
 export default function FiltrosProductos({
@@ -30,6 +31,7 @@ export default function FiltrosProductos({
   onImportar, inputImportarRef,
   seleccionados, onEliminarSeleccionados
 }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-xl border border-slate-800 bg-slate-900 p-4">
       <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
@@ -41,14 +43,14 @@ export default function FiltrosProductos({
           className="md:col-span-4"
         />
         <Select value={filtros.filtroCategoria} onChange={(e) => setFiltro("filtroCategoria", e.target.value)} className="md:col-span-3">
-          <option value="">Todas las categorias</option>
+          <option value="">{t("filtros.todasCategorias")}</option>
           {categorias.map((c) => <option key={c} value={c}>{c}</option>)}
         </Select>
         <Select value={filtros.filtroEstado} onChange={(e) => setFiltro("filtroEstado", e.target.value)} className="md:col-span-3">
-          {OPCIONES_ESTADO.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          {OPCIONES_ESTADO.map((o) => <option key={o.value} value={o.value}>{t(o.key)}</option>)}
         </Select>
         <Select value={filtros.orden} onChange={(e) => setFiltro("orden", e.target.value)} className="md:col-span-2">
-          {OPCIONES_ORDEN.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+          {OPCIONES_ORDEN.map((o) => <option key={o.value} value={o.value}>{t(o.key)}</option>)}
         </Select>
         <div className="flex flex-wrap items-center gap-2 md:col-span-6">
           <label className="text-xs text-slate-400 whitespace-nowrap">Vence desde:</label>

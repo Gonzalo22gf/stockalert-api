@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
@@ -18,6 +19,7 @@ import { Select } from "../../components/ui/Input";
 import Boton from "../../components/ui/Boton";
 
 export default function ProductosPage() {
+  const { t } = useTranslation();
   const usuario = useAuthStore((s) => s.usuario);
   const esAdmin = usuario?.rol === "admin";
   const [searchParams] = useSearchParams();
@@ -87,7 +89,7 @@ export default function ProductosPage() {
           <div className="flex items-center gap-3">
             <label className="text-sm text-slate-400">Sucursal</label>
             <Select value={sucursalSeleccionada} onChange={(e) => setSucursalSeleccionada(e.target.value)} className="w-auto">
-              <option value="">Todas las sucursales</option>
+              <option value="">{t("productos.todasSucursales")}</option>
               {(sucursales || []).map((s) => <option key={s._id} value={s._id}>{s.nombre}</option>)}
             </Select>
           </div>

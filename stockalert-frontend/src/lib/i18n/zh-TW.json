@@ -122,7 +122,8 @@
     "noDeshacer": "此操作無法撤銷。",
     "eliminado": "產品已刪除",
     "error": "錯誤",
-    "sucursal": "分店"
+    "sucursal": "分店",
+    "todasSucursales": "所有分店"
   },
   "sucursales": {
     "titulo": "門市",
@@ -292,5 +293,30 @@
     "limiteGenerico": "您已達到目前方案的限制。",
     "verPlanes": "查看方案與價格",
     "ahoreNo": "暫不"
+  },
+  "filtros": {
+    "todasCategorias": "所有類別",
+    "estadoTodos": "所有狀態",
+    "stockBajo": "庫存不足",
+    "agotado": "缺貨",
+    "ordenarPor": "排序方式...",
+    "nombreAZ": "名稱 (A-Z)",
+    "nombreZA": "名稱 (Z-A)",
+    "vencePrimero": "最先到期",
+    "venceUltimo": "最後到期",
+    "stockMenor": "庫存 (少)",
+    "stockMayor": "庫存 (多)",
+    "precioMenor": "價格 (低)",
+    "precioMayor": "價格 (高)"
+  },
+  "form": {
+    "ean": "EAN / 條碼",
+    "nombreProducto": "產品名稱",
+    "precio": "價格 $",
+    "lote": "批號",
+    "stock": "庫存",
+    "seleccionaSucursal": "選擇產品分店",
+    "elegiSucursal": "請選擇分店",
+    "elegiSucursalTexto": "請選擇產品所屬的分店。"
   }
 }

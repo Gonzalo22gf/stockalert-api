@@ -122,7 +122,8 @@
     "noDeshacer": "此操作无法撤销。",
     "eliminado": "产品已删除",
     "error": "错误",
-    "sucursal": "分店"
+    "sucursal": "分店",
+    "todasSucursales": "所有分店"
   },
   "sucursales": {
     "titulo": "门店",
@@ -292,5 +293,30 @@
     "limiteGenerico": "您已达到当前套餐的限制。",
     "verPlanes": "查看套餐和价格",
     "ahoreNo": "暂不"
+  },
+  "filtros": {
+    "todasCategorias": "所有类别",
+    "estadoTodos": "所有状态",
+    "stockBajo": "库存不足",
+    "agotado": "缺货",
+    "ordenarPor": "排序方式...",
+    "nombreAZ": "名称 (A-Z)",
+    "nombreZA": "名称 (Z-A)",
+    "vencePrimero": "最先到期",
+    "venceUltimo": "最后到期",
+    "stockMenor": "库存 (少)",
+    "stockMayor": "库存 (多)",
+    "precioMenor": "价格 (低)",
+    "precioMayor": "价格 (高)"
+  },
+  "form": {
+    "ean": "EAN / 条形码",
+    "nombreProducto": "产品名称",
+    "precio": "价格 $",
+    "lote": "批号",
+    "stock": "库存",
+    "seleccionaSucursal": "选择产品分店",
+    "elegiSucursal": "请选择分店",
+    "elegiSucursalTexto": "请选择产品所属的分店。"
   }
 }

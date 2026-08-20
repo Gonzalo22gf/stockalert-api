@@ -122,7 +122,8 @@
     "noDeshacer": "この操作は取り消せません。",
     "eliminado": "商品を削除しました",
     "error": "エラー",
-    "sucursal": "店舗"
+    "sucursal": "店舗",
+    "todasSucursales": "すべての店舗"
   },
   "sucursales": {
     "titulo": "店舗",
@@ -292,5 +293,30 @@
     "limiteGenerico": "現在のプランの上限に達しました。",
     "verPlanes": "プランと料金を見る",
     "ahoreNo": "後で"
+  },
+  "filtros": {
+    "todasCategorias": "すべてのカテゴリ",
+    "estadoTodos": "すべての状態",
+    "stockBajo": "在庫僅少",
+    "agotado": "在庫切れ",
+    "ordenarPor": "並び替え...",
+    "nombreAZ": "名前 (A-Z)",
+    "nombreZA": "名前 (Z-A)",
+    "vencePrimero": "期限が近い順",
+    "venceUltimo": "期限が遠い順",
+    "stockMenor": "在庫 (少)",
+    "stockMayor": "在庫 (多)",
+    "precioMenor": "価格 (安)",
+    "precioMayor": "価格 (高)"
+  },
+  "form": {
+    "ean": "EAN / バーコード",
+    "nombreProducto": "商品名",
+    "precio": "価格 $",
+    "lote": "ロット番号",
+    "stock": "在庫",
+    "seleccionaSucursal": "商品の店舗を選択",
+    "elegiSucursal": "店舗を選択してください",
+    "elegiSucursalTexto": "商品が属する店舗を選択してください。"
   }
 }
