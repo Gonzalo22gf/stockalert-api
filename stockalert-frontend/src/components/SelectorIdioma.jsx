@@ -2,11 +2,12 @@ import { useTranslation } from "react-i18next";
 
 const IDIOMAS = [
   { codigo: "es", etiqueta: "ES", nombre: "Español" },
-  { codigo: "en", etiqueta: "EN", nombre: "English" },
-  { codigo: "pt", etiqueta: "PT", nombre: "Português" },
-  { codigo: "zh-CN", etiqueta: "中文", nombre: "中文（简体）" },
-  { codigo: "zh-TW", etiqueta: "繁體", nombre: "中文（繁體）" },
-  { codigo: "ja", etiqueta: "日本語", nombre: "日本語" }
+  { codigo: "en", etiqueta: "EN", nombre: "English" }
+  // Desactivados por ahora (traducciones pendientes de validar por hablante nativo):
+  // { codigo: "pt", etiqueta: "PT", nombre: "Português" },
+  // { codigo: "zh-CN", etiqueta: "中文", nombre: "中文（简体）" },
+  // { codigo: "zh-TW", etiqueta: "繁體", nombre: "中文（繁體）" },
+  // { codigo: "ja", etiqueta: "日本語", nombre: "日本語" }
 ];
 
 export default function SelectorIdioma({ colapsado }) {

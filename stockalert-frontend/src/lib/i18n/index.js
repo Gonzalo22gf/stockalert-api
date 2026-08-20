@@ -21,6 +21,8 @@ i18n
       ja: { translation: ja }
     },
     fallbackLng: "es",
+    supportedLngs: ["es", "en"], // pt/zh/ja desactivados por ahora (traducciones sin validar); reactivar agregandolos aca y en SelectorIdioma
+    nonExplicitSupportedLngs: true,
     detection: {
       order: ["localStorage", "navigator"],
       caches: ["localStorage"],
