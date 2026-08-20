@@ -317,6 +317,7 @@
     "stock": "Stock",
     "seleccionaSucursal": "Select the product branch",
     "elegiSucursal": "Select a branch",
-    "elegiSucursalTexto": "Choose which branch the product belongs to."
+    "elegiSucursalTexto": "Choose which branch the product belongs to.",
+    "sucursalProducto": "Product branch"
   }
 }

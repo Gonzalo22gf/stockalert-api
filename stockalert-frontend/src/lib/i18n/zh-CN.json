@@ -317,6 +317,7 @@
     "stock": "库存",
     "seleccionaSucursal": "选择产品分店",
     "elegiSucursal": "请选择分店",
-    "elegiSucursalTexto": "请选择产品所属的分店。"
+    "elegiSucursalTexto": "请选择产品所属的分店。",
+    "sucursalProducto": "产品分店"
   }
 }

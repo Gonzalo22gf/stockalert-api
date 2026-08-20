@@ -317,6 +317,7 @@
     "stock": "在庫",
     "seleccionaSucursal": "商品の店舗を選択",
     "elegiSucursal": "店舗を選択してください",
-    "elegiSucursalTexto": "商品が属する店舗を選択してください。"
+    "elegiSucursalTexto": "商品が属する店舗を選択してください。",
+    "sucursalProducto": "商品の店舗"
   }
 }

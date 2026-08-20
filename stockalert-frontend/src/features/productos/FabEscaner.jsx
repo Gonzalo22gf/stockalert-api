@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Html5Qrcode } from "html5-qrcode";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
@@ -8,6 +9,7 @@ import { useSucursales } from "../sucursales/useSucursales";
 const CATEGORIAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
 
 export default function FabEscaner() {
+  const { t } = useTranslation();
   const usuario = useAuthStore((s) => s.usuario);
   const esAdmin = usuario?.rol === "admin";
 
@@ -187,7 +189,7 @@ export default function FabEscaner() {
 
                 <input className={inputClase} placeholder="Nombre del producto" value={nombre} onChange={(e) => setNombre(e.target.value)} />
                 <select className={inputClase} value={categoria} onChange={(e) => setCategoria(e.target.value)}>
-                  <option value="">Categoría</option>
+                  <option value="">{t("productos.categoria")}</option>
                   {CATEGORIAS.map((c) => (
                     <option key={c} value={c}>{c}</option>
                   ))}
@@ -202,7 +204,7 @@ export default function FabEscaner() {
                 </div>
                 {esAdmin && (
                   <select className={inputClase} value={sucursalId} onChange={(e) => setSucursalId(e.target.value)}>
-                    <option value="">Sucursal del producto</option>
+                    <option value="">{t("form.sucursalProducto")}</option>
                     {(sucursales || []).map((s) => (
                       <option key={s._id} value={s._id}>{s.nombre}</option>
                     ))}

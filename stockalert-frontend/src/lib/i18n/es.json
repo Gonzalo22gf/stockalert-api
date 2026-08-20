@@ -317,6 +317,7 @@
     "stock": "Stock",
     "seleccionaSucursal": "Seleccioná la sucursal del producto",
     "elegiSucursal": "Seleccioná una sucursal",
-    "elegiSucursalTexto": "Elegí a qué sucursal pertenece el producto."
+    "elegiSucursalTexto": "Elegí a qué sucursal pertenece el producto.",
+    "sucursalProducto": "Sucursal del producto"
   }
 }

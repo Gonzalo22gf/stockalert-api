@@ -317,6 +317,7 @@
     "stock": "Estoque",
     "seleccionaSucursal": "Selecione a filial do produto",
     "elegiSucursal": "Selecione uma filial",
-    "elegiSucursalTexto": "Escolha a qual filial o produto pertence."
+    "elegiSucursalTexto": "Escolha a qual filial o produto pertence.",
+    "sucursalProducto": "Filial do produto"
   }
 }
