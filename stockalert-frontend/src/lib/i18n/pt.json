@@ -323,5 +323,17 @@
     "elegiSucursal": "Selecione uma filial",
     "elegiSucursalTexto": "Escolha a qual filial o produto pertence.",
     "sucursalProducto": "Filial do produto"
+  },
+  "superadmin": {
+    "accionEmpresa": "{{accion}} empresa",
+    "desactivada": "Empresa desativada",
+    "activada": "Empresa ativada",
+    "eliminarTitulo": "⚠️ Excluir empresa",
+    "eliminarHtml": "<b>{{nombre}}</b><br><br><b>Todos</b> os seus dados serão excluídos: usuários, produtos, filiais, snapshots e movimentações.<br><br><span style=\"color:#ef4444\">Esta ação é <b>irreversível</b>.</span>",
+    "confirmacionFinal": "Confirmação final",
+    "nombreIncorrecto": "Nome incorreto",
+    "noEliminada": "A empresa não foi excluída.",
+    "empresaEliminada": "Empresa excluída",
+    "fueEliminada": "{{nombre}} foi excluída."
   }
 }

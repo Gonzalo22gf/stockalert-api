@@ -323,5 +323,17 @@
     "elegiSucursal": "店舗を選択してください",
     "elegiSucursalTexto": "商品が属する店舗を選択してください。",
     "sucursalProducto": "商品の店舗"
+  },
+  "superadmin": {
+    "accionEmpresa": "会社を{{accion}}",
+    "desactivada": "会社を無効化しました",
+    "activada": "会社を有効化しました",
+    "eliminarTitulo": "⚠️ 会社を削除",
+    "eliminarHtml": "<b>{{nombre}}</b><br><br><b>すべて</b>のデータが削除されます：ユーザー、商品、店舗、スナップショット、履歴。<br><br><span style=\"color:#ef4444\">この操作は<b>取り消せません</b>。</span>",
+    "confirmacionFinal": "最終確認",
+    "nombreIncorrecto": "名前が正しくありません",
+    "noEliminada": "会社は削除されませんでした。",
+    "empresaEliminada": "会社を削除しました",
+    "fueEliminada": "{{nombre}} を削除しました。"
   }
 }

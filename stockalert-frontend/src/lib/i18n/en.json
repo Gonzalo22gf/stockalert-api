@@ -323,5 +323,17 @@
     "elegiSucursal": "Select a branch",
     "elegiSucursalTexto": "Choose which branch the product belongs to.",
     "sucursalProducto": "Product branch"
+  },
+  "superadmin": {
+    "accionEmpresa": "{{accion}} company",
+    "desactivada": "Company deactivated",
+    "activada": "Company activated",
+    "eliminarTitulo": "⚠️ Delete company",
+    "eliminarHtml": "<b>{{nombre}}</b><br><br><b>All</b> its data will be deleted: users, products, branches, snapshots and movements.<br><br><span style=\"color:#ef4444\">This action is <b>irreversible</b>.</span>",
+    "confirmacionFinal": "Final confirmation",
+    "nombreIncorrecto": "Incorrect name",
+    "noEliminada": "The company was not deleted.",
+    "empresaEliminada": "Company deleted",
+    "fueEliminada": "{{nombre}} was deleted."
   }
 }

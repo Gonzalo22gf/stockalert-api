@@ -323,5 +323,17 @@
     "elegiSucursal": "请选择分店",
     "elegiSucursalTexto": "请选择产品所属的分店。",
     "sucursalProducto": "产品分店"
+  },
+  "superadmin": {
+    "accionEmpresa": "{{accion}}公司",
+    "desactivada": "公司已停用",
+    "activada": "公司已启用",
+    "eliminarTitulo": "⚠️ 删除公司",
+    "eliminarHtml": "<b>{{nombre}}</b><br><br>将删除其<b>所有</b>数据：用户、产品、分店、快照和记录。<br><br><span style=\"color:#ef4444\">此操作<b>不可逆</b>。</span>",
+    "confirmacionFinal": "最终确认",
+    "nombreIncorrecto": "名称错误",
+    "noEliminada": "公司未被删除。",
+    "empresaEliminada": "公司已删除",
+    "fueEliminada": "{{nombre}} 已删除。"
   }
 }

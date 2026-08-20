@@ -323,5 +323,17 @@
     "elegiSucursal": "Seleccioná una sucursal",
     "elegiSucursalTexto": "Elegí a qué sucursal pertenece el producto.",
     "sucursalProducto": "Sucursal del producto"
+  },
+  "superadmin": {
+    "accionEmpresa": "{{accion}} empresa",
+    "desactivada": "Empresa desactivada",
+    "activada": "Empresa activada",
+    "eliminarTitulo": "⚠️ Eliminar empresa",
+    "eliminarHtml": "<b>{{nombre}}</b><br><br>Se eliminarán <b>todos</b> sus datos: usuarios, productos, sucursales, snapshots y movimientos.<br><br><span style=\"color:#ef4444\">Esta acción es <b>irreversible</b>.</span>",
+    "confirmacionFinal": "Confirmación final",
+    "nombreIncorrecto": "Nombre incorrecto",
+    "noEliminada": "La empresa no fue eliminada.",
+    "empresaEliminada": "Empresa eliminada",
+    "fueEliminada": "{{nombre}} fue eliminada."
   }
 }

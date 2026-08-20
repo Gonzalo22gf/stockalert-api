@@ -1,4 +1,5 @@
 import { useAuthStore } from "../../features/auth/authStore";
+import { useTranslation } from "react-i18next";
 import { useMetricasSuperadmin, useEmpresasSuperadmin, useToggleEmpresa, useEliminarEmpresa } from "./useSuperadmin";
 import { SkeletonKpis, SkeletonTabla } from "../../components/Skeleton";
 import Swal from "sweetalert2";
@@ -39,6 +40,7 @@ function formatFecha(fecha) {
 }
 
 export default function SuperadminPage() {
+  const { t } = useTranslation();
   const usuario = useAuthStore((s) => s.usuario);
   const esFundador = FUNDADORES.includes(usuario?.email?.toLowerCase());
   const { data: metricas, isLoading: cargandoMetricas } = useMetricasSuperadmin();
@@ -57,7 +59,7 @@ export default function SuperadminPage() {
   async function manejarToggle(empresa) {
     const accion = empresa.activa ? "desactivar" : "activar";
     const { isConfirmed } = await Swal.fire({
-      title: accion.charAt(0).toUpperCase() + accion.slice(1) + " empresa",
+      title: t("superadmin.accionEmpresa", { accion: accion.charAt(0).toUpperCase() + accion.slice(1) }),
       text: 'Vas a ' + accion + ' "' + empresa.nombre + '".',
       icon: "question",
       showCancelButton: true,
@@ -67,7 +69,7 @@ export default function SuperadminPage() {
     if (!isConfirmed) return;
     try {
       await toggleEmpresa.mutateAsync(empresa._id);
-      Swal.fire({ icon: "success", title: "Empresa " + (empresa.activa ? "desactivada" : "activada"), timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: empresa.activa ? t("superadmin.desactivada") : t("superadmin.activada"), timer: 1500, showConfirmButton: false });
     } catch (e) {
       Swal.fire({ icon: "error", title: "Error", text: e.message });
     }
@@ -75,8 +77,8 @@ export default function SuperadminPage() {
 
   async function manejarEliminar(empresa) {
     const { isConfirmed: paso1 } = await Swal.fire({
-      title: "⚠️ Eliminar empresa",
-      html: "<b>" + empresa.nombre + "</b><br><br>Se eliminarán <b>todos</b> sus datos: usuarios, productos, sucursales, snapshots y movimientos.<br><br><span style='color:#ef4444'>Esta acción es <b>irreversible</b>.</span>",
+      title: t("superadmin.eliminarTitulo"),
+      html: t("superadmin.eliminarHtml", { nombre: empresa.nombre }),
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: "Sí, eliminar todo",
@@ -85,7 +87,7 @@ export default function SuperadminPage() {
     });
     if (!paso1) return;
     const { value: confirmacion } = await Swal.fire({
-      title: "Confirmación final",
+      title: t("superadmin.confirmacionFinal"),
       text: 'Escribí el nombre exacto de la empresa para confirmar:',
       input: "text",
       inputPlaceholder: empresa.nombre,
@@ -94,12 +96,12 @@ export default function SuperadminPage() {
       confirmButtonColor: "#dc2626"
     });
     if (confirmacion !== empresa.nombre) {
-      Swal.fire({ icon: "error", title: "Nombre incorrecto", text: "La empresa no fue eliminada." });
+      Swal.fire({ icon: "error", title: t("superadmin.nombreIncorrecto"), text: t("superadmin.noEliminada") });
       return;
     }
     try {
       await eliminarEmpresa.mutateAsync(empresa._id);
-      Swal.fire({ icon: "success", title: "Empresa eliminada", text: empresa.nombre + " fue eliminada.", timer: 2000, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: t("superadmin.empresaEliminada"), text: t("superadmin.fueEliminada", { nombre: empresa.nombre }), timer: 2000, showConfirmButton: false });
     } catch (e) {
       Swal.fire({ icon: "error", title: "Error", text: e.message });
     }
