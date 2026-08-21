@@ -1,4 +1,5 @@
 import { Bar } from "react-chartjs-2";
+import { useTranslation } from "react-i18next";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { useDesperdicios } from "./useDesperdicios";
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -9,6 +10,7 @@ function formatearSemana(clave) {
 }
 
 export default function GraficoDesperdicios() {
+  const { t } = useTranslation();
   const { data: semanas, isLoading, isError } = useDesperdicios();
 
   if (isLoading) return <div className="h-48 animate-pulse rounded-xl bg-slate-800/50" />;
@@ -24,7 +26,7 @@ export default function GraficoDesperdicios() {
   const data = {
     labels,
     datasets: [{
-      label: "Productos vencidos",
+      label: t("dash.prodVencidos"),
       data: valores,
       backgroundColor: "rgba(239, 68, 68, 0.3)",
       borderColor: "rgba(239, 68, 68, 0.8)",
@@ -39,7 +41,7 @@ export default function GraficoDesperdicios() {
       legend: { display: false },
       tooltip: {
         callbacks: {
-          label: (ctx) => " " + ctx.raw + " productos vencidos esa semana"
+          label: (ctx) => " " + t("dash.vencidosSemana", { cantidad: ctx.raw })
         }
       }
     },

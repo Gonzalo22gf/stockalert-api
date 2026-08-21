@@ -74,7 +74,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
 
   // Dona de estado
   const datosEstado = {
-    labels: ["En buen estado", "Por vencer", "Vencido"],
+    labels: [t("productos.buenEstado"), t("productos.porVencer"), t("productos.vencido")],
     datasets: [{
       data: [enBuenEstado, porVencer, vencidos],
       backgroundColor: ["#10b981", "#f59e0b", "#ef4444"],
@@ -233,13 +233,13 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
 
       {/* Fila 1: Dona estado + Productos por categoría */}
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-        <Tarjeta titulo="Estado general" subtitulo="Distribución por vencimiento">
+        <Tarjeta titulo={t("dash.estadoGeneral")} subtitulo={t("dash.estadoGeneralSub")}>
           <div className="h-64">
             <Doughnut data={datosEstado} options={opcionesDona} plugins={[textoCentral]} />
           </div>
         </Tarjeta>
 
-        <Tarjeta titulo="Productos por categoría" subtitulo="Cantidad de ítems distintos">
+        <Tarjeta titulo={t("dash.prodCategoria")} subtitulo={t("dash.prodCategoriaSub")}>
           <div className="h-64">
             <Bar data={barrasH(porCategoria, 0)} options={opcionesBarrasH()} />
           </div>
@@ -248,13 +248,13 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
 
       {/* Fila 2: Valor + Stock por categoría */}
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-        <Tarjeta titulo="Valor por categoría" subtitulo="Dónde está concentrado el capital">
+        <Tarjeta titulo={t("dash.valorCategoria")} subtitulo={t("dash.valorCategoriaSub")}>
           <div className="h-56">
             <Bar data={barrasH(valorPorCategoria, 1)} options={opcionesBarrasH(fmtMoneda)} />
           </div>
         </Tarjeta>
 
-        <Tarjeta titulo="Unidades en stock" subtitulo="Cantidad total por categoría">
+        <Tarjeta titulo={t("dash.unidadesStock")} subtitulo={t("dash.unidadesStockSub")}>
           <div className="h-56">
             <Bar data={barrasH(stockPorCategoria, 5)} options={opcionesBarrasH()} />
           </div>
@@ -263,7 +263,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
 
       {/* Fila 3: #9 productos stock bajo + #10 dona tiendas en riesgo */}
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-        <Tarjeta titulo="🔻 10 productos con menor stock" subtitulo="Los que primero hay que reponer">
+        <Tarjeta titulo={t("dash.menorStock")} subtitulo={t("dash.menorStockSub")}>
           <div className="h-64">
             <Bar
               data={barrasRanking(topStockBajo.map((p) => p.nombre), topStockBajo.map((p) => Number(p.stock || 0)), "#f97316")}
@@ -290,7 +290,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
       {/* Fila 4: #7 tiendas más vencidos + #8 tiendas más por vencer (solo con todas las sucursales) */}
       {hayResumen && (
         <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
-          <Tarjeta titulo="💀 10 tiendas con más vencidos" subtitulo="Productos ya vencidos por sucursal">
+          <Tarjeta titulo={t("dash.masVencidos")} subtitulo={t("dash.masVencidosSub")}>
             {topVencidos.length > 0 ? (
               <div className="h-64">
                 <Bar
@@ -303,7 +303,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
             )}
           </Tarjeta>
 
-          <Tarjeta titulo="⏳ 10 tiendas con más por vencer" subtitulo="Productos próximos a vencer por sucursal">
+          <Tarjeta titulo={t("dash.masPorVencer")} subtitulo={t("dash.masPorVencerSub")}>
             {topPorVencer.length > 0 ? (
               <div className="h-64">
                 <Bar

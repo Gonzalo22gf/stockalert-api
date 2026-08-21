@@ -348,5 +348,23 @@
     "sucursalesSub": "Branch management",
     "usuariosSub": "User management",
     "reportesSub": "Store history and trends"
+  },
+  "dash": {
+    "estadoGeneral": "General status",
+    "estadoGeneralSub": "Distribution by expiration",
+    "prodCategoria": "Products by category",
+    "prodCategoriaSub": "Number of distinct items",
+    "valorCategoria": "Value by category",
+    "valorCategoriaSub": "Where capital is concentrated",
+    "unidadesStock": "Units in stock",
+    "unidadesStockSub": "Total quantity by category",
+    "menorStock": "🔻 10 products with lowest stock",
+    "menorStockSub": "The ones to restock first",
+    "masVencidos": "💀 10 stores with most expired",
+    "masVencidosSub": "Already expired products by branch",
+    "masPorVencer": "⏳ 10 stores with most expiring",
+    "masPorVencerSub": "Products about to expire by branch",
+    "prodVencidos": "Expired products",
+    "vencidosSemana": "{{cantidad}} expired products that week"
   }
 }

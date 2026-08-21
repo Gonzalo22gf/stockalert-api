@@ -348,5 +348,23 @@
     "sucursalesSub": "Administración de sucursales",
     "usuariosSub": "Gestión de usuarios",
     "reportesSub": "Histórico y evolución de las tiendas"
+  },
+  "dash": {
+    "estadoGeneral": "Estado general",
+    "estadoGeneralSub": "Distribución por vencimiento",
+    "prodCategoria": "Productos por categoría",
+    "prodCategoriaSub": "Cantidad de ítems distintos",
+    "valorCategoria": "Valor por categoría",
+    "valorCategoriaSub": "Dónde está concentrado el capital",
+    "unidadesStock": "Unidades en stock",
+    "unidadesStockSub": "Cantidad total por categoría",
+    "menorStock": "🔻 10 productos con menor stock",
+    "menorStockSub": "Los que primero hay que reponer",
+    "masVencidos": "💀 10 tiendas con más vencidos",
+    "masVencidosSub": "Productos ya vencidos por sucursal",
+    "masPorVencer": "⏳ 10 tiendas con más por vencer",
+    "masPorVencerSub": "Productos próximos a vencer por sucursal",
+    "prodVencidos": "Productos vencidos",
+    "vencidosSemana": "{{cantidad}} productos vencidos esa semana"
   }
 }
