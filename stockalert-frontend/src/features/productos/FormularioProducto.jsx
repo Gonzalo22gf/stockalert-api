@@ -45,7 +45,7 @@ export default function FormularioProducto({ esAdmin }) {
       if (datos) {
         if (datos.nombre && !nombre) setNombre(datos.nombre);
         if (datos.categoria && !categoria) setCategoria(datos.categoria);
-        Swal.fire({ icon: "success", title: "Producto encontrado", text: datos.nombre || codigo, timer: 1800, showConfirmButton: false });
+        Swal.fire({ icon: "success", title: t("swal.prodEncontrado"), text: datos.nombre || codigo, timer: 1800, showConfirmButton: false });
       } else {
         Swal.fire({ icon: "info", title: "EAN detectado", text: codigo + " — completá los datos manualmente.", timer: 1800, showConfirmButton: false });
       }
@@ -59,7 +59,7 @@ export default function FormularioProducto({ esAdmin }) {
   async function manejarSubmit(e) {
     e.preventDefault();
     if (!nombre || !categoria || !precio || !stock || !vencimiento) {
-      Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Completá todos los campos correctamente." });
+      Swal.fire({ icon: "warning", title: t("swal.datosIncompletos"), text: t("swal.completaCamposBien") });
       return;
     }
     if (esAdmin && !sucursalId) {
@@ -80,7 +80,7 @@ export default function FormularioProducto({ esAdmin }) {
     try {
       await crearProducto.mutateAsync(nuevoProducto);
       limpiarForm();
-      Swal.fire({ icon: "success", title: "Producto agregado", timer: 1500, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: t("swal.prodAgregado"), timer: 1500, showConfirmButton: false });
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
     }
@@ -129,7 +129,7 @@ export default function FormularioProducto({ esAdmin }) {
         )}
       </div>
       <Boton type="submit" disabled={crearProducto.isPending} className="mt-4">
-        {crearProducto.isPending ? "Guardando..." : "Guardar producto"}
+        {crearProducto.isPending ? t("swal.guardando") : t("swal.guardarProducto")}
       </Boton>
       {escanerAbierto && <EscanerEAN onDetectado={manejarDetectado} onCerrar={() => setEscanerAbierto(false)} />}
     </form>

@@ -106,11 +106,11 @@ export default function FabEscaner() {
     e.preventDefault();
 
     if (!nombre || !categoria || !precio || !stock || !vencimiento) {
-      Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Completá todos los campos." });
+      Swal.fire({ icon: "warning", title: t("swal.datosIncompletos"), text: t("swal.completaCampos") });
       return;
     }
     if (esAdmin && !sucursalId) {
-      Swal.fire({ icon: "warning", title: "Falta sucursal", text: "Elegí la sucursal." });
+      Swal.fire({ icon: "warning", title: t("swal.faltaSucursal"), text: t("swal.elegiSucursal") });
       return;
     }
 
@@ -127,7 +127,7 @@ export default function FabEscaner() {
         ...(esAdmin ? { sucursal: sucursalId } : {})
       });
 
-      await Swal.fire({ icon: "success", title: "Guardado", text: "Listo para escanear el siguiente.", timer: 1200, showConfirmButton: false });
+      await Swal.fire({ icon: "success", title: t("swal.guardado"), text: t("swal.listoSiguiente"), timer: 1200, showConfirmButton: false });
 
       limpiarCampos();
       setEanDetectado("");
@@ -153,7 +153,7 @@ export default function FabEscaner() {
     <>
       <button
         onClick={() => setAbierto(true)}
-        title="Escanear producto"
+        title={t("escaner.titulo")}
         className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-brand text-white shadow-lg hover:opacity-90"
       >
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -217,7 +217,7 @@ export default function FabEscaner() {
                     disabled={crearProducto.isPending}
                     className="flex-1 rounded-lg bg-brand py-2 text-sm font-semibold text-white hover:opacity-90 disabled:opacity-50"
                   >
-                    {crearProducto.isPending ? "Guardando..." : "Guardar y seguir"}
+                    {crearProducto.isPending ? t("swal.guardando") : t("escaner.guardarSeguir")}
                   </button>
                   <button
                     type="button"

@@ -366,5 +366,41 @@
     "masPorVencerSub": "Products about to expire by branch",
     "prodVencidos": "Expired products",
     "vencidosSemana": "{{cantidad}} expired products that week"
+  },
+  "estados": {
+    "stockCritico": "Critical stock",
+    "stockNormal": "Normal stock",
+    "critico": "Critical",
+    "bajo": "Low",
+    "normal": "Normal"
+  },
+  "swal": {
+    "datosIncompletos": "Incomplete data",
+    "completaCampos": "Fill in all fields.",
+    "completaCamposBien": "Fill in all fields correctly.",
+    "faltaSucursal": "Branch missing",
+    "elegiSucursal": "Choose the branch.",
+    "guardado": "Saved",
+    "listoSiguiente": "Ready to scan the next one.",
+    "guardando": "Saving...",
+    "prodEncontrado": "Product found",
+    "prodAgregado": "Product added",
+    "guardarProducto": "Save product",
+    "prodActualizado": "Product updated",
+    "guardarCambios": "Save changes",
+    "sinProductos": "No products to show",
+    "sinProductosDesc": "Try adjusting the filters, or add a new product.",
+    "eliminarN": "Delete {{n}} products?",
+    "permanente": "This action is permanent and cannot be undone.",
+    "siEliminarTodos": "Yes, delete all",
+    "eliminados": "Deleted",
+    "eliminarProducto": "Delete product?",
+    "seEliminaPermanente": "{{nombre}} will be permanently deleted.",
+    "siEliminar": "Yes, delete",
+    "eliminado": "Deleted"
+  },
+  "escaner": {
+    "titulo": "Scan product",
+    "guardarSeguir": "Save and continue"
   }
 }

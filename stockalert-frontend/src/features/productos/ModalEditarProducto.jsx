@@ -40,7 +40,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
   async function manejarGuardar(e) {
     e.preventDefault();
     if (!nombre || !categoria || precio === "" || stock === "" || !vencimiento) {
-      Swal.fire({ icon: "warning", title: "Datos incompletos", text: "Completá todos los campos." });
+      Swal.fire({ icon: "warning", title: t("swal.datosIncompletos"), text: t("swal.completaCampos") });
       return;
     }
     const datos = {
@@ -55,7 +55,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
     };
     try {
       await actualizarProducto.mutateAsync({ id: producto._id, datos });
-      Swal.fire({ icon: "success", title: "Producto actualizado", timer: 1400, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: t("swal.prodActualizado"), timer: 1400, showConfirmButton: false });
       onCerrar();
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
@@ -111,7 +111,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
           </div>
           <div className="flex gap-2 pt-2">
             <Boton type="submit" disabled={actualizarProducto.isPending} className="flex-1">
-              {actualizarProducto.isPending ? "Guardando..." : "Guardar cambios"}
+              {actualizarProducto.isPending ? t("swal.guardando") : t("swal.guardarCambios")}
             </Boton>
             <Boton type="button" variante="secondary" onClick={onCerrar} className="flex-1">
               Cancelar

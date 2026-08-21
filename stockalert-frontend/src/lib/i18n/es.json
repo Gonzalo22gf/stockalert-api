@@ -366,5 +366,41 @@
     "masPorVencerSub": "Productos próximos a vencer por sucursal",
     "prodVencidos": "Productos vencidos",
     "vencidosSemana": "{{cantidad}} productos vencidos esa semana"
+  },
+  "estados": {
+    "stockCritico": "Stock crítico",
+    "stockNormal": "Stock normal",
+    "critico": "Crítico",
+    "bajo": "Bajo",
+    "normal": "Normal"
+  },
+  "swal": {
+    "datosIncompletos": "Datos incompletos",
+    "completaCampos": "Completá todos los campos.",
+    "completaCamposBien": "Completá todos los campos correctamente.",
+    "faltaSucursal": "Falta sucursal",
+    "elegiSucursal": "Elegí la sucursal.",
+    "guardado": "Guardado",
+    "listoSiguiente": "Listo para escanear el siguiente.",
+    "guardando": "Guardando...",
+    "prodEncontrado": "Producto encontrado",
+    "prodAgregado": "Producto agregado",
+    "guardarProducto": "Guardar producto",
+    "prodActualizado": "Producto actualizado",
+    "guardarCambios": "Guardar cambios",
+    "sinProductos": "No hay productos para mostrar",
+    "sinProductosDesc": "Probá ajustar los filtros, o agregá un producto nuevo.",
+    "eliminarN": "¿Eliminar {{n}} productos?",
+    "permanente": "Esta acción es permanente y no se puede deshacer.",
+    "siEliminarTodos": "Sí, eliminar todos",
+    "eliminados": "Eliminados",
+    "eliminarProducto": "¿Eliminar producto?",
+    "seEliminaPermanente": "{{nombre}} se va a eliminar permanentemente.",
+    "siEliminar": "Sí, eliminar",
+    "eliminado": "Eliminado"
+  },
+  "escaner": {
+    "titulo": "Escanear producto",
+    "guardarSeguir": "Guardar y seguir"
   }
 }

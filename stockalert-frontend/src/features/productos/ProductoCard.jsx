@@ -1,17 +1,18 @@
+import { useTranslation } from "react-i18next";
 function obtenerEstado(vencimiento) {
   const hoy = new Date();
   const fecha = new Date(vencimiento);
   const dias = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
-  if (dias < 0) return { texto: "Vencido", color: "bg-red-500/15 text-red-400" };
-  if (dias <= 7) return { texto: "Por vencer", color: "bg-amber-500/15 text-amber-400" };
-  return { texto: "En buen estado", color: "bg-emerald-500/15 text-emerald-400" };
+  if (dias < 0) return { texto: "productos.vencido", color: "bg-red-500/15 text-red-400" };
+  if (dias <= 7) return { texto: "productos.porVencer", color: "bg-amber-500/15 text-amber-400" };
+  return { texto: "productos.buenEstado", color: "bg-emerald-500/15 text-emerald-400" };
 }
 
 function obtenerEstadoStock(stock) {
-  if (stock <= 0) return { texto: "Agotado", color: "bg-red-500/15 text-red-400" };
-  if (stock <= 5) return { texto: "Stock crítico", color: "bg-purple-500/15 text-purple-400" };
-  if (stock <= 10) return { texto: "Stock bajo", color: "bg-amber-500/15 text-amber-400" };
-  return { texto: "Stock normal", color: "bg-slate-700/60 text-slate-300" };
+  if (stock <= 0) return { texto: "filtros.agotado", color: "bg-red-500/15 text-red-400" };
+  if (stock <= 5) return { texto: "estados.stockCritico", color: "bg-purple-500/15 text-purple-400" };
+  if (stock <= 10) return { texto: "filtros.stockBajo", color: "bg-amber-500/15 text-amber-400" };
+  return { texto: "estados.stockNormal", color: "bg-slate-700/60 text-slate-300" };
 }
 
 function formatearFecha(fecha) {
@@ -19,6 +20,7 @@ function formatearFecha(fecha) {
 }
 
 export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }) {
+  const { t } = useTranslation();
   const estado = obtenerEstado(producto.vencimiento);
   const estadoStock = obtenerEstadoStock(producto.stock);
   return (
@@ -54,8 +56,8 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
         </div>
       </div>
       <div className="mb-3.5 flex flex-wrap gap-1.5">
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estado.color}`}>{estado.texto}</span>
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estadoStock.color}`}>{estadoStock.texto}</span>
+        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estado.color}`}>{t(estado.texto)}</span>
+        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estadoStock.color}`}>{t(estadoStock.texto)}</span>
         {producto.lote && (
           <span className="rounded-full bg-panel-hover px-2 py-0.5 text-[10px] font-medium text-slate-400">
             Lote {producto.lote}

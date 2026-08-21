@@ -51,16 +51,16 @@ export default function ProductosPage() {
 
   async function manejarEliminarSeleccionados() {
     const { isConfirmed } = await Swal.fire({
-      title: "Eliminar " + seleccionados.length + " productos?",
-      text: "Esta accion es permanente y no se puede deshacer.",
+      title: t("swal.eliminarN", { n: seleccionados.length }),
+      text: t("swal.permanente"),
       icon: "warning", showCancelButton: true,
-      confirmButtonText: "Si, eliminar todos", cancelButtonText: "Cancelar"
+      confirmButtonText: t("swal.siEliminarTodos"), cancelButtonText: t("productos.cancelar")
     });
     if (!isConfirmed) return;
     try {
       await bulkDelete.mutateAsync(seleccionados);
       limpiarSeleccion();
-      Swal.fire({ icon: "success", title: "Eliminados", timer: 1300, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: t("swal.eliminados"), timer: 1300, showConfirmButton: false });
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
     }
@@ -68,15 +68,15 @@ export default function ProductosPage() {
 
   async function manejarEliminar(producto) {
     const { isConfirmed } = await Swal.fire({
-      title: "Eliminar producto?",
-      text: producto.nombre + " se va a eliminar permanentemente.",
+      title: t("swal.eliminarProducto"),
+      text: t("swal.seEliminaPermanente", { nombre: producto.nombre }),
       icon: "warning", showCancelButton: true,
-      confirmButtonText: "Si, eliminar", cancelButtonText: "Cancelar"
+      confirmButtonText: t("swal.siEliminar"), cancelButtonText: t("productos.cancelar")
     });
     if (!isConfirmed) return;
     try {
       await eliminarProducto.mutateAsync(producto._id);
-      Swal.fire({ icon: "success", title: "Eliminado", timer: 1300, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: t("swal.eliminado"), timer: 1300, showConfirmButton: false });
     } catch (error) {
       Swal.fire({ icon: "error", title: "Error", text: error.message });
     }
@@ -122,7 +122,7 @@ export default function ProductosPage() {
         <>
           <p className="text-xs text-slate-500">Mostrando {resultado.length} de {productos?.length || 0} productos</p>
           {resultado.length === 0 ? (
-            <EmptyState icono="📦" titulo="No hay productos para mostrar" descripcion="Proba ajustar los filtros, o agrega un producto nuevo." />
+            <EmptyState icono="📦" titulo={t("swal.sinProductos")} descripcion={t("swal.sinProductosDesc")} />
           ) : vista === "tabla" ? (
             <ProductosTabla productos={resultado} esAdmin={esAdmin} onEditar={setProductoEditando} onEliminar={manejarEliminar} seleccionados={seleccionados} onToggle={toggleSeleccion} onToggleTodos={toggleTodos} />
           ) : (
