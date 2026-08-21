@@ -12,12 +12,17 @@
     "principal": "Principal",
     "analisis": "Análisis",
     "expandir": "Expandir menú",
-    "colapsar": "Colapsar menú"
+    "colapsar": "Colapsar menú",
+    "superadmin": "Superadmin",
+    "planes": "Planes",
+    "notifOn": "Activar notificaciones",
+    "notifOff": "Desactivar notificaciones"
   },
   "topbar": {
     "accesosRapidos": "Accesos rápidos",
     "todasSucursales": "Todas las sucursales",
-    "miSucursal": "Mi sucursal"
+    "miSucursal": "Mi sucursal",
+    "tooltipCodigo": "Código de acceso de tu empresa"
   },
   "login": {
     "titulo": "StockAlert",
@@ -335,5 +340,13 @@
     "noEliminada": "La empresa no fue eliminada.",
     "empresaEliminada": "Empresa eliminada",
     "fueEliminada": "{{nombre}} fue eliminada."
+  },
+  "paginas": {
+    "dashboardSub": "Resumen general del inventario",
+    "productosSub": "Gestión de inventario",
+    "movimientosSub": "Historial de auditoría",
+    "sucursalesSub": "Administración de sucursales",
+    "usuariosSub": "Gestión de usuarios",
+    "reportesSub": "Histórico y evolución de las tiendas"
   }
 }

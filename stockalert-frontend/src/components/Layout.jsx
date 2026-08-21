@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
@@ -8,12 +9,12 @@ import { useInactividad } from "../hooks/useInactividad";
 import { esPlanError } from "../lib/PlanError";
 
 const TITULOS = {
-  "/": { titulo: "Dashboard", subtitulo: "Resumen general del inventario" },
-  "/productos": { titulo: "Productos", subtitulo: "Gestion de inventario" },
-  "/movimientos": { titulo: "Movimientos", subtitulo: "Historial de auditoria" },
-  "/sucursales": { titulo: "Sucursales", subtitulo: "Administracion de sucursales" },
-  "/usuarios": { titulo: "Usuarios", subtitulo: "Gestion de usuarios" },
-  "/reportes": { titulo: "Reportes", subtitulo: "Historico y evolucion de las tiendas" }
+  "/": { titulo: "nav.dashboard", subtitulo: "paginas.dashboardSub" },
+  "/productos": { titulo: "nav.productos", subtitulo: "paginas.productosSub" },
+  "/movimientos": { titulo: "nav.movimientos", subtitulo: "paginas.movimientosSub" },
+  "/sucursales": { titulo: "nav.sucursales", subtitulo: "paginas.sucursalesSub" },
+  "/usuarios": { titulo: "nav.usuarios", subtitulo: "paginas.usuariosSub" },
+  "/reportes": { titulo: "nav.reportes", subtitulo: "paginas.reportesSub" }
 };
 
 // Funcion global para disparar el modal de upgrade desde cualquier lugar
@@ -23,8 +24,11 @@ export function mostrarUpgrade(codigo) {
 
 export default function Layout() {
   useInactividad();
+  const { t } = useTranslation();
   const location = useLocation();
-  const { titulo, subtitulo } = TITULOS[location.pathname] || { titulo: "StockAlert", subtitulo: "" };
+  const entrada = TITULOS[location.pathname] || { titulo: "StockAlert", subtitulo: "" };
+  const titulo = entrada.titulo === "StockAlert" ? entrada.titulo : t(entrada.titulo);
+  const subtitulo = entrada.subtitulo ? t(entrada.subtitulo) : "";
   const [sidebarAbierto, setSidebarAbierto] = useState(() => window.innerWidth >= 768);
   const [sidebarColapsado, setSidebarColapsado] = useState(() => {
     try { return localStorage.getItem("sidebarColapsado") === "true"; } catch { return false; }

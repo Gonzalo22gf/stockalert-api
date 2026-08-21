@@ -1,10 +1,12 @@
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../features/auth/authStore";
 import { usePerfilEmpresa } from "../features/empresa/useEmpresa";
 import { Zap, ChevronDown, Package, LayoutDashboard, ClipboardList, Store, Users, TrendingUp, Home, Calendar, Menu, Link, KeyRound } from "lucide-react";
 
 export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
+  const { t } = useTranslation();
   const usuario = useAuthStore((s) => s.usuario);
   const navigate = useNavigate();
   const esAdmin = usuario?.rol === "admin";
@@ -12,16 +14,16 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const { data: empresa } = usePerfilEmpresa();
 
   const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
-  const nombreSucursal = esAdmin ? "Todas las sucursales" : usuario?.sucursal?.nombre || "Mi sucursal";
+  const nombreSucursal = esAdmin ? t("productos.todasSucursales") : usuario?.sucursal?.nombre || t("topbar.miSucursal");
 
   const accesos = [
-    { label: "Productos", icono: Package, ruta: "/productos" },
-    { label: "Dashboard", icono: LayoutDashboard, ruta: "/", soloAdmin: true },
-    { label: "Movimientos", icono: ClipboardList, ruta: "/movimientos", soloAdmin: true },
-    { label: "Sucursales", icono: Store, ruta: "/sucursales", soloAdmin: true },
-    { label: "Usuarios", icono: Users, ruta: "/usuarios", soloAdmin: true },
-    { label: "Reportes", icono: TrendingUp, ruta: "/reportes", soloAdmin: true },
-    { label: "Links frecuentes", icono: Link, ruta: "/links" }
+    { label: t("nav.productos"), icono: Package, ruta: "/productos" },
+    { label: t("nav.dashboard"), icono: LayoutDashboard, ruta: "/", soloAdmin: true },
+    { label: t("nav.movimientos"), icono: ClipboardList, ruta: "/movimientos", soloAdmin: true },
+    { label: t("nav.sucursales"), icono: Store, ruta: "/sucursales", soloAdmin: true },
+    { label: t("nav.usuarios"), icono: Users, ruta: "/usuarios", soloAdmin: true },
+    { label: t("nav.reportes"), icono: TrendingUp, ruta: "/reportes", soloAdmin: true },
+    { label: t("nav.links"), icono: Link, ruta: "/links" }
   ];
 
   function ir(ruta) {
@@ -91,7 +93,7 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
         {esAdmin && empresa?.codigoAcceso && (
           <div
             className="hidden lg:flex items-center gap-1.5 rounded-[9px] border border-brand/30 bg-brand/10 px-3 py-[7px] text-[12.5px] font-bold tracking-widest text-brand-400 select-all cursor-pointer"
-            title="Codigo de acceso de tu empresa"
+            title={t("topbar.tooltipCodigo")}
           >
             <KeyRound size={12} />
             {empresa.codigoAcceso}

@@ -12,12 +12,17 @@
     "principal": "Main",
     "analisis": "Analytics",
     "expandir": "Expand menu",
-    "colapsar": "Collapse menu"
+    "colapsar": "Collapse menu",
+    "superadmin": "Superadmin",
+    "planes": "Plans",
+    "notifOn": "Enable notifications",
+    "notifOff": "Disable notifications"
   },
   "topbar": {
     "accesosRapidos": "Quick access",
     "todasSucursales": "All branches",
-    "miSucursal": "My branch"
+    "miSucursal": "My branch",
+    "tooltipCodigo": "Your company access code"
   },
   "login": {
     "titulo": "StockAlert",
@@ -335,5 +340,13 @@
     "noEliminada": "The company was not deleted.",
     "empresaEliminada": "Company deleted",
     "fueEliminada": "{{nombre}} was deleted."
+  },
+  "paginas": {
+    "dashboardSub": "Inventory overview",
+    "productosSub": "Inventory management",
+    "movimientosSub": "Audit history",
+    "sucursalesSub": "Branch management",
+    "usuariosSub": "User management",
+    "reportesSub": "Store history and trends"
   }
 }
