@@ -402,5 +402,36 @@
   "escaner": {
     "titulo": "Scan product",
     "guardarSeguir": "Save and continue"
+  },
+  "planes": {
+    "titulo": "Plans",
+    "subtitulo": "Choose the plan that best fits your business.",
+    "mes": "/mo",
+    "masPopular": "Most popular",
+    "suscribirme": "Subscribe",
+    "redirigiendo": "Redirecting...",
+    "soloAdmin": "Only administrators can manage the plan.",
+    "pagoExitoso": "Payment successful",
+    "pagoActivado": "Your plan was activated. Reload the app to see the changes.",
+    "recargar": "Reload",
+    "starterDesc": "For a single store that wants to organize its inventory.",
+    "proDesc": "For businesses with several branches that need a unified view.",
+    "businessDesc": "For chains and franchises managing inventory at scale.",
+    "f1Sucursal": "1 branch",
+    "fHasta50": "Up to 50 products",
+    "fAlertas": "Expiration alerts",
+    "fExcel": "Excel export",
+    "fSoporteEmail": "Email support",
+    "fHasta10Suc": "Up to 10 branches",
+    "fProdIlimitados": "Unlimited products",
+    "fDashMulti": "Multi-branch dashboard",
+    "fRankings": "Risk rankings",
+    "fUsuariosRoles": "Users with roles",
+    "fSoportePrioritario": "Priority support",
+    "fSucIlimitadas": "Unlimited branches",
+    "fUsuariosIlimitados": "Unlimited users",
+    "fReportesAvanzados": "Advanced reports",
+    "fSoporteWhatsapp": "WhatsApp support",
+    "fOnboarding": "Guided onboarding"
   }
 }

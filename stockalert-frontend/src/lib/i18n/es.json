@@ -402,5 +402,36 @@
   "escaner": {
     "titulo": "Escanear producto",
     "guardarSeguir": "Guardar y seguir"
+  },
+  "planes": {
+    "titulo": "Planes",
+    "subtitulo": "Elegí el plan que mejor se adapta a tu negocio.",
+    "mes": "/mes",
+    "masPopular": "Más popular",
+    "suscribirme": "Suscribirme",
+    "redirigiendo": "Redirigiendo...",
+    "soloAdmin": "Solo los administradores pueden gestionar el plan.",
+    "pagoExitoso": "Pago exitoso",
+    "pagoActivado": "Tu plan fue activado. Recargá la app para ver los cambios.",
+    "recargar": "Recargar",
+    "starterDesc": "Para un solo local que quiere ordenar su inventario.",
+    "proDesc": "Para negocios con varias sucursales que necesitan una vista unificada.",
+    "businessDesc": "Para cadenas y franquicias que gestionan inventario a escala.",
+    "f1Sucursal": "1 sucursal",
+    "fHasta50": "Hasta 50 productos",
+    "fAlertas": "Alertas de vencimiento",
+    "fExcel": "Exportación Excel",
+    "fSoporteEmail": "Soporte por email",
+    "fHasta10Suc": "Hasta 10 sucursales",
+    "fProdIlimitados": "Productos ilimitados",
+    "fDashMulti": "Dashboard multi-sucursal",
+    "fRankings": "Rankings de riesgo",
+    "fUsuariosRoles": "Usuarios con roles",
+    "fSoportePrioritario": "Soporte prioritario",
+    "fSucIlimitadas": "Sucursales ilimitadas",
+    "fUsuariosIlimitados": "Usuarios ilimitados",
+    "fReportesAvanzados": "Reportes avanzados",
+    "fSoporteWhatsapp": "Soporte WhatsApp",
+    "fOnboarding": "Onboarding guiado"
   }
 }
