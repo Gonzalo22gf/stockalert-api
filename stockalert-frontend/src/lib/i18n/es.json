@@ -209,7 +209,12 @@
     "hasta": "Hasta",
     "limpiar": "Limpiar filtros",
     "mostrando": "Mostrando",
-    "de": "de"
+    "de": "de",
+    "creado": "Creado",
+    "editado": "Editado",
+    "eliminado": "Eliminado",
+    "producto": "Producto",
+    "usuario": "Usuario"
   },
   "reportes": {
     "titulo": "Reportes",
@@ -339,7 +344,36 @@
     "nombreIncorrecto": "Nombre incorrecto",
     "noEliminada": "La empresa no fue eliminada.",
     "empresaEliminada": "Empresa eliminada",
-    "fueEliminada": "{{nombre}} fue eliminada."
+    "fueEliminada": "{{nombre}} fue eliminada.",
+    "accesoRestringido": "Acceso restringido.",
+    "vasA": "Vas a {{accion}} \"{{nombre}}\".",
+    "siAccion": "Sí, {{accion}}",
+    "siEliminarTodo": "Sí, eliminar todo",
+    "escribiNombre": "Escribí el nombre exacto de la empresa para confirmar:",
+    "eliminarDefinitivamente": "Eliminar definitivamente",
+    "panelFundador": "Panel de fundador",
+    "metricasGlobales": "Métricas globales de toda la plataforma.",
+    "kpiEmpresas": "Empresas",
+    "kpiUsuarios": "Usuarios",
+    "kpiProductos": "Productos",
+    "kpiSucursales": "Sucursales",
+    "kpiEmpresasSemana": "Empresas esta semana",
+    "kpiUsuariosSemana": "Usuarios esta semana",
+    "todasEmpresas": "Todas las empresas",
+    "thEmpresa": "Empresa",
+    "thCodigo": "Código",
+    "thPlan": "Plan",
+    "thEstado": "Estado",
+    "thUsuarios": "Usuarios",
+    "thSucursales": "Sucursales",
+    "thProductos": "Productos",
+    "thRegistrada": "Registrada",
+    "thAcciones": "Acciones",
+    "activa": "Activa",
+    "inactiva": "Inactiva",
+    "desactivar": "Desactivar",
+    "activar": "Activar",
+    "eliminar": "Eliminar"
   },
   "paginas": {
     "dashboardSub": "Resumen general del inventario",
@@ -433,5 +467,58 @@
     "fReportesAvanzados": "Reportes avanzados",
     "fSoporteWhatsapp": "Soporte WhatsApp",
     "fOnboarding": "Onboarding guiado"
+  },
+  "sucursal": {
+    "zonaNumeroObligatorios": "Zona y número son obligatorios.",
+    "actualizada": "Sucursal actualizada",
+    "creada": "Sucursal creada",
+    "listaParaUsar": "\"Zona {{zona}}, {{numero}}\" lista para usar.",
+    "editar": "Editar sucursal",
+    "nueva": "🏪 Nueva sucursal",
+    "zona": "Zona",
+    "numero": "Número de sucursal",
+    "direccion": "Dirección (opcional)",
+    "ejZona": "Ej: 1",
+    "ejNumero": "Ej: 402",
+    "ejDireccion": "Av. Corrientes 1234",
+    "guardarCambios": "Guardar cambios",
+    "crear": "Crear sucursal"
+  },
+  "usuario": {
+    "nombreEmailObligatorios": "Nombre y email son obligatorios.",
+    "actualizado": "Usuario actualizado",
+    "editar": "Editar usuario",
+    "nombre": "Nombre",
+    "email": "Email",
+    "nuevaPassword": "Nueva contraseña (dejar vacío para no cambiar)"
+  },
+  "restablecer": {
+    "muyCorta": "Contraseña muy corta",
+    "requisitos": "Debe tener al menos 8 caracteres, e incluir mayúscula, número y símbolo.",
+    "noCoinciden": "No coinciden",
+    "noIguales": "Las contraseñas ingresadas no son iguales.",
+    "listo": "¡Listo!",
+    "restablecida": "Contraseña restablecida.",
+    "titulo": "Nueva contraseña",
+    "subtitulo": "Elegí tu nueva contraseña de StockAlert",
+    "linkInvalido": "El link no es válido o está incompleto.",
+    "volverLogin": "Volver al inicio de sesión",
+    "nuevaPassword": "Nueva contraseña",
+    "repetir": "Repetir contraseña",
+    "guardarNueva": "Guardar nueva contraseña"
+  },
+  "empresa": {
+    "codigoInvitacion": "Código de invitación",
+    "copiado": "Copiado",
+    "copiar": "Copiar",
+    "compartilo": "Compartilo con tu equipo para que puedan unirse a <1>{{nombre}}</1>.",
+    "linksFrecuentes": "Links frecuentes",
+    "gestionar": "Gestionar",
+    "noLinks": "No hay links.",
+    "agregar": "Agregar",
+    "masEn": "+{{n}} más en"
+  },
+  "password": {
+    "mostrar": "Mostrar contraseña"
   }
 }

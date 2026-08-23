@@ -51,7 +51,7 @@ export default function SuperadminPage() {
   if (!esFundador) {
     return (
       <div className="flex h-full items-center justify-center">
-        <p className="text-sm text-slate-500">Acceso restringido.</p>
+        <p className="text-sm text-slate-500">{t("superadmin.accesoRestringido")}</p>
       </div>
     );
   }
@@ -60,11 +60,11 @@ export default function SuperadminPage() {
     const accion = empresa.activa ? "desactivar" : "activar";
     const { isConfirmed } = await Swal.fire({
       title: t("superadmin.accionEmpresa", { accion: accion.charAt(0).toUpperCase() + accion.slice(1) }),
-      text: 'Vas a ' + accion + ' "' + empresa.nombre + '".',
+      text: t("superadmin.vasA", { accion, nombre: empresa.nombre }),
       icon: "question",
       showCancelButton: true,
-      confirmButtonText: "Sí, " + accion,
-      cancelButtonText: "Cancelar"
+      confirmButtonText: t("superadmin.siAccion", { accion }),
+      cancelButtonText: t("productos.cancelar")
     });
     if (!isConfirmed) return;
     try {
@@ -81,18 +81,18 @@ export default function SuperadminPage() {
       html: t("superadmin.eliminarHtml", { nombre: empresa.nombre }),
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sí, eliminar todo",
-      cancelButtonText: "Cancelar",
+      confirmButtonText: t("superadmin.siEliminarTodo"),
+      cancelButtonText: t("productos.cancelar"),
       confirmButtonColor: "#dc2626"
     });
     if (!paso1) return;
     const { value: confirmacion } = await Swal.fire({
       title: t("superadmin.confirmacionFinal"),
-      text: 'Escribí el nombre exacto de la empresa para confirmar:',
+      text: t("superadmin.escribiNombre"),
       input: "text",
       inputPlaceholder: empresa.nombre,
       showCancelButton: true,
-      confirmButtonText: "Eliminar definitivamente",
+      confirmButtonText: t("superadmin.eliminarDefinitivamente"),
       confirmButtonColor: "#dc2626"
     });
     if (confirmacion !== empresa.nombre) {
@@ -110,37 +110,37 @@ export default function SuperadminPage() {
   return (
     <div className="space-y-8 animate-rise">
       <div>
-        <h1 className="text-lg font-bold text-white">Panel de fundador</h1>
-        <p className="text-sm text-slate-400">Métricas globales de toda la plataforma.</p>
+        <h1 className="text-lg font-bold text-white">{t("superadmin.panelFundador")}</h1>
+        <p className="text-sm text-slate-400">{t("superadmin.metricasGlobales")}</p>
       </div>
 
       {cargandoMetricas ? <SkeletonKpis /> : (
         <div className="grid grid-cols-2 gap-4 lg:grid-cols-6">
-          <KpiSuperadmin etiqueta="Empresas" valor={metricas?.empresas} color="indigo" />
-          <KpiSuperadmin etiqueta="Usuarios" valor={metricas?.usuarios} color="cyan" />
-          <KpiSuperadmin etiqueta="Productos" valor={metricas?.productos} color="emerald" />
-          <KpiSuperadmin etiqueta="Sucursales" valor={metricas?.sucursales} color="amber" />
-          <KpiSuperadmin etiqueta="Empresas esta semana" valor={metricas?.empresasNuevas} color="indigo" />
-          <KpiSuperadmin etiqueta="Usuarios esta semana" valor={metricas?.usuariosNuevos} color="cyan" />
+          <KpiSuperadmin etiqueta={t("superadmin.kpiEmpresas")} valor={metricas?.empresas} color="indigo" />
+          <KpiSuperadmin etiqueta={t("superadmin.kpiUsuarios")} valor={metricas?.usuarios} color="cyan" />
+          <KpiSuperadmin etiqueta={t("superadmin.kpiProductos")} valor={metricas?.productos} color="emerald" />
+          <KpiSuperadmin etiqueta={t("superadmin.kpiSucursales")} valor={metricas?.sucursales} color="amber" />
+          <KpiSuperadmin etiqueta={t("superadmin.kpiEmpresasSemana")} valor={metricas?.empresasNuevas} color="indigo" />
+          <KpiSuperadmin etiqueta={t("superadmin.kpiUsuariosSemana")} valor={metricas?.usuariosNuevos} color="cyan" />
         </div>
       )}
 
       <div>
-        <h2 className="mb-4 text-sm font-semibold text-white">Todas las empresas</h2>
+        <h2 className="mb-4 text-sm font-semibold text-white">{t("superadmin.todasEmpresas")}</h2>
         {cargandoEmpresas ? <SkeletonTabla filas={5} /> : (
           <div className="overflow-x-auto rounded-xl border border-slate-800">
             <table className="w-full text-sm">
               <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
                 <tr>
-                  <th className="px-4 py-3">Empresa</th>
-                  <th className="px-4 py-3">Código</th>
-                  <th className="px-4 py-3 text-center">Plan</th>
-                  <th className="px-4 py-3 text-center">Estado</th>
-                  <th className="px-4 py-3 text-center">Usuarios</th>
-                  <th className="px-4 py-3 text-center">Sucursales</th>
-                  <th className="px-4 py-3 text-center">Productos</th>
-                  <th className="px-4 py-3">Registrada</th>
-                  <th className="px-4 py-3">Acciones</th>
+                  <th className="px-4 py-3">{t("superadmin.thEmpresa")}</th>
+                  <th className="px-4 py-3">{t("superadmin.thCodigo")}</th>
+                  <th className="px-4 py-3 text-center">{t("superadmin.thPlan")}</th>
+                  <th className="px-4 py-3 text-center">{t("superadmin.thEstado")}</th>
+                  <th className="px-4 py-3 text-center">{t("superadmin.thUsuarios")}</th>
+                  <th className="px-4 py-3 text-center">{t("superadmin.thSucursales")}</th>
+                  <th className="px-4 py-3 text-center">{t("superadmin.thProductos")}</th>
+                  <th className="px-4 py-3">{t("superadmin.thRegistrada")}</th>
+                  <th className="px-4 py-3">{t("superadmin.thAcciones")}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800">
@@ -151,7 +151,7 @@ export default function SuperadminPage() {
                     <td className="px-4 py-3 text-center"><BadgePlan plan={e.plan} /></td>
                     <td className="px-4 py-3 text-center">
                       <span className={"rounded-full px-2 py-0.5 text-[10px] font-semibold " + (e.activa ? "bg-green-500/15 text-green-400" : "bg-red-500/15 text-red-400")}>
-                        {e.activa ? "Activa" : "Inactiva"}
+                        {e.activa ? t("superadmin.activa") : t("superadmin.inactiva")}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-center text-slate-300">{e.usuarios}</td>
@@ -165,7 +165,7 @@ export default function SuperadminPage() {
                           disabled={toggleEmpresa.isPending}
                           className={"rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors " + (e.activa ? "bg-amber-500/15 text-amber-400 hover:bg-amber-500/25" : "bg-green-500/15 text-green-400 hover:bg-green-500/25")}
                         >
-                          {e.activa ? "Desactivar" : "Activar"}
+                          {e.activa ? t("superadmin.desactivar") : t("superadmin.activar")}
                         </button>
                         <button
                           onClick={() => manejarEliminar(e)}

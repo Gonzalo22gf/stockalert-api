@@ -209,7 +209,12 @@
     "hasta": "To",
     "limpiar": "Clear filters",
     "mostrando": "Showing",
-    "de": "of"
+    "de": "of",
+    "creado": "Created",
+    "editado": "Edited",
+    "eliminado": "Deleted",
+    "producto": "Product",
+    "usuario": "User"
   },
   "reportes": {
     "titulo": "Reports",
@@ -339,7 +344,36 @@
     "nombreIncorrecto": "Incorrect name",
     "noEliminada": "The company was not deleted.",
     "empresaEliminada": "Company deleted",
-    "fueEliminada": "{{nombre}} was deleted."
+    "fueEliminada": "{{nombre}} was deleted.",
+    "accesoRestringido": "Access restricted.",
+    "vasA": "You are about to {{accion}} \"{{nombre}}\".",
+    "siAccion": "Yes, {{accion}}",
+    "siEliminarTodo": "Yes, delete everything",
+    "escribiNombre": "Type the exact company name to confirm:",
+    "eliminarDefinitivamente": "Delete permanently",
+    "panelFundador": "Founder panel",
+    "metricasGlobales": "Global metrics across the platform.",
+    "kpiEmpresas": "Companies",
+    "kpiUsuarios": "Users",
+    "kpiProductos": "Products",
+    "kpiSucursales": "Branches",
+    "kpiEmpresasSemana": "Companies this week",
+    "kpiUsuariosSemana": "Users this week",
+    "todasEmpresas": "All companies",
+    "thEmpresa": "Company",
+    "thCodigo": "Code",
+    "thPlan": "Plan",
+    "thEstado": "Status",
+    "thUsuarios": "Users",
+    "thSucursales": "Branches",
+    "thProductos": "Products",
+    "thRegistrada": "Registered",
+    "thAcciones": "Actions",
+    "activa": "Active",
+    "inactiva": "Inactive",
+    "desactivar": "Deactivate",
+    "activar": "Activate",
+    "eliminar": "Delete"
   },
   "paginas": {
     "dashboardSub": "Inventory overview",
@@ -433,5 +467,58 @@
     "fReportesAvanzados": "Advanced reports",
     "fSoporteWhatsapp": "WhatsApp support",
     "fOnboarding": "Guided onboarding"
+  },
+  "sucursal": {
+    "zonaNumeroObligatorios": "Zone and number are required.",
+    "actualizada": "Branch updated",
+    "creada": "Branch created",
+    "listaParaUsar": "\"Zone {{zona}}, {{numero}}\" ready to use.",
+    "editar": "Edit branch",
+    "nueva": "🏪 New branch",
+    "zona": "Zone",
+    "numero": "Branch number",
+    "direccion": "Address (optional)",
+    "ejZona": "e.g. 1",
+    "ejNumero": "e.g. 402",
+    "ejDireccion": "123 Main St",
+    "guardarCambios": "Save changes",
+    "crear": "Create branch"
+  },
+  "usuario": {
+    "nombreEmailObligatorios": "Name and email are required.",
+    "actualizado": "User updated",
+    "editar": "Edit user",
+    "nombre": "Name",
+    "email": "Email",
+    "nuevaPassword": "New password (leave empty to keep current)"
+  },
+  "restablecer": {
+    "muyCorta": "Password too short",
+    "requisitos": "Must be at least 8 characters and include an uppercase letter, a number and a symbol.",
+    "noCoinciden": "They do not match",
+    "noIguales": "The passwords entered are not the same.",
+    "listo": "Done!",
+    "restablecida": "Password reset.",
+    "titulo": "New password",
+    "subtitulo": "Choose your new StockAlert password",
+    "linkInvalido": "The link is invalid or incomplete.",
+    "volverLogin": "Back to sign in",
+    "nuevaPassword": "New password",
+    "repetir": "Repeat password",
+    "guardarNueva": "Save new password"
+  },
+  "empresa": {
+    "codigoInvitacion": "Invitation code",
+    "copiado": "Copied",
+    "copiar": "Copy",
+    "compartilo": "Share it with your team so they can join <1>{{nombre}}</1>.",
+    "linksFrecuentes": "Frequent links",
+    "gestionar": "Manage",
+    "noLinks": "No links.",
+    "agregar": "Add",
+    "masEn": "+{{n}} more in"
+  },
+  "password": {
+    "mostrar": "Show password"
   }
 }
