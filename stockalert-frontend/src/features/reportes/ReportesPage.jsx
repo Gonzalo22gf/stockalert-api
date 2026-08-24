@@ -174,7 +174,7 @@ export default function ReportesPage() {
                 <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
                   <tr>
                     <th className="px-4 py-3">{t("reportes.fecha")}</th>
-                    {CATS.map((c) => (<th key={c} className="px-4 py-3 text-center">{c}</th>))}
+                    {CATS.map((c) => (<th key={c} className="px-4 py-3 text-center">{t(`categorias.${c}`)}</th>))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
