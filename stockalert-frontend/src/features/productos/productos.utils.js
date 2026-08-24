@@ -1,7 +1,6 @@
 // Funciones puras para logica de productos.
 // Sin estado, sin efectos secundarios, sin dependencias de React.
 
-export const CATEGORIAS = ["Lacteos", "Bebidas", "Almacen", "Limpieza", "Congelados"];
 
 export function estadoVencimiento(vencimiento) {
   const dias = Math.ceil((new Date(vencimiento) - new Date()) / (1000 * 60 * 60 * 24));

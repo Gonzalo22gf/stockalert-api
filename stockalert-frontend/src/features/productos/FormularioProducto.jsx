@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { useCategorias } from "../categorias/useCategorias";
 import { buscarProductoPorEAN } from "./useOpenFoodFacts";
 import Swal from "sweetalert2";
 import { useCrearProducto } from "./useProductos";
@@ -8,10 +9,10 @@ import EscanerEAN from "./EscanerEAN";
 import Boton from "../../components/ui/Boton";
 import { Input, Select } from "../../components/ui/Input";
 
-const CATEGORIAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
 
 export default function FormularioProducto({ esAdmin }) {
   const { t } = useTranslation();
+  const { data: categorias = [] } = useCategorias();
   const crearProducto = useCrearProducto();
   const { data: sucursales } = useSucursales(esAdmin);
   const [ean, setEan] = useState("");
@@ -108,8 +109,8 @@ export default function FormularioProducto({ esAdmin }) {
         <Input placeholder={t("form.nombreProducto")} value={nombre} onChange={(e) => setNombre(e.target.value)} />
         <Select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
           <option value="">{t("productos.categoria")}</option>
-          {CATEGORIAS.map((c) => (
-            <option key={c} value={c}>{t(`categorias.${c}`)}</option>
+          {categorias.map((c) => (
+            <option key={c._id} value={c.nombre}>{c.nombre}</option>
           ))}
         </Select>
         <Input type="number" placeholder={t("form.precio")} value={precio} onChange={(e) => setPrecio(e.target.value)} />

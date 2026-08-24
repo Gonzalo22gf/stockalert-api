@@ -5,9 +5,9 @@ import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
 import { useProductos, useEliminarProducto, useBulkDelete } from "./useProductos";
 import { useSucursales } from "../sucursales/useSucursales";
+import { useCategorias } from "../categorias/useCategorias";
 import { useFiltradorProductos } from "./useFiltradorProductos";
 import { useImportarProductos } from "./useImportarProductos";
-import { CATEGORIAS } from "./productos.utils";
 import FiltrosProductos from "./FiltrosProductos";
 import FormularioProducto from "./FormularioProducto";
 import ProductoCard from "./ProductoCard";
@@ -20,6 +20,7 @@ import Boton from "../../components/ui/Boton";
 
 export default function ProductosPage() {
   const { t } = useTranslation();
+  const { data: categoriasEmpresa = [] } = useCategorias();
   const usuario = useAuthStore((s) => s.usuario);
   const esAdmin = usuario?.rol === "admin";
   const [searchParams] = useSearchParams();
@@ -42,7 +43,7 @@ export default function ProductosPage() {
   const { filtros, setFiltro, limpiar, hayFiltrosActivos, resultado, seleccionados, toggleSeleccion, toggleTodos, limpiarSeleccion } = useFiltradorProductos(productos);
   const { inputRef, abrirSelector, manejarArchivo } = useImportarProductos({ esAdmin, sucursalSeleccionada });
 
-  const categoriasDisponibles = [...new Set([...CATEGORIAS, ...(productos || []).map((p) => p.categoria).filter(Boolean)])];
+  const categoriasDisponibles = [...new Set([...categoriasEmpresa.map((c) => c.nombre), ...(productos || []).map((p) => p.categoria).filter(Boolean)])];
 
   function cambiarVista(v) {
     setVista(v);

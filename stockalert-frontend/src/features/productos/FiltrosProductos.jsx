@@ -44,7 +44,7 @@ export default function FiltrosProductos({
         />
         <Select value={filtros.filtroCategoria} onChange={(e) => setFiltro("filtroCategoria", e.target.value)} className="md:col-span-3">
           <option value="">{t("filtros.todasCategorias")}</option>
-          {categorias.map((c) => <option key={c} value={c}>{t(`categorias.${c}`)}</option>)}
+          {categorias.map((c) => <option key={c} value={c}>{c}</option>)}
         </Select>
         <Select value={filtros.filtroEstado} onChange={(e) => setFiltro("filtroEstado", e.target.value)} className="md:col-span-3">
           {OPCIONES_ESTADO.map((o) => <option key={o.value} value={o.value}>{t(o.key)}</option>)}

@@ -1,15 +1,16 @@
 import { useState, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { useCategorias } from "../categorias/useCategorias";
 import { Html5Qrcode } from "html5-qrcode";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
 import { useCrearProducto, useProductos } from "./useProductos";
 import { useSucursales } from "../sucursales/useSucursales";
 
-const CATEGORIAS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
 
 export default function FabEscaner() {
   const { t } = useTranslation();
+  const { data: categorias = [] } = useCategorias();
   const usuario = useAuthStore((s) => s.usuario);
   const esAdmin = usuario?.rol === "admin";
 
@@ -190,8 +191,8 @@ export default function FabEscaner() {
                 <input className={inputClase} placeholder="Nombre del producto" value={nombre} onChange={(e) => setNombre(e.target.value)} />
                 <select className={inputClase} value={categoria} onChange={(e) => setCategoria(e.target.value)}>
                   <option value="">{t("productos.categoria")}</option>
-                  {CATEGORIAS.map((c) => (
-                    <option key={c} value={c}>{t(`categorias.${c}`)}</option>
+                  {categorias.map((c) => (
+                    <option key={c._id} value={c.nombre}>{c.nombre}</option>
                   ))}
                 </select>
                 <div className="grid grid-cols-2 gap-2">
