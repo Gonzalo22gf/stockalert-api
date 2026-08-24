@@ -17,7 +17,8 @@
     "planes": "Plans",
     "notifOn": "Enable notifications",
     "notifOff": "Disable notifications",
-    "categorias": "Categories"
+    "categorias": "Categories",
+    "inventario": "Inventory"
   },
   "topbar": {
     "accesosRapidos": "Quick access",
@@ -133,7 +134,9 @@
     "eliminado": "Product deleted",
     "error": "Error",
     "sucursal": "Branch",
-    "todasSucursales": "All branches"
+    "todasSucursales": "All branches",
+    "agregarProducto": "Add product",
+    "cerrarFormulario": "Close form"
   },
   "sucursales": {
     "titulo": "Branches",
@@ -342,7 +345,8 @@
     "escanearEan": "📷 Scan EAN",
     "eanDetectado": "EAN detected",
     "eanCompleta": "{{codigo}} — fill in the details manually.",
-    "codigoBarrasEan": "Barcode (EAN)"
+    "codigoBarrasEan": "Barcode (EAN)",
+    "tituloAgregar": "Add product"
   },
   "superadmin": {
     "accionEmpresa": "{{accion}} company",

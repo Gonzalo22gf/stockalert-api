@@ -17,7 +17,8 @@
     "planes": "Planes",
     "notifOn": "Activar notificaciones",
     "notifOff": "Desactivar notificaciones",
-    "categorias": "Categorías"
+    "categorias": "Categorías",
+    "inventario": "Inventario"
   },
   "topbar": {
     "accesosRapidos": "Accesos rápidos",
@@ -133,7 +134,9 @@
     "eliminado": "Producto eliminado",
     "error": "Error",
     "sucursal": "Sucursal",
-    "todasSucursales": "Todas las sucursales"
+    "todasSucursales": "Todas las sucursales",
+    "agregarProducto": "Agregar producto",
+    "cerrarFormulario": "Cerrar formulario"
   },
   "sucursales": {
     "titulo": "Sucursales",
@@ -342,7 +345,8 @@
     "escanearEan": "📷 Escanear EAN",
     "eanDetectado": "EAN detectado",
     "eanCompleta": "{{codigo}} — completá los datos manualmente.",
-    "codigoBarrasEan": "Código de barras (EAN)"
+    "codigoBarrasEan": "Código de barras (EAN)",
+    "tituloAgregar": "Agregar producto"
   },
   "superadmin": {
     "accionEmpresa": "{{accion}} empresa",

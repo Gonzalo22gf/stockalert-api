@@ -75,7 +75,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
           {!colapsado && (
             <div className="min-w-0 flex-1">
               <p className="text-[15px] font-extrabold text-white">StockAlert</p>
-              <p className="text-[10px] font-medium tracking-wide text-slate-600">v5.0 · Inventario</p>
+              <p className="text-[10px] font-medium tracking-wide text-slate-600">v5.0 · {t("nav.inventario")}</p>
             </div>
           )}
           <button

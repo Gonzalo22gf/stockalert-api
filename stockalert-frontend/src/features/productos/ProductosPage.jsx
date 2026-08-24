@@ -96,7 +96,7 @@ export default function ProductosPage() {
           </div>
         ) : <div />}
         <Boton onClick={() => setFormAbierto((v) => !v)}>
-          {formAbierto ? "x Cerrar formulario" : "+ Agregar producto"}
+          {formAbierto ? "x " + t("productos.cerrarFormulario") : "+ " + t("productos.agregarProducto")}
         </Boton>
       </div>
 
