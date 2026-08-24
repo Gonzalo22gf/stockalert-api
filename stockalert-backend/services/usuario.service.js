@@ -40,6 +40,9 @@ const UsuarioService = {
       const Empresa = require("../models/Empresa");
       empresa = await Empresa.create({ nombre: nombreEmpresa.trim(), codigoAcceso: generarCodigoAcceso(nombreEmpresa.trim()) });
       sucursal = await SucursalRepository.create({ zona: 1, numero: 1, direccion: "", empresa: empresa._id });
+      const Categoria = require("../models/Categoria");
+      const categoriasDefault = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
+      await Categoria.insertMany(categoriasDefault.map((nombre) => ({ nombre, empresa: empresa._id })));
       rolAsignado = "admin";
     } else {
       if (!nombreEmpresa?.trim()) throw new ValidationError("El codigo de acceso es obligatorio");

@@ -98,9 +98,15 @@ const bulkDeleteSchema = z.object({
   ids: z.array(z.string().min(1)).min(1, "Debe seleccionar al menos un producto").max(100, "Maximo 100 productos a la vez")
 });
 
+const categoriaSchema = z.object({
+  nombre: z.string().trim().min(1, "El nombre es obligatorio").max(40, "El nombre es muy largo")
+});
+const eliminarCategoriaSchema = z.object({
+  reasignarA: z.string().trim().max(40).optional()
+});
 module.exports = {
   pushTokenSchema,
   registroSchema, loginSchema, cambiarRolSchema, cambiarEstadoSchema,
   cambiarSucursalSchema, editarUsuarioSchema, productoSchema, sucursalSchema, bulkDeleteSchema,
-  linkSchema, olvidePasswordSchema, restablecerPasswordSchema
+  linkSchema, olvidePasswordSchema, restablecerPasswordSchema, categoriaSchema, eliminarCategoriaSchema
 };
