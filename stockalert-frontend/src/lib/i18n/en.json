@@ -16,7 +16,8 @@
     "superadmin": "Superadmin",
     "planes": "Plans",
     "notifOn": "Enable notifications",
-    "notifOff": "Disable notifications"
+    "notifOff": "Disable notifications",
+    "categorias": "Categories"
   },
   "topbar": {
     "accesosRapidos": "Quick access",
@@ -539,5 +540,31 @@
     "Limpieza": "Cleaning",
     "Congelados": "Frozen",
     "Otros": "Other"
+  },
+  "categoriasPage": {
+    "subtitulo": "Manage your company's product categories.",
+    "nueva": "New category",
+    "editar": "Edit",
+    "eliminar": "Delete",
+    "cancelar": "Cancel",
+    "nombre": "Name",
+    "ejNombre": "e.g. Dairy",
+    "nombreObligatorio": "The category name is required",
+    "crear": "Create",
+    "guardarCambios": "Save changes",
+    "creada": "Category created",
+    "actualizada": "Category updated",
+    "eliminada": "Category deleted",
+    "error": "Something went wrong",
+    "sinCategorias": "No categories yet",
+    "confirmEliminar": "Delete category?",
+    "vasAEliminar": "You're about to delete <b>{{nombre}}</b>. This action can't be undone.",
+    "reasignarTitulo": "Reassign products",
+    "reasignarTexto": "The category <b>{{nombre}}</b> has products. Choose which category to move them to before deleting it.",
+    "reasignarPlaceholder": "Choose a category",
+    "reasignarConfirmar": "Move and delete",
+    "reasignarObligatorio": "Choose a target category",
+    "sinDestinoTitulo": "No other category",
+    "sinDestinoTexto": "You need at least one other category to reassign the products."
   }
 }

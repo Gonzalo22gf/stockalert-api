@@ -1,5 +1,6 @@
 import UsuariosPage from "./features/usuarios/UsuariosPage";
 import SucursalesPage from "./features/sucursales/SucursalesPage";
+import CategoriasPage from "./features/categorias/CategoriasPage";
 import MovimientosPage from "./features/movimientos/MovimientosPage";
 import ProductosPage from "./features/productos/ProductosPage";
 import DashboardPage from "./features/dashboard/DashboardPage";
@@ -39,6 +40,7 @@ export default function App() {
         <Route path="productos" element={<ProductosPage />} />
         <Route path="movimientos" element={<MovimientosPage />} />
         <Route path="sucursales" element={<SucursalesPage />} />
+        <Route path="categorias" element={<CategoriasPage />} />
         <Route path="usuarios" element={<UsuariosPage />} />
         <Route path="reportes" element={<ReportesPage />} />
             <Route path="superadmin" element={<SuperadminPage />} />

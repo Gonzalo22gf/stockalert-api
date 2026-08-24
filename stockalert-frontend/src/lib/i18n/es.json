@@ -16,7 +16,8 @@
     "superadmin": "Superadmin",
     "planes": "Planes",
     "notifOn": "Activar notificaciones",
-    "notifOff": "Desactivar notificaciones"
+    "notifOff": "Desactivar notificaciones",
+    "categorias": "Categorías"
   },
   "topbar": {
     "accesosRapidos": "Accesos rápidos",
@@ -539,5 +540,31 @@
     "Limpieza": "Limpieza",
     "Congelados": "Congelados",
     "Otros": "Otros"
+  },
+  "categoriasPage": {
+    "subtitulo": "Gestioná las categorías de productos de tu empresa.",
+    "nueva": "Nueva categoría",
+    "editar": "Editar",
+    "eliminar": "Eliminar",
+    "cancelar": "Cancelar",
+    "nombre": "Nombre",
+    "ejNombre": "Ej: Lácteos",
+    "nombreObligatorio": "El nombre de la categoría es obligatorio",
+    "crear": "Crear",
+    "guardarCambios": "Guardar cambios",
+    "creada": "Categoría creada",
+    "actualizada": "Categoría actualizada",
+    "eliminada": "Categoría eliminada",
+    "error": "Ocurrió un error",
+    "sinCategorias": "Todavía no hay categorías",
+    "confirmEliminar": "¿Eliminar categoría?",
+    "vasAEliminar": "Vas a eliminar <b>{{nombre}}</b>. Esta acción no se puede deshacer.",
+    "reasignarTitulo": "Reasignar productos",
+    "reasignarTexto": "La categoría <b>{{nombre}}</b> tiene productos. Elegí a qué categoría moverlos antes de eliminarla.",
+    "reasignarPlaceholder": "Elegí una categoría",
+    "reasignarConfirmar": "Mover y eliminar",
+    "reasignarObligatorio": "Elegí una categoría destino",
+    "sinDestinoTitulo": "No hay otra categoría",
+    "sinDestinoTexto": "Necesitás al menos otra categoría para poder reasignar los productos."
   }
 }

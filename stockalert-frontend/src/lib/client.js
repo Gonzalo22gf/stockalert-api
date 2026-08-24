@@ -20,7 +20,9 @@ async function request(path, options = {}) {
     if (data.codigo && ["LIMITE_PRODUCTOS","LIMITE_SUCURSALES","LIMITE_USUARIOS","TRIAL_EXPIRADO"].includes(data.codigo)) {
       throw new PlanError(data.mensaje, data.codigo);
     }
-    throw new Error(data.mensaje || "Error en la solicitud");
+    const err = new Error(data.mensaje || "Error en la solicitud");
+    if (data.codigo) err.codigo = data.codigo;
+    throw err;
   }
   return data;
 }
