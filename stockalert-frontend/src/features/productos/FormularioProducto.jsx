@@ -47,10 +47,10 @@ export default function FormularioProducto({ esAdmin }) {
         if (datos.categoria && !categoria) setCategoria(datos.categoria);
         Swal.fire({ icon: "success", title: t("swal.prodEncontrado"), text: datos.nombre || codigo, timer: 1800, showConfirmButton: false });
       } else {
-        Swal.fire({ icon: "info", title: "EAN detectado", text: codigo + " — completá los datos manualmente.", timer: 1800, showConfirmButton: false });
+        Swal.fire({ icon: "info", title: t("form.eanDetectado"), text: t("form.eanCompleta", { codigo }), timer: 1800, showConfirmButton: false });
       }
     } catch {
-      Swal.fire({ icon: "info", title: "EAN detectado", text: codigo, timer: 1400, showConfirmButton: false });
+      Swal.fire({ icon: "info", title: t("form.eanDetectado"), text: codigo, timer: 1400, showConfirmButton: false });
     } finally {
       setBuscandoEAN(false);
     }
@@ -109,7 +109,7 @@ export default function FormularioProducto({ esAdmin }) {
         <Select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
           <option value="">{t("productos.categoria")}</option>
           {CATEGORIAS.map((c) => (
-            <option key={c} value={c}>{c}</option>
+            <option key={c} value={c}>{t(`categorias.${c}`)}</option>
           ))}
         </Select>
         <Input type="number" placeholder={t("form.precio")} value={precio} onChange={(e) => setPrecio(e.target.value)} />

@@ -191,7 +191,7 @@ export default function FabEscaner() {
                 <select className={inputClase} value={categoria} onChange={(e) => setCategoria(e.target.value)}>
                   <option value="">{t("productos.categoria")}</option>
                   {CATEGORIAS.map((c) => (
-                    <option key={c} value={c}>{c}</option>
+                    <option key={c} value={c}>{t(`categorias.${c}`)}</option>
                   ))}
                 </select>
                 <div className="grid grid-cols-2 gap-2">

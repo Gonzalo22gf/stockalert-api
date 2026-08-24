@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { Html5Qrcode } from "html5-qrcode";
+import { useTranslation } from "react-i18next";
 
 const HIDDEN_ID = "__ean_scanner_hidden__";
 
 export default function EscanerEAN({ onDetectado, onCerrar }) {
+  const { t } = useTranslation();
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null);

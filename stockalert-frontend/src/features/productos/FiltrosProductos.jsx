@@ -37,14 +37,14 @@ export default function FiltrosProductos({
       <div className="grid grid-cols-1 gap-3 md:grid-cols-12">
         <Input
           type="text"
-          placeholder="Buscar por nombre, lote, EAN o sucursal..."
+          placeholder={t("filtros.buscarPlaceholder")}
           value={filtros.busqueda}
           onChange={(e) => setFiltro("busqueda", e.target.value)}
           className="md:col-span-4"
         />
         <Select value={filtros.filtroCategoria} onChange={(e) => setFiltro("filtroCategoria", e.target.value)} className="md:col-span-3">
           <option value="">{t("filtros.todasCategorias")}</option>
-          {categorias.map((c) => <option key={c} value={c}>{c}</option>)}
+          {categorias.map((c) => <option key={c} value={c}>{t(`categorias.${c}`)}</option>)}
         </Select>
         <Select value={filtros.filtroEstado} onChange={(e) => setFiltro("filtroEstado", e.target.value)} className="md:col-span-3">
           {OPCIONES_ESTADO.map((o) => <option key={o.value} value={o.value}>{t(o.key)}</option>)}
@@ -79,7 +79,7 @@ export default function FiltrosProductos({
           </Boton>
           {hayFiltrosActivos && (
             <Boton variante="ghost" tamano="sm" onClick={limpiar}>
-              x Limpiar filtros
+              x {t("filtros.limpiarFiltros")}
             </Boton>
           )}
           {seleccionados?.length > 0 && (
@@ -88,8 +88,8 @@ export default function FiltrosProductos({
             </Boton>
           )}
           <div className="ml-auto flex overflow-hidden rounded-lg border border-slate-700">
-            <button onClick={() => onCambiarVista("tabla")} className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "tabla" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}>Tabla</button>
-            <button onClick={() => onCambiarVista("cards")} className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "cards" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}>Tarjetas</button>
+            <button onClick={() => onCambiarVista("tabla")} className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "tabla" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}>{t("filtros.tabla")}</button>
+            <button onClick={() => onCambiarVista("cards")} className={"px-3 py-2 text-xs font-semibold transition-colors " + (vista === "cards" ? "bg-brand text-white" : "bg-slate-800 text-slate-400 hover:bg-slate-700")}>{t("filtros.tarjetas")}</button>
           </div>
           <input ref={inputImportarRef} type="file" accept=".csv,.xlsx,.xls" onChange={onImportar} className="hidden" />
         </div>

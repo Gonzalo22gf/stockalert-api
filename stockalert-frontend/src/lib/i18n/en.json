@@ -321,7 +321,11 @@
     "stockMenor": "Stock (low)",
     "stockMayor": "Stock (high)",
     "precioMenor": "Price (low)",
-    "precioMayor": "Price (high)"
+    "precioMayor": "Price (high)",
+    "limpiarFiltros": "Clear filters",
+    "tabla": "Table",
+    "tarjetas": "Cards",
+    "buscarPlaceholder": "Search by name, lot, EAN or branch..."
   },
   "form": {
     "ean": "EAN / Barcode",
@@ -332,7 +336,12 @@
     "seleccionaSucursal": "Select the product branch",
     "elegiSucursal": "Select a branch",
     "elegiSucursalTexto": "Choose which branch the product belongs to.",
-    "sucursalProducto": "Product branch"
+    "sucursalProducto": "Product branch",
+    "buscando": "Searching...",
+    "escanearEan": "📷 Scan EAN",
+    "eanDetectado": "EAN detected",
+    "eanCompleta": "{{codigo}} — fill in the details manually.",
+    "codigoBarrasEan": "Barcode (EAN)"
   },
   "superadmin": {
     "accionEmpresa": "{{accion}} company",
@@ -399,7 +408,8 @@
     "masPorVencer": "⏳ 10 stores with most expiring",
     "masPorVencerSub": "Products about to expire by branch",
     "prodVencidos": "Expired products",
-    "vencidosSemana": "{{cantidad}} expired products that week"
+    "vencidosSemana": "{{cantidad}} expired products that week",
+    "analisisInventario": "Inventory analysis"
   },
   "estados": {
     "stockCritico": "Critical stock",
@@ -435,7 +445,8 @@
   },
   "escaner": {
     "titulo": "Scan product",
-    "guardarSeguir": "Save and continue"
+    "guardarSeguir": "Save and continue",
+    "codigoBarras": "Scan barcode"
   },
   "planes": {
     "titulo": "Plans",
@@ -520,5 +531,13 @@
   },
   "password": {
     "mostrar": "Show password"
+  },
+  "categorias": {
+    "Lácteos": "Dairy",
+    "Bebidas": "Beverages",
+    "Almacén": "Groceries",
+    "Limpieza": "Cleaning",
+    "Congelados": "Frozen",
+    "Otros": "Other"
   }
 }

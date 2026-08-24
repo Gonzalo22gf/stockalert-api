@@ -80,7 +80,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
               <Select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
                 <option value="">{t("productos.categoria")}</option>
                 {CATEGORIAS.map((c) => (
-                  <option key={c} value={c}>{c}</option>
+                  <option key={c} value={c}>{t(`categorias.${c}`)}</option>
                 ))}
               </Select>
             </div>
@@ -101,7 +101,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="mb-1 block text-xs text-slate-400">Código de barras (EAN)</label>
+              <label className="mb-1 block text-xs text-slate-400">{t("form.codigoBarrasEan")}</label>
               <Input value={codigoBarras} onChange={(e) => setCodigoBarras(e.target.value)} placeholder="Opcional" />
             </div>
             <div>

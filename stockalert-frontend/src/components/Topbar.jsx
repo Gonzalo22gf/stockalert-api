@@ -57,7 +57,7 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
             className="flex items-center gap-1.5 rounded-[9px] border border-brand/25 bg-brand/10 px-3 py-[7px] text-[12.5px] font-semibold text-brand-400 transition-all hover:bg-brand/20"
           >
             <Zap size={14} />
-            <span className="hidden sm:inline">Accesos rapidos</span>
+            <span className="hidden sm:inline">{t("topbar.accesosRapidos")}</span>
             <ChevronDown size={12} />
           </button>
 
