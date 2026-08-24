@@ -3,13 +3,12 @@ const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
 const Empresa = require("../models/Empresa");
 
-const CATEGORIAS_FIJAS = ["Lacteos", "Bebidas", "Almacen", "Limpieza", "Congelados"];
 
 function contarCategorias(productos) {
-  const conteo = { "Lacteos": 0, "Bebidas": 0, "Almacen": 0, "Limpieza": 0, "Congelados": 0, "Otros": 0 };
+  const conteo = {};
   productos.forEach((p) => {
-    if (CATEGORIAS_FIJAS.includes(p.categoria)) conteo[p.categoria]++;
-    else conteo["Otros"]++;
+    const cat = p.categoria || "Sin categoria";
+    conteo[cat] = (conteo[cat] || 0) + 1;
   });
   return conteo;
 }
@@ -48,7 +47,7 @@ async function calcularResumenSucursal(sucursal, empresaId) {
 async function calcularResumenEmpresa(empresaId) {
   const sucursales = await Sucursal.find({ empresa: empresaId }).sort({ numero: 1 });
   const detalle = await Promise.all(sucursales.map((s) => calcularResumenSucursal(s, empresaId)));
-  const categoriasVacias = { "Lacteos": 0, "Bebidas": 0, "Almacen": 0, "Limpieza": 0, "Congelados": 0, "Otros": 0 };
+  const categoriasVacias = {};
   const totales = detalle.reduce(
     (acc, s) => ({
       tiendas: acc.tiendas + 1,

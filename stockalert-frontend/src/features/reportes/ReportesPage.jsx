@@ -14,7 +14,6 @@ import { Download } from "lucide-react";
 
 ChartJS.register(LineElement, PointElement, LinearScale, CategoryScale, Tooltip, Legend, Filler);
 
-const CATS = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados", "Otros"];
 
 function formatearFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
@@ -46,6 +45,11 @@ export default function ReportesPage() {
   if (!esAdmin) return <Navigate to="/productos" replace />;
 
   const hayDatos = snapshots && snapshots.length > 0;
+
+  // Categorias del reporte = union de todas las que aparezcan en los snapshots del periodo
+  const CATS = [...new Set(
+    (snapshots || []).flatMap((s) => Object.keys((s.totales && s.totales.categorias) || {}))
+  )].sort((a, b) => a.localeCompare(b, "es"));
 
   const datosGrafico = {
     labels: (snapshots || []).map((s) => formatearFecha(s.fecha)),
@@ -174,7 +178,7 @@ export default function ReportesPage() {
                 <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
                   <tr>
                     <th className="px-4 py-3">{t("reportes.fecha")}</th>
-                    {CATS.map((c) => (<th key={c} className="px-4 py-3 text-center">{t(`categorias.${c}`)}</th>))}
+                    {CATS.map((c) => (<th key={c} className="px-4 py-3 text-center">{c}</th>))}
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-800">
