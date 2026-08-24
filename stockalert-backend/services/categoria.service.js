@@ -32,7 +32,7 @@ const CategoriaService = {
     const cantidad = await CategoriaRepository.contarProductos(categoria.nombre, empresaId);
     if (cantidad > 0) {
       const destino = reasignarA?.trim();
-      if (!destino) throw new ValidationError("La categoria tiene productos. Indica a que categoria reasignarlos.");
+      if (!destino) throw new ValidationError("La categoria tiene productos. Indica a que categoria reasignarlos.", "CATEGORIA_CON_PRODUCTOS");
       if (destino === categoria.nombre) throw new ValidationError("La categoria destino no puede ser la misma");
       const existeDestino = await CategoriaRepository.findByNombre(destino, empresaId);
       if (!existeDestino) throw new ValidationError("La categoria destino no existe");

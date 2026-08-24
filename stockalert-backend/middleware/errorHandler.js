@@ -38,7 +38,7 @@ function errorHandler(error, req, res, next) {
 
   // Errores operacionales nuestros (AppError y sus hijos)
   if (error.esOperacional) {
-    return res.status(error.statusCode).json({ mensaje: error.message });
+    return res.status(error.statusCode).json({ mensaje: error.message, ...(error.codigo ? { codigo: error.codigo } : {}) });
   }
 
   // Error inesperado (bug) — loguear full stack y no exponer detalles
