@@ -29,7 +29,7 @@ export default function ModalSucursal({ sucursal, onCerrar }) {
       Swal.fire({ icon: "warning", title: t("swal.datosIncompletos"), text: t("sucursal.zonaNumeroObligatorios") });
       return;
     }
-    const datos = { zona: Number(zona), numero: Number(numero), direccion: direccion.trim() };
+    const datos = { zona: zona.trim(), numero: Number(numero), direccion: direccion.trim() };
     try {
       if (esEdicion) {
         await editarSucursal.mutateAsync({ id: sucursal._id, datos });
@@ -51,7 +51,7 @@ export default function ModalSucursal({ sucursal, onCerrar }) {
         <form onSubmit={manejarGuardar} className="space-y-3">
           <div>
             <label className="mb-1 block text-xs text-slate-400">{t("sucursal.zona")}</label>
-            <Input type="number" placeholder={t("sucursal.ejZona")} value={zona} onChange={(e) => setZona(e.target.value)} />
+            <Input type="text" placeholder={t("sucursal.ejZona")} value={zona} onChange={(e) => setZona(e.target.value)} />
           </div>
           <div>
             <label className="mb-1 block text-xs text-slate-400">{t("sucursal.numero")}</label>

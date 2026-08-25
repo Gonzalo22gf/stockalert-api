@@ -130,7 +130,7 @@ export default function UsuariosPage() {
     }
   }
 
-  const zonas = [...new Set((usuarios || []).map((u) => u.sucursal?.zona).filter((z) => z !== undefined))].sort((a, b) => a - b);
+  const zonas = [...new Set((usuarios || []).map((u) => u.sucursal?.zona).filter((z) => z !== undefined))].sort((a, b) => String(a).localeCompare(String(b), "es", { numeric: true }));
   const usuariosFiltrados = (usuarios || []).filter((u) => {
     const texto = busqueda.toLowerCase();
     return (u.nombre.toLowerCase().includes(texto) || u.email.toLowerCase().includes(texto)) &&

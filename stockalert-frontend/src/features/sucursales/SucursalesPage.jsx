@@ -89,7 +89,7 @@ export default function SucursalesPage() {
   }
 
   const formatoMoneda = (v) => Number(v).toLocaleString("es-AR", { style: "currency", currency: "ARS", maximumFractionDigits: 0 });
-  const zonas = [...new Set((resumen || []).map((r) => r.sucursal.zona))].sort((a, b) => a - b);
+  const zonas = [...new Set((resumen || []).map((r) => r.sucursal.zona))].sort((a, b) => String(a).localeCompare(String(b), "es", { numeric: true }));
   const resumenFiltrado = (resumen || []).filter((r) => {
     const coincideZona = filtroZona ? String(r.sucursal.zona) === filtroZona : true;
     const coincideNumero = filtroNumero ? String(r.sucursal.numero).includes(filtroNumero) : true;
