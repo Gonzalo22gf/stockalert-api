@@ -1,4 +1,5 @@
 import { create } from "zustand";
+import { queryClient } from "../../lib/queryClient.js";
 
 const tokenGuardado = localStorage.getItem("tokenStockAlert") || "";
 const usuarioGuardado = JSON.parse(localStorage.getItem("usuarioStockAlert") || "null");
@@ -22,6 +23,7 @@ export const useAuthStore = create((set) => ({
   cerrarSesion: () => {
     localStorage.removeItem("tokenStockAlert");
     localStorage.removeItem("usuarioStockAlert");
+    queryClient.clear();
     set({ token: "", usuario: null });
   }
 }));
