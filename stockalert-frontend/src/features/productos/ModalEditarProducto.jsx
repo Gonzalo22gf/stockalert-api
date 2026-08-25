@@ -23,6 +23,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
   const [stock, setStock] = useState("");
   const [vencimiento, setVencimiento] = useState("");
   const [codigoBarras, setCodigoBarras] = useState("");
+  const [vence, setVence] = useState(true);
 
   useEffect(() => {
     if (producto) {
@@ -33,6 +34,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       setStock(producto.stock ?? "");
       setVencimiento(fechaParaInput(producto.vencimiento));
       setCodigoBarras(producto.codigoBarras || "");
+      setVence(producto.vence !== false);
     }
   }, [producto]);
 
@@ -40,7 +42,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
 
   async function manejarGuardar(e) {
     e.preventDefault();
-    if (!nombre || !categoria || precio === "" || stock === "" || !vencimiento) {
+    if (!nombre || !categoria || precio === "" || stock === "" || (vence && !vencimiento)) {
       Swal.fire({ icon: "warning", title: t("swal.datosIncompletos"), text: t("swal.completaCampos") });
       return;
     }
@@ -50,9 +52,11 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       precio: Number(precio),
       lote,
       stock: Number(stock),
-      vencimiento,
+      vence,
       codigoBarras: codigoBarras.trim(),
-      lotes: [{ numero: lote, stock: Number(stock), vencimiento }]
+      ...(vence
+        ? { vencimiento, lotes: [{ numero: lote, stock: Number(stock), vencimiento }] }
+        : { vencimiento: null, lotes: [] })
     };
     try {
       await actualizarProducto.mutateAsync({ id: producto._id, datos });
@@ -106,8 +110,12 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
               <Input value={codigoBarras} onChange={(e) => setCodigoBarras(e.target.value)} placeholder="Opcional" />
             </div>
             <div>
-              <label className="mb-1 block text-xs text-slate-400">Vencimiento</label>
-              <Input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
+              <label className="mb-1 block text-xs text-slate-400">{t("form.fechaVencimiento")}</label>
+              <Input type="date" value={vencimiento} disabled={!vence} onChange={(e) => setVencimiento(e.target.value)} />
+              <label className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+                <input type="checkbox" checked={!vence} onChange={(e) => setVence(!e.target.checked)} />
+                {t("form.noVence")}
+              </label>
             </div>
           </div>
           <div className="flex gap-2 pt-2">
