@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { useAuthStore } from "../features/auth/authStore";
 import { usePerfilEmpresa } from "../features/empresa/useEmpresa";
-import { Zap, ChevronDown, Package, LayoutDashboard, ClipboardList, Store, Users, TrendingUp, Home, Calendar, Menu, Link, KeyRound } from "lucide-react";
+import { Zap, ChevronDown, Package, LayoutDashboard, ClipboardList, Store, Tag, Users, TrendingUp, Home, Calendar, Menu, Link, KeyRound } from "lucide-react";
 
 export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const { t } = useTranslation();
@@ -21,6 +21,7 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
     { label: t("nav.dashboard"), icono: LayoutDashboard, ruta: "/", soloAdmin: true },
     { label: t("nav.movimientos"), icono: ClipboardList, ruta: "/movimientos", soloAdmin: true },
     { label: t("nav.sucursales"), icono: Store, ruta: "/sucursales", soloAdmin: true },
+    { label: t("nav.categorias"), icono: Tag, ruta: "/categorias", soloAdmin: true },
     { label: t("nav.usuarios"), icono: Users, ruta: "/usuarios", soloAdmin: true },
     { label: t("nav.reportes"), icono: TrendingUp, ruta: "/reportes", soloAdmin: true },
     { label: t("nav.links"), icono: Link, ruta: "/links" }
