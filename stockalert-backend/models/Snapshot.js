@@ -31,7 +31,7 @@ const snapshotSchema = new mongoose.Schema(
       {
         sucursalId: { type: mongoose.Schema.Types.ObjectId, ref: "Sucursal" },
         nombre: String,
-        zona: Number,
+        zona: String,
         numero: Number,
         totalProductos: Number,
         vencidos: Number,

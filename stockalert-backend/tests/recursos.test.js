@@ -95,8 +95,8 @@ describe("Gestion de sucursales", () => {
     expect(res.statusCode).toBe(200);
   });
 
-  test("rechaza sucursal con zona 0", async () => {
-    const res = await request(app).post("/api/sucursales").set("Authorization", "Bearer " + tokenAdmin).send({ zona: 0, numero: 1 });
+  test("rechaza sucursal con zona vacia", async () => {
+    const res = await request(app).post("/api/sucursales").set("Authorization", "Bearer " + tokenAdmin).send({ zona: "", numero: 1 });
     expect(res.statusCode).toBe(400);
   });
 });

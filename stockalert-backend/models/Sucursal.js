@@ -3,8 +3,9 @@ const mongoose = require("mongoose");
 const sucursalSchema = new mongoose.Schema(
   {
     zona: {
-      type: Number,
-      required: true
+      type: String,
+      required: true,
+      trim: true
     },
     numero: {
       type: Number,

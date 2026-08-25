@@ -62,11 +62,11 @@ describe("Validacion de sucursales", () => {
     expect(res.statusCode).toBe(400);
   });
 
-  test("rechaza sucursal con zona 0", async () => {
+  test("rechaza sucursal con zona vacia", async () => {
     const res = await request(app)
       .post("/api/sucursales")
       .set("Authorization", "Bearer " + token)
-      .send({ zona: 0, numero: 1 });
+      .send({ zona: "", numero: 1 });
     expect(res.statusCode).toBe(400);
   });
 

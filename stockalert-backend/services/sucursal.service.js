@@ -54,7 +54,7 @@ const SucursalService = {
     const yaExiste = await SucursalRepository.findByNumero(numero, empresaId);
     if (yaExiste) throw new ValidationError("Ya existe una sucursal con ese numero en tu empresa");
     return SucursalRepository.create({
-      zona: Number(zona), numero: Number(numero),
+      zona: String(zona).trim(), numero: Number(numero),
       direccion: direccion?.trim() || "", empresa: empresaId
     });
   },
@@ -67,7 +67,7 @@ const SucursalService = {
       if (choque && choque._id.toString() !== existente._id.toString())
         throw new ValidationError("Ya existe otra sucursal con ese numero");
     }
-    existente.zona = Number(zona);
+    existente.zona = String(zona).trim();
     existente.numero = Number(numero);
     existente.direccion = direccion?.trim() || "";
     return SucursalRepository.save(existente);

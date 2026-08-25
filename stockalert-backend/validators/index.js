@@ -63,7 +63,7 @@ const productoSchema = z.object({
 
 // ─── SUCURSALES ───────────────────────────────────────────────────────────────
 const sucursalSchema = z.object({
-  zona: z.union([z.string(), z.number()]).transform(Number).refine((n) => n > 0, "La zona debe ser un numero positivo"),
+  zona: z.union([z.string(), z.number()]).transform((v) => String(v).trim()).refine((s) => s.length > 0, "La zona es obligatoria"),
   numero: z.union([z.string(), z.number()]).transform(Number).refine((n) => n > 0, "El numero debe ser un numero positivo"),
   direccion: z.string().max(200).optional()
 });
