@@ -41,6 +41,10 @@ const productoSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    vence: {
+      type: Boolean,
+      default: true
+    },
     stock: {
       type: Number,
       required: true,
@@ -54,9 +58,10 @@ const productoSchema = new mongoose.Schema(
     },
     vencimiento: {
       type: Date,
-      required: true,
+      required: function () { return this.vence !== false; },
       validate: {
         validator: function (valor) {
+          if (!valor) return true;
           const limite = new Date();
           limite.setFullYear(limite.getFullYear() + 5);
           return valor <= limite;

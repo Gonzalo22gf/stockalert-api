@@ -70,4 +70,14 @@ describe("clasificar (logica de alertas)", () => {
     expect(r.agotados.length).toBe(1);
     expect(r.stockCritico.length).toBe(1);
   });
+  test("un producto con vence:false y fecha pasada NO va a vencidos ni porVencer", () => {
+    const r = clasificar([{ nombre: "Heladera", vence: false, vencimiento: diasDesdeHoy(-10), stock: 10 }]);
+    expect(r.vencidos.length).toBe(0);
+    expect(r.porVencer.length).toBe(0);
+  });
+  test("un producto con vence:false igual puede estar agotado", () => {
+    const r = clasificar([{ nombre: "Rollo de tela", vence: false, vencimiento: diasDesdeHoy(-10), stock: 0 }]);
+    expect(r.vencidos.length).toBe(0);
+    expect(r.agotados.length).toBe(1);
+  });
 });

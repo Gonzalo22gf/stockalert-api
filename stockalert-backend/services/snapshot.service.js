@@ -32,8 +32,9 @@ async function calcularResumenSucursal(sucursal, empresaId) {
     zona: sucursal.zona,
     numero: sucursal.numero,
     totalProductos: productos.length,
-    vencidos: productos.filter((p) => new Date(p.vencimiento) < hoy).length,
+    vencidos: productos.filter((p) => p.vence !== false && new Date(p.vencimiento) < hoy).length,
     porVencer: productos.filter((p) => {
+      if (p.vence === false) return false;
       const diff = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
       return diff >= 0 && diff <= 7;
     }).length,

@@ -13,9 +13,11 @@ function clasificar(productos) {
   limite.setDate(hoy.getDate() + 7);
   const vencidos = [], porVencer = [], stockCritico = [], agotados = [];
   for (const p of productos) {
-    const fecha = new Date(p.vencimiento);
-    if (fecha < hoy) vencidos.push(p);
-    else if (fecha <= limite) porVencer.push(p);
+    if (p.vence !== false) {
+      const fecha = new Date(p.vencimiento);
+      if (fecha < hoy) vencidos.push(p);
+      else if (fecha <= limite) porVencer.push(p);
+    }
     const stock = Number(p.stock) || 0;
     if (stock === 0) agotados.push(p);
     else if (stock <= 5) stockCritico.push(p);
