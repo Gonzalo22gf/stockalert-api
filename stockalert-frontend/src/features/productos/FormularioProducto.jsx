@@ -22,6 +22,7 @@ export default function FormularioProducto({ esAdmin }) {
   const [lote, setLote] = useState("");
   const [stock, setStock] = useState("");
   const [vencimiento, setVencimiento] = useState("");
+  const [vence, setVence] = useState(true);
   const [sucursalId, setSucursalId] = useState("");
   const [escanerAbierto, setEscanerAbierto] = useState(false);
   const [buscandoEAN, setBuscandoEAN] = useState(false);
@@ -34,6 +35,7 @@ export default function FormularioProducto({ esAdmin }) {
     setLote("");
     setStock("");
     setVencimiento("");
+    setVence(true);
     setSucursalId("");
   }
 
@@ -59,7 +61,7 @@ export default function FormularioProducto({ esAdmin }) {
 
   async function manejarSubmit(e) {
     e.preventDefault();
-    if (!nombre || !categoria || !precio || !stock || !vencimiento) {
+    if (!nombre || !categoria || !precio || !stock || (vence && !vencimiento)) {
       Swal.fire({ icon: "warning", title: t("swal.datosIncompletos"), text: t("swal.completaCamposBien") });
       return;
     }
@@ -73,9 +75,11 @@ export default function FormularioProducto({ esAdmin }) {
       precio: Number(precio),
       lote,
       stock: Number(stock),
-      vencimiento,
+      vence,
       codigoBarras: ean,
-      lotes: [{ numero: lote, stock: Number(stock), vencimiento }],
+      ...(vence
+        ? { vencimiento, lotes: [{ numero: lote, stock: Number(stock), vencimiento }] }
+        : { lotes: [] }),
       ...(esAdmin ? { sucursal: sucursalId } : {})
     };
     try {
@@ -117,8 +121,12 @@ export default function FormularioProducto({ esAdmin }) {
         <Input placeholder={t("form.lote")} value={lote} onChange={(e) => setLote(e.target.value)} />
         <Input type="number" placeholder={t("form.stock")} value={stock} onChange={(e) => setStock(e.target.value)} />
         <div className="flex flex-col gap-1">
-          <label className="text-xs font-medium text-slate-400">Fecha de vencimiento</label>
-          <Input type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
+          <label className="text-xs font-medium text-slate-400">{t("form.fechaVencimiento")}</label>
+          <Input type="date" value={vencimiento} disabled={!vence} onChange={(e) => setVencimiento(e.target.value)} />
+          <label className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+            <input type="checkbox" checked={!vence} onChange={(e) => setVence(!e.target.checked)} />
+            {t("form.noVence")}
+          </label>
         </div>
         {esAdmin && (
           <Select className="sm:col-span-2 lg:col-span-3" value={sucursalId} onChange={(e) => setSucursalId(e.target.value)}>

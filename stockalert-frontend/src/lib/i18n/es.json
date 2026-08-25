@@ -346,6 +346,8 @@
     "eanDetectado": "EAN detectado",
     "eanCompleta": "{{codigo}} — completá los datos manualmente.",
     "codigoBarrasEan": "Código de barras (EAN)",
+    "fechaVencimiento": "Fecha de vencimiento",
+    "noVence": "Este producto no vence",
     "tituloAgregar": "Agregar producto"
   },
   "superadmin": {

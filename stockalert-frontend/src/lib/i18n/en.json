@@ -346,6 +346,8 @@
     "eanDetectado": "EAN detected",
     "eanCompleta": "{{codigo}} — fill in the details manually.",
     "codigoBarrasEan": "Barcode (EAN)",
+    "fechaVencimiento": "Expiration date",
+    "noVence": "This product doesn't expire",
     "tituloAgregar": "Add product"
   },
   "superadmin": {
