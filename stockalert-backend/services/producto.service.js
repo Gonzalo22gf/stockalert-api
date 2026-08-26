@@ -9,7 +9,8 @@ function prepararLotes({ lotes, lote, stock, vencimiento }) {
   if (!vencimiento) return [];
   return [{ numero: lote || "", stock: Number(stock || 0), vencimiento }];
 }
-function calcularStockTotal(lotes) {
+function calcularStockTotal(lotes, stockDirecto) {
+  if (!lotes || lotes.length === 0) return Number(stockDirecto || 0);
   return lotes.reduce((total, l) => total + Number(l.stock || 0), 0);
 }
 function obtenerProximoVencimiento(lotes, fallback) {
@@ -27,7 +28,7 @@ const ProductoService = {
   crear: async (empresaId, usuario, datos) => {
     const { nombre, categoria, stock, precio, vencimiento, vence, codigoBarras, lote, lotes, sucursal } = datos;
     const lotesProducto = prepararLotes({ lotes, lote, stock, vencimiento });
-    const stockTotal = calcularStockTotal(lotesProducto);
+    const stockTotal = calcularStockTotal(lotesProducto, stock);
     const vencimientoPrincipal = obtenerProximoVencimiento(lotesProducto, vencimiento);
     const lotePrincipal = obtenerLotePrincipal(lotesProducto, lote);
     if (vence !== false && !vencimientoPrincipal) throw new ValidationError("Vencimiento invalido");
@@ -62,7 +63,7 @@ const ProductoService = {
     const datosAnteriores = { nombre: producto.nombre, categoria: producto.categoria, stock: producto.stock, precio: producto.precio, vencimiento: producto.vencimiento, codigoBarras: producto.codigoBarras || "", lote: producto.lote || "", lotes: producto.lotes || [], sucursal: producto.sucursal };
     const { nombre, categoria, stock, precio, vencimiento, vence, codigoBarras, lote, lotes, sucursal } = datos;
     const lotesProducto = prepararLotes({ lotes, lote, stock, vencimiento });
-    const stockTotal = calcularStockTotal(lotesProducto);
+    const stockTotal = calcularStockTotal(lotesProducto, stock);
     const vencimientoPrincipal = obtenerProximoVencimiento(lotesProducto, vencimiento);
     const lotePrincipal = obtenerLotePrincipal(lotesProducto, lote);
     const camposUpdate = { nombre, categoria, stock: stockTotal, precio, vencimiento: vencimientoPrincipal, vence: vence !== false, codigoBarras: codigoBarras || "", lote: lotePrincipal, lotes: lotesProducto, actualizadoPor: usuario._id, fechaUltimaActualizacion: new Date() };

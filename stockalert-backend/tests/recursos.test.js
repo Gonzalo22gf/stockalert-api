@@ -123,6 +123,15 @@ describe("Gestion de productos", () => {
     expect(res.statusCode === 200 || res.statusCode === 201).toBe(true);
   });
 
+  test("un producto que no vence conserva su stock (no queda en 0)", async () => {
+    const res = await request(app).post("/api/productos").set("Authorization", "Bearer " + tokenAdmin).send({
+      nombre: "Fosforos", categoria: "Almacen", precio: 80, sucursal: sucursalId.toString(),
+      vence: false, stock: 5, lotes: []
+    });
+    expect(res.statusCode === 200 || res.statusCode === 201).toBe(true);
+    expect(res.body.stock ?? res.body.producto?.stock).toBe(5);
+  });
+
   test("un producto creado con vence false se guarda con vence false", async () => {
     const res = await request(app).post("/api/productos").set("Authorization", "Bearer " + tokenAdmin).send({
       nombre: "Detergente", categoria: "Limpieza", precio: 300, sucursal: sucursalId.toString(),

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-function obtenerEstado(vencimiento) {
+function obtenerEstado(vencimiento, vence) {
+  if (vence === false || !vencimiento) return null;
   const hoy = new Date();
   const fecha = new Date(vencimiento);
   const dias = Math.ceil((fecha - hoy) / (1000 * 60 * 60 * 24));
@@ -16,12 +17,13 @@ function obtenerEstadoStock(stock) {
 }
 
 function formatearFecha(fecha) {
+  if (!fecha) return "\u2014";
   return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
 }
 
 export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }) {
   const { t } = useTranslation();
-  const estado = obtenerEstado(producto.vencimiento);
+  const estado = obtenerEstado(producto.vencimiento, producto.vence);
   const estadoStock = obtenerEstadoStock(producto.stock);
   return (
     <div className="animate-rise rounded-2xl border border-border-soft bg-panel p-[18px] transition-all duration-200 hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-black/30">
@@ -56,7 +58,7 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
         </div>
       </div>
       <div className="mb-3.5 flex flex-wrap gap-1.5">
-        <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estado.color}`}>{t(estado.texto)}</span>
+        {estado && <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estado.color}`}>{t(estado.texto)}</span>}
         <span className={`rounded-full px-2 py-0.5 text-[10px] font-semibold ${estadoStock.color}`}>{t(estadoStock.texto)}</span>
         {producto.lote && (
           <span className="rounded-full bg-panel-hover px-2 py-0.5 text-[10px] font-medium text-slate-400">
