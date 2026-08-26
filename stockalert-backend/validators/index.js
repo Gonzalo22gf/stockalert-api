@@ -53,7 +53,7 @@ const productoSchema = z.object({
   lote: z.string().optional(),
   sucursal: z.string().optional(),
   stock: z.union([z.string(), z.number()]).transform(Number).optional(),
-  vencimiento: z.string().optional(),
+  vencimiento: z.string().nullable().optional(),
   vence: z.boolean().optional(),
   lotes: z.array(z.object({
     numero: z.string().optional(),

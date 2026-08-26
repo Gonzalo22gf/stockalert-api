@@ -16,11 +16,16 @@ const ProductoRepository = {
 
   create: (datos) => Producto.create(datos),
 
-  update: (id, datos) =>
-    Producto.findByIdAndUpdate(id, datos, { new: true, runValidators: true })
+  update: async (id, datos) => {
+    const doc = await Producto.findById(id);
+    if (!doc) return null;
+    doc.set(datos);
+    await doc.save();
+    return doc
       .populate("sucursal", populate)
-      .populate("creadoPor", "nombre email rol")
-      .populate("actualizadoPor", "nombre email rol"),
+      .then((d) => d.populate("creadoPor", "nombre email rol"))
+      .then((d) => d.populate("actualizadoPor", "nombre email rol"));
+  },
 
   delete: (id) => Producto.findByIdAndDelete(id),
 

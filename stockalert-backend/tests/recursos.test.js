@@ -110,6 +110,19 @@ describe("Gestion de productos", () => {
     expect(res.statusCode === 200 || res.statusCode === 201).toBe(true);
   });
 
+  test("editar un producto de con-fecha a no-vence (vencimiento null) funciona", async () => {
+    const crear = await request(app).post("/api/productos").set("Authorization", "Bearer " + tokenAdmin).send({
+      nombre: "Yogur", categoria: "Bebidas", precio: 150, sucursal: sucursalId.toString(),
+      lotes: [{ numero: "L010", stock: 6, vencimiento: new Date(Date.now() + 20 * 24 * 60 * 60 * 1000).toISOString().split("T")[0] }]
+    });
+    const id = crear.body._id || crear.body.producto?._id;
+    const res = await request(app).put("/api/productos/" + id).set("Authorization", "Bearer " + tokenAdmin).send({
+      nombre: "Yogur", categoria: "Bebidas", precio: 150, sucursal: sucursalId.toString(),
+      vence: false, stock: 6, vencimiento: null, lotes: []
+    });
+    expect(res.statusCode === 200 || res.statusCode === 201).toBe(true);
+  });
+
   test("un producto creado con vence false se guarda con vence false", async () => {
     const res = await request(app).post("/api/productos").set("Authorization", "Bearer " + tokenAdmin).send({
       nombre: "Detergente", categoria: "Limpieza", precio: 300, sucursal: sucursalId.toString(),
