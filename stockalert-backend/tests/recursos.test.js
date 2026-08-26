@@ -102,6 +102,22 @@ describe("Gestion de sucursales", () => {
 });
 
 describe("Gestion de productos", () => {
+  test("admin puede crear un producto que no vence (sin fecha)", async () => {
+    const res = await request(app).post("/api/productos").set("Authorization", "Bearer " + tokenAdmin).send({
+      nombre: "Lavandina", categoria: "Limpieza", precio: 250, sucursal: sucursalId.toString(),
+      vence: false, stock: 5, lotes: []
+    });
+    expect(res.statusCode === 200 || res.statusCode === 201).toBe(true);
+  });
+
+  test("un producto creado con vence false se guarda con vence false", async () => {
+    const res = await request(app).post("/api/productos").set("Authorization", "Bearer " + tokenAdmin).send({
+      nombre: "Detergente", categoria: "Limpieza", precio: 300, sucursal: sucursalId.toString(),
+      vence: false, stock: 8, lotes: []
+    });
+    expect(res.body.vence).toBe(false);
+  });
+
   test("admin puede crear un producto", async () => {
     const res = await request(app).post("/api/productos").set("Authorization", "Bearer " + tokenAdmin).send({
       nombre: "Leche", categoria: "Bebidas", precio: 100, sucursal: sucursalId.toString(),
