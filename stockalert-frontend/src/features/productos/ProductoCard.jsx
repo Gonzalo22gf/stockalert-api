@@ -18,7 +18,7 @@ function obtenerEstadoStock(stock) {
 
 function formatearFecha(fecha) {
   if (!fecha) return "\u2014";
-  return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
 }
 
 export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }) {

@@ -17,7 +17,8 @@ function obtenerEstadoStock(stock) {
 }
 
 function formatearFecha(fecha) {
-  return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  if (!fecha) return "\u2014";
+  return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
 }
 
 function MenuAcciones({ producto, onEditar, onEliminar }) {
