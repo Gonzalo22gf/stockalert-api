@@ -53,6 +53,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
   // Estado de productos
   let enBuenEstado = 0, porVencer = 0, vencidos = 0;
   productos.forEach((p) => {
+    if (p.vence === false) { enBuenEstado++; return; }
     const dias = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
     if (dias < 0) vencidos++;
     else if (dias <= 7) porVencer++;

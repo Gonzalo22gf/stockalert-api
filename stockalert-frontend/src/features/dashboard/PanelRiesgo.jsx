@@ -11,8 +11,10 @@ function calcularRiesgo(producto, t) {
   const stock = Number(producto.stock || 0);
   let puntaje = 0;
   const motivos = [];
-  if (dias < 0) { puntaje += 100; motivos.push({ texto: t("panelRiesgo.vencido"), color: "#ef4444", pts: 100 }); }
-  else if (dias <= 7) { puntaje += 60; motivos.push({ texto: t("panelRiesgo.porVencer"), color: "#eab308", pts: 60 }); }
+  if (producto.vence !== false) {
+    if (dias < 0) { puntaje += 100; motivos.push({ texto: t("panelRiesgo.vencido"), color: "#ef4444", pts: 100 }); }
+    else if (dias <= 7) { puntaje += 60; motivos.push({ texto: t("panelRiesgo.porVencer"), color: "#eab308", pts: 60 }); }
+  }
   if (stock <= 0) { puntaje += 50; motivos.push({ texto: t("panelRiesgo.agotado"), color: "#b91c1c", pts: 50 }); }
   else if (stock <= 5) { puntaje += 40; motivos.push({ texto: t("panelRiesgo.stockCritico"), color: "#a855f7", pts: 40 }); }
   else if (stock <= 10) { puntaje += 25; motivos.push({ texto: t("panelRiesgo.stockBajo"), color: "#f97316", pts: 25 }); }
@@ -23,7 +25,8 @@ function calcularRiesgo(producto, t) {
 }
 
 function formatearFecha(fecha) {
-  return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
+  if (!fecha) return "\u2014";
+  return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
 }
 
 function descargarExcel(filas, nombreArchivo, nombreHoja) {
@@ -69,8 +72,8 @@ export default function PanelRiesgo({ productos }) {
 
   const top10 = conRiesgo.slice(0, 10);
   const urgentes = conRiesgo.filter((p) => {
-    const dias = diasParaVencer(p.vencimiento);
-    return dias < 0 || dias <= 7 || Number(p.stock) <= 5;
+    const venceProximo = p.vence !== false && diasParaVencer(p.vencimiento) <= 7;
+    return venceProximo || Number(p.stock) <= 5;
   });
 
   function descargarUrgentes() {
