@@ -73,6 +73,16 @@ const productoSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+    imagen: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    imagenAuto: {
+      type: String,
+      trim: true,
+      default: ""
+    },
     tamano: {
       type: String,
       trim: true,
