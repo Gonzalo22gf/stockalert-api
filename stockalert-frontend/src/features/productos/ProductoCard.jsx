@@ -1,4 +1,21 @@
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
+
+const COLORES = ["bg-brand/20 text-brand-400", "bg-emerald-500/20 text-emerald-400", "bg-sky-500/20 text-sky-400", "bg-purple-500/20 text-purple-400", "bg-amber-500/20 text-amber-400", "bg-rose-500/20 text-rose-400"];
+function colorPorNombre(nombre) {
+  let suma = 0;
+  for (let i = 0; i < nombre.length; i++) suma += nombre.charCodeAt(i);
+  return COLORES[suma % COLORES.length];
+}
+function ImagenProducto({ producto }) {
+  const [fallo, setFallo] = useState(false);
+  const url = producto.imagen || producto.imagenAuto;
+  if (url && !fallo) {
+    return <img src={url} alt={producto.nombre} onError={() => setFallo(true)} className="h-11 w-11 shrink-0 rounded-lg object-cover" />;
+  }
+  const inicial = (producto.nombre || "?").trim().charAt(0).toUpperCase();
+  return <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-lg font-bold ${colorPorNombre(producto.nombre || "")}`}>{inicial}</div>;
+}
 function obtenerEstado(vencimiento, vence) {
   if (vence === false || !vencimiento) return null;
   const hoy = new Date();
@@ -28,9 +45,12 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
   return (
     <div className="animate-rise rounded-2xl border border-border-soft bg-panel p-[18px] transition-all duration-200 hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-black/30">
       <div className="mb-1 flex items-start justify-between gap-2">
-        <div className="min-w-0">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <ImagenProducto producto={producto} />
+          <div className="min-w-0">
           <span className="font-semibold text-white">{producto.nombre}</span>
           {producto.tamano && <span className="ml-1.5 text-xs font-medium text-slate-500">{producto.tamano}</span>}
+          </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           {esAdmin && producto.sucursal?.nombre && (
