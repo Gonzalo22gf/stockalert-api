@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { useActualizarProducto } from "./useProductos";
 import Boton from "../../components/ui/Boton";
 import { Input, Select } from "../../components/ui/Input";
+import { subirImagen } from "../../lib/cloudinary";
 
 
 function fechaParaInput(vencimiento) {
@@ -26,6 +27,8 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
   const [vence, setVence] = useState(true);
   const [tamano, setTamano] = useState("");
   const [imagenAuto, setImagenAuto] = useState("");
+  const [imagen, setImagen] = useState("");
+  const [subiendo, setSubiendo] = useState(false);
 
   useEffect(() => {
     if (producto) {
@@ -39,10 +42,26 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       setVence(producto.vence !== false);
       setTamano(producto.tamano || "");
       setImagenAuto(producto.imagenAuto || "");
+      setImagen(producto.imagen || "");
     }
   }, [producto]);
 
   if (!producto) return null;
+
+  async function manejarSubirFoto(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setSubiendo(true);
+    try {
+      const url = await subirImagen(file);
+      setImagen(url);
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Error", text: error.message });
+    } finally {
+      setSubiendo(false);
+    }
+  }
 
   async function manejarGuardar(e) {
     e.preventDefault();
@@ -60,6 +79,7 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       codigoBarras: codigoBarras.trim(),
       tamano,
       imagenAuto,
+      imagen,
       ...(vence
         ? { vencimiento, lotes: [{ numero: lote, stock: Number(stock), vencimiento }] }
         : { vencimiento: null, lotes: [] })
@@ -127,6 +147,23 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
           <div>
             <label className="mb-1 block text-xs text-slate-400">{t("form.tamano")}</label>
             <Input value={tamano} onChange={(e) => setTamano(e.target.value)} placeholder={t("form.tamanoPlaceholder")} />
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-400">{t("form.foto")}</label>
+            <div className="flex items-center gap-3">
+              {(imagen || imagenAuto) && (
+                <img src={imagen || imagenAuto} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+              )}
+              <label className="cursor-pointer rounded-lg border border-brand/40 bg-brand/10 px-3 py-2 text-xs font-semibold text-brand-400 hover:bg-brand/20">
+                {subiendo ? t("form.subiendoFoto") : t("form.subirFoto")}
+                <input type="file" accept="image/*" className="hidden" disabled={subiendo} onChange={manejarSubirFoto} />
+              </label>
+              {imagen && (
+                <button type="button" onClick={() => setImagen("")} className="text-xs font-medium text-slate-400 hover:text-red-400">
+                  {t("form.quitarFoto")}
+                </button>
+              )}
+            </div>
           </div>
           <div className="flex gap-2 pt-2">
             <Boton type="submit" disabled={actualizarProducto.isPending} className="flex-1">

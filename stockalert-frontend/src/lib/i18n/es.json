@@ -350,7 +350,11 @@
     "noVence": "Este producto no vence",
     "tituloAgregar": "Agregar producto",
     "tamano": "Tamaño / Medida",
-    "tamanoPlaceholder": "Ej: 500 g, 1 L"
+    "tamanoPlaceholder": "Ej: 500 g, 1 L",
+    "foto": "Foto del producto",
+    "subirFoto": "Subir foto",
+    "subiendoFoto": "Subiendo...",
+    "quitarFoto": "Quitar mi foto"
   },
   "superadmin": {
     "accionEmpresa": "{{accion}} empresa",
