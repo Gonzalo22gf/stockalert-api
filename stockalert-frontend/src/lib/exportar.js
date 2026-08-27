@@ -62,6 +62,16 @@ export function exportarProductosExcel(productos) {
   XLSX.writeFile(libro, "inventario-stockalert-" + fecha + ".xlsx");
 }
 
+// Deriva si el producto vence. Soporta una columna opcional "Vence" (si/no).
+// Si esa columna no viene en el Excel, se asume que vence cuando hay fecha.
+function derivarVence(fila) {
+  const marca = fila.Vence ?? fila.vence;
+  if (marca !== undefined && String(marca).trim() !== "") {
+    const texto = String(marca).trim().toLowerCase();
+    return !["no", "false", "0", "n"].includes(texto);
+  }
+  return Boolean(fila.Vencimiento || fila.vencimiento);
+}
 export function leerArchivoProductos(archivo) {
   return new Promise((resolve, reject) => {
     const lector = new FileReader();
@@ -78,6 +88,7 @@ export function leerArchivoProductos(archivo) {
           stock: Number(fila.Stock || fila.stock || 0),
           lote: String(fila.Lote || fila.lote || ""),
           vencimiento: fila.Vencimiento || fila.vencimiento || "",
+          vence: derivarVence(fila),
           codigoBarras: String(fila["EAN / Cod. barras"] || fila.codigoBarras || "")
         }));
         resolve(productos);

@@ -23,7 +23,7 @@ export function useImportarProductos({ esAdmin, sucursalSeleccionada }) {
 
     try {
       const importados = await leerArchivoProductos(archivo);
-      const validos = importados.filter((p) => p.nombre && p.categoria && p.vencimiento);
+      const validos = importados.filter((p) => p.nombre && p.categoria);
 
       if (validos.length === 0) {
         Swal.fire({ icon: "warning", title: "Archivo vacio o invalido", text: "Revisa las columnas: Nombre, Categoria, Precio, Stock, Lote, Vencimiento." });
@@ -46,9 +46,12 @@ export function useImportarProductos({ esAdmin, sucursalSeleccionada }) {
 
       for (const p of validos) {
         try {
+          const venceProducto = p.vence !== false && Boolean(p.vencimiento);
           await crearProducto.mutateAsync({
             ...p,
-            lotes: [{ numero: p.lote, stock: p.stock, vencimiento: p.vencimiento }],
+            vence: venceProducto,
+            vencimiento: venceProducto ? p.vencimiento : null,
+            lotes: venceProducto ? [{ numero: p.lote, stock: p.stock, vencimiento: p.vencimiento }] : [],
             ...(esAdmin ? { sucursal: sucursalSeleccionada } : {})
           });
           exitosos++;
