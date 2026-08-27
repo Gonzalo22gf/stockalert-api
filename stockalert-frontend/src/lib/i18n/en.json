@@ -348,7 +348,9 @@
     "codigoBarrasEan": "Barcode (EAN)",
     "fechaVencimiento": "Expiration date",
     "noVence": "This product doesn't expire",
-    "tituloAgregar": "Add product"
+    "tituloAgregar": "Add product",
+    "tamano": "Size / Measure",
+    "tamanoPlaceholder": "e.g. 500 g, 1 L"
   },
   "superadmin": {
     "accionEmpresa": "{{accion}} company",

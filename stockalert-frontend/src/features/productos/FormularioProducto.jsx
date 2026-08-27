@@ -21,6 +21,8 @@ export default function FormularioProducto({ esAdmin }) {
   const [precio, setPrecio] = useState("");
   const [lote, setLote] = useState("");
   const [stock, setStock] = useState("");
+  const [tamano, setTamano] = useState("");
+  const [imagenAuto, setImagenAuto] = useState("");
   const [vencimiento, setVencimiento] = useState("");
   const [vence, setVence] = useState(true);
   const [sucursalId, setSucursalId] = useState("");
@@ -34,6 +36,8 @@ export default function FormularioProducto({ esAdmin }) {
     setPrecio("");
     setLote("");
     setStock("");
+    setTamano("");
+    setImagenAuto("");
     setVencimiento("");
     setVence(true);
     setSucursalId("");
@@ -48,6 +52,8 @@ export default function FormularioProducto({ esAdmin }) {
       if (datos) {
         if (datos.nombre && !nombre) setNombre(datos.nombre);
         if (datos.categoria && !categoria) setCategoria(datos.categoria);
+        if (datos.tamano && !tamano) setTamano(datos.tamano);
+        if (datos.imagen) setImagenAuto(datos.imagen);
         Swal.fire({ icon: "success", title: t("swal.prodEncontrado"), text: datos.nombre || codigo, timer: 1800, showConfirmButton: false });
       } else {
         Swal.fire({ icon: "info", title: t("form.eanDetectado"), text: t("form.eanCompleta", { codigo }), timer: 1800, showConfirmButton: false });
@@ -77,6 +83,8 @@ export default function FormularioProducto({ esAdmin }) {
       stock: Number(stock),
       vence,
       codigoBarras: ean,
+      tamano,
+      imagenAuto,
       ...(vence
         ? { vencimiento, lotes: [{ numero: lote, stock: Number(stock), vencimiento }] }
         : { lotes: [] }),
@@ -119,6 +127,7 @@ export default function FormularioProducto({ esAdmin }) {
         </Select>
         <Input type="number" placeholder={t("form.precio")} value={precio} onChange={(e) => setPrecio(e.target.value)} />
         <Input placeholder={t("form.lote")} value={lote} onChange={(e) => setLote(e.target.value)} />
+        <Input placeholder={t("form.tamano")} value={tamano} onChange={(e) => setTamano(e.target.value)} />
         <Input type="number" placeholder={t("form.stock")} value={stock} onChange={(e) => setStock(e.target.value)} />
         <div className="flex flex-col gap-1">
           <label className="text-xs font-medium text-slate-400">{t("form.fechaVencimiento")}</label>

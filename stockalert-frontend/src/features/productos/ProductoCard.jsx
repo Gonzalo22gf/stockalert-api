@@ -28,7 +28,10 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
   return (
     <div className="animate-rise rounded-2xl border border-border-soft bg-panel p-[18px] transition-all duration-200 hover:-translate-y-1 hover:border-border hover:shadow-xl hover:shadow-black/30">
       <div className="mb-1 flex items-start justify-between gap-2">
-        <span className="font-semibold text-white">{producto.nombre}</span>
+        <div className="min-w-0">
+          <span className="font-semibold text-white">{producto.nombre}</span>
+          {producto.tamano && <span className="ml-1.5 text-xs font-medium text-slate-500">{producto.tamano}</span>}
+        </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
           {esAdmin && producto.sucursal?.nombre && (
             <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold text-brand-400">

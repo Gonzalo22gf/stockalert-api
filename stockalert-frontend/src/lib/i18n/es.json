@@ -348,7 +348,9 @@
     "codigoBarrasEan": "Código de barras (EAN)",
     "fechaVencimiento": "Fecha de vencimiento",
     "noVence": "Este producto no vence",
-    "tituloAgregar": "Agregar producto"
+    "tituloAgregar": "Agregar producto",
+    "tamano": "Tamaño / Medida",
+    "tamanoPlaceholder": "Ej: 500 g, 1 L"
   },
   "superadmin": {
     "accionEmpresa": "{{accion}} empresa",

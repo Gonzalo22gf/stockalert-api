@@ -24,6 +24,8 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
   const [vencimiento, setVencimiento] = useState("");
   const [codigoBarras, setCodigoBarras] = useState("");
   const [vence, setVence] = useState(true);
+  const [tamano, setTamano] = useState("");
+  const [imagenAuto, setImagenAuto] = useState("");
 
   useEffect(() => {
     if (producto) {
@@ -35,6 +37,8 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       setVencimiento(fechaParaInput(producto.vencimiento));
       setCodigoBarras(producto.codigoBarras || "");
       setVence(producto.vence !== false);
+      setTamano(producto.tamano || "");
+      setImagenAuto(producto.imagenAuto || "");
     }
   }, [producto]);
 
@@ -54,6 +58,8 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
       stock: Number(stock),
       vence,
       codigoBarras: codigoBarras.trim(),
+      tamano,
+      imagenAuto,
       ...(vence
         ? { vencimiento, lotes: [{ numero: lote, stock: Number(stock), vencimiento }] }
         : { vencimiento: null, lotes: [] })
@@ -117,6 +123,10 @@ export default function ModalEditarProducto({ producto, onCerrar }) {
                 {t("form.noVence")}
               </label>
             </div>
+          </div>
+          <div>
+            <label className="mb-1 block text-xs text-slate-400">{t("form.tamano")}</label>
+            <Input value={tamano} onChange={(e) => setTamano(e.target.value)} placeholder={t("form.tamanoPlaceholder")} />
           </div>
           <div className="flex gap-2 pt-2">
             <Boton type="submit" disabled={actualizarProducto.isPending} className="flex-1">

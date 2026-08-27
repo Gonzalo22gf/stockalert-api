@@ -35,6 +35,7 @@ async function buscarEnOpenFoodFacts(ean) {
     return {
       nombre,
       categoria: mapearCategoria(p.categories_tags),
+      tamano: p.quantity || "",
       imagen: p.image_url || ""
     };
   } catch {
@@ -52,6 +53,7 @@ async function buscarEnUPCItemDB(ean) {
     return {
       nombre: item.title || "",
       categoria: "",
+      tamano: "",
       imagen: item.images?.[0] || ""
     };
   } catch {

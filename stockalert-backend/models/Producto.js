@@ -73,6 +73,11 @@ const productoSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+    tamano: {
+      type: String,
+      trim: true,
+      default: ""
+    },
 
     lote: {
       type: String,
