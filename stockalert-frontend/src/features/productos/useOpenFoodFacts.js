@@ -15,6 +15,8 @@ const CATEGORIAS_MAPEADAS = {
   "en:yogurts": "Lacteos",
 };
 
+// Detecta si un texto ya incluye una medida (numero + unidad), ej "40 grs", "1 L", "500 ml"
+const TIENE_MEDIDA = /\d+\s*(g|gr|grs|kg|ml|l|cc|un|u|lts?|litros?|gramos?|kilos?)\b/i;
 function mapearCategoria(categoriasTags) {
   if (!categoriasTags?.length) return "";
   for (const tag of categoriasTags) {
@@ -35,7 +37,7 @@ async function buscarEnOpenFoodFacts(ean) {
     return {
       nombre,
       categoria: mapearCategoria(p.categories_tags),
-      tamano: p.quantity || "",
+      tamano: TIENE_MEDIDA.test(nombre) ? "" : (p.quantity || ""),
       imagen: p.image_url || ""
     };
   } catch {
