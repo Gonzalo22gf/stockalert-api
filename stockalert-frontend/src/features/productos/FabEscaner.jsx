@@ -5,6 +5,7 @@ import { Html5Qrcode } from "html5-qrcode";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
 import { useCrearProducto, useProductos } from "./useProductos";
+import { buscarProductoPorEAN } from "./useOpenFoodFacts";
 import { useSucursales } from "../sucursales/useSucursales";
 
 
@@ -30,7 +31,11 @@ export default function FabEscaner() {
   const [precio, setPrecio] = useState("");
   const [lote, setLote] = useState("");
   const [stock, setStock] = useState("");
+  const [tamano, setTamano] = useState("");
+  const [imagenAuto, setImagenAuto] = useState("");
   const [vencimiento, setVencimiento] = useState("");
+  const [vence, setVence] = useState(true);
+  const [buscandoEAN, setBuscandoEAN] = useState(false);
   const [sucursalId, setSucursalId] = useState("");
 
   function limpiarCampos() {
@@ -39,7 +44,10 @@ export default function FabEscaner() {
     setPrecio("");
     setLote("");
     setStock("");
+    setTamano("");
+    setImagenAuto("");
     setVencimiento("");
+    setVence(true);
   }
 
   // Detiene el scanner de forma segura (fuera del callback, para evitar el crash conocido de stop())
@@ -92,21 +100,38 @@ export default function FabEscaner() {
     };
   }, [abierto, mostrarForm]);
 
-  function manejarDetectado(codigo) {
+  async function manejarDetectado(codigo) {
     setEanDetectado(codigo);
+    setMostrarForm(true);
     const existente = (productos || []).find((p) => p.codigoBarras === codigo);
     if (existente) {
       setNombre(existente.nombre);
       setCategoria(existente.categoria);
       setPrecio(String(existente.precio));
+      if (existente.tamano) setTamano(existente.tamano);
+      return;
     }
-    setMostrarForm(true);
+    // No lo tenemos: buscar en Open Food Facts para autocompletar
+    setBuscandoEAN(true);
+    try {
+      const datos = await buscarProductoPorEAN(codigo);
+      if (datos) {
+        if (datos.nombre) setNombre(datos.nombre);
+        if (datos.categoria) setCategoria(datos.categoria);
+        if (datos.tamano) setTamano(datos.tamano);
+        if (datos.imagen) setImagenAuto(datos.imagen);
+      }
+    } catch {
+      // sin conexion o sin match: se carga a mano
+    } finally {
+      setBuscandoEAN(false);
+    }
   }
 
   async function guardarYSeguir(e) {
     e.preventDefault();
 
-    if (!nombre || !categoria || !precio || !stock || !vencimiento) {
+    if (!nombre || !categoria || !precio || !stock || (vence && !vencimiento)) {
       Swal.fire({ icon: "warning", title: t("swal.datosIncompletos"), text: t("swal.completaCampos") });
       return;
     }
@@ -122,9 +147,13 @@ export default function FabEscaner() {
         precio: Number(precio),
         lote,
         stock: Number(stock),
-        vencimiento,
+        vence,
         codigoBarras: eanDetectado,
-        lotes: [{ numero: lote, stock: Number(stock), vencimiento }],
+        tamano,
+        imagenAuto,
+        ...(vence
+          ? { vencimiento, lotes: [{ numero: lote, stock: Number(stock), vencimiento }] }
+          : { lotes: [] }),
         ...(esAdmin ? { sucursal: sucursalId } : {})
       });
 
@@ -201,7 +230,15 @@ export default function FabEscaner() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <input className={inputClase} type="number" placeholder="Stock" value={stock} onChange={(e) => setStock(e.target.value)} />
-                  <input className={inputClase} type="date" value={vencimiento} onChange={(e) => setVencimiento(e.target.value)} />
+                  <input className={inputClase} placeholder={t("form.tamano")} value={tamano} onChange={(e) => setTamano(e.target.value)} />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-slate-400">{t("form.fechaVencimiento")}</label>
+                  <input className={inputClase} type="date" value={vencimiento} disabled={!vence} onChange={(e) => setVencimiento(e.target.value)} />
+                  <label className="mt-1 flex items-center gap-2 text-xs text-slate-400">
+                    <input type="checkbox" checked={!vence} onChange={(e) => setVence(!e.target.checked)} />
+                    {t("form.noVence")}
+                  </label>
                 </div>
                 {esAdmin && (
                   <select className={inputClase} value={sucursalId} onChange={(e) => setSucursalId(e.target.value)}>
