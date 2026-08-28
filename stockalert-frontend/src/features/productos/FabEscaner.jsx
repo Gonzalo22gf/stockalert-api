@@ -1,12 +1,12 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useCategorias } from "../categorias/useCategorias";
-import { Html5Qrcode } from "html5-qrcode";
 import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
 import { useCrearProducto, useProductos } from "./useProductos";
 import { buscarProductoPorEAN } from "./useOpenFoodFacts";
 import { useSucursales } from "../sucursales/useSucursales";
+import { useScanner } from "./useScanner";
 
 
 export default function FabEscaner() {
@@ -23,9 +23,6 @@ export default function FabEscaner() {
   const { data: sucursales } = useSucursales(esAdmin);
   const { data: productos } = useProductos(undefined);
 
-  const scannerRef = useRef(null);
-  const yaDetectadoRef = useRef(false);
-
   const [nombre, setNombre] = useState("");
   const [categoria, setCategoria] = useState("");
   const [precio, setPrecio] = useState("");
@@ -38,6 +35,13 @@ export default function FabEscaner() {
   const [buscandoEAN, setBuscandoEAN] = useState(false);
   const [sucursalId, setSucursalId] = useState("");
 
+  // La camara vive activa mientras el modal esta abierto y no se muestra el formulario.
+  const { detener } = useScanner({
+    activo: abierto && !mostrarForm,
+    elementoId: "fab-lector",
+    onDetectado: manejarDetectado
+  });
+
   function limpiarCampos() {
     setNombre("");
     setCategoria("");
@@ -49,56 +53,6 @@ export default function FabEscaner() {
     setVencimiento("");
     setVence(true);
   }
-
-  // Detiene el scanner de forma segura (fuera del callback, para evitar el crash conocido de stop())
-  async function detenerScanner() {
-    const s = scannerRef.current;
-    scannerRef.current = null;
-    if (!s) return;
-    try {
-      if (s.isScanning) {
-        await s.stop();
-      }
-      await s.clear();
-    } catch (e) {
-      // ignorar errores de stop/clear (conocidos en Android)
-    }
-  }
-
-  useEffect(() => {
-    if (!abierto || mostrarForm) return;
-
-    yaDetectadoRef.current = false;
-    const scanner = new Html5Qrcode("fab-lector", {
-      // usa el detector nativo de Chrome si existe (mucho más estable en Android)
-      experimentalFeatures: { useBarCodeDetectorIfSupported: true },
-      verbose: false
-    });
-    scannerRef.current = scanner;
-
-    scanner
-      .start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 150 } },
-        (texto) => {
-          // NO llamamos stop() acá adentro (eso crashea en Android).
-          // Solo marcamos y agendamos el cierre para el próximo tick.
-          if (yaDetectadoRef.current) return;
-          yaDetectadoRef.current = true;
-          const codigo = texto;
-          setTimeout(async () => {
-            await detenerScanner();
-            manejarDetectado(codigo);
-          }, 0);
-        },
-        () => {}
-      )
-      .catch((err) => console.error("Error cámara:", err));
-
-    return () => {
-      detenerScanner();
-    };
-  }, [abierto, mostrarForm]);
 
   async function manejarDetectado(codigo) {
     setEanDetectado(codigo);
@@ -168,7 +122,7 @@ export default function FabEscaner() {
   }
 
   async function cerrarTodo() {
-    await detenerScanner();
+    await detener();
     setMostrarForm(false);
     setAbierto(false);
     setEanDetectado("");
