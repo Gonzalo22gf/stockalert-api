@@ -1,6 +1,6 @@
 import { useRef } from "react";
 import Swal from "sweetalert2";
-import { leerArchivoProductos } from "../../lib/exportar";
+import { leerArchivoProductos } from "../../lib/importar";
 import { useCrearProducto } from "./useProductos";
 
 export function useImportarProductos({ esAdmin, sucursalSeleccionada }) {
