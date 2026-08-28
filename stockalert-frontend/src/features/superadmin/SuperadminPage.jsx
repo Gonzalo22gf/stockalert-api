@@ -78,7 +78,7 @@ export default function SuperadminPage() {
   async function manejarEliminar(empresa) {
     const { isConfirmed: paso1 } = await Swal.fire({
       title: t("superadmin.eliminarTitulo"),
-      html: t("superadmin.eliminarHtml", { nombre: empresa.nombre }),
+      html: t("superadmin.eliminarHtml", { nombre: empresa.nombre, interpolation: { escapeValue: false } }),
       icon: "warning",
       showCancelButton: true,
       confirmButtonText: t("superadmin.siEliminarTodo"),

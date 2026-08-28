@@ -135,6 +135,42 @@ router.post("/", protegerRuta, validar(productoSchema), crearProducto);
  */
 router.delete("/bulk-delete", protegerRuta, validar(bulkDeleteSchema), eliminarVariosProductos);
 
+/**
+ * @swagger
+ * /api/productos/{id}:
+ *   put:
+ *     summary: Editar un producto
+ *     tags: [Productos]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nombre: { type: string, example: "Leche entera 1L" }
+ *               categoria: { type: string, description: "Categoria de la empresa (viene de /api/categorias)", example: "Lácteos" }
+ *               precio: { type: number, example: 1200 }
+ *               stock: { type: number, example: 24 }
+ *               lote: { type: string, example: "L-2026-01" }
+ *               vence: { type: boolean, description: "false = producto sin vencimiento" }
+ *               vencimiento: { type: string, format: date, nullable: true, description: "null borra la fecha; requerido solo si vence=true", example: "2026-08-15" }
+ *               tamano: { type: string, example: "1 L" }
+ *               codigoBarras: { type: string, example: "7791234567890" }
+ *               imagen: { type: string, description: "URL de foto propia (Cloudinary)" }
+ *               imagenAuto: { type: string, description: "URL de foto de Open Food Facts" }
+ *     responses:
+ *       200: { description: "Producto actualizado" }
+ *       400: { description: "Datos inválidos" }
+ *       401: { description: "No autenticado" }
+ *       404: { description: "Producto no encontrado" }
+ */
 router.put("/:id", protegerRuta, validar(productoSchema), actualizarProducto);
 router.delete("/:id", protegerRuta, eliminarProducto);
 
