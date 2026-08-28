@@ -2,6 +2,7 @@ const Snapshot = require("../models/Snapshot");
 const Sucursal = require("../models/Sucursal");
 const Producto = require("../models/Producto");
 const Empresa = require("../models/Empresa");
+const { estaVencido, estaPorVencer } = require("../utils/clasificarVencimiento");
 
 
 function contarCategorias(productos) {
@@ -32,12 +33,8 @@ async function calcularResumenSucursal(sucursal, empresaId) {
     zona: sucursal.zona,
     numero: sucursal.numero,
     totalProductos: productos.length,
-    vencidos: productos.filter((p) => p.vence !== false && new Date(p.vencimiento) < hoy).length,
-    porVencer: productos.filter((p) => {
-      if (p.vence === false) return false;
-      const diff = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
-      return diff >= 0 && diff <= 7;
-    }).length,
+    vencidos: productos.filter((p) => estaVencido(p, hoy)).length,
+    porVencer: productos.filter((p) => estaPorVencer(p, 7, hoy)).length,
     stockCritico: productos.filter((p) => p.stock > 0 && p.stock <= 5).length,
     agotados: productos.filter((p) => p.stock === 0).length,
     valorInventario: productos.reduce((t, p) => t + p.stock * p.precio, 0),

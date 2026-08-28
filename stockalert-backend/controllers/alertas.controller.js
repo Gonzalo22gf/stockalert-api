@@ -7,17 +7,14 @@ const { enviarCorreo } = require("../services/email");
 const { templateJefe, templateAdmin } = require("../services/email-templates");
 const PushService = require("../services/push.service");
 
+const { estaVencido, estaPorVencer } = require("../utils/clasificarVencimiento");
+
 function clasificar(productos) {
   const hoy = new Date();
-  const limite = new Date();
-  limite.setDate(hoy.getDate() + 7);
   const vencidos = [], porVencer = [], stockCritico = [], agotados = [];
   for (const p of productos) {
-    if (p.vence !== false) {
-      const fecha = new Date(p.vencimiento);
-      if (fecha < hoy) vencidos.push(p);
-      else if (fecha <= limite) porVencer.push(p);
-    }
+    if (estaVencido(p, hoy)) vencidos.push(p);
+    else if (estaPorVencer(p, 7, hoy)) porVencer.push(p);
     const stock = Number(p.stock) || 0;
     if (stock === 0) agotados.push(p);
     else if (stock <= 5) stockCritico.push(p);
