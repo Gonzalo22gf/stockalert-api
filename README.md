@@ -16,14 +16,18 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Verificación de email** — al registrarse llega un link de activación. Sin verificar, no se puede ingresar.
 - **Gestión multi-sucursal** — inventario independiente por tienda. Admin ve todo, jefe ve solo su sucursal.
 - **Dashboard por rol** — métricas globales para admin, KPIs propios para jefe.
-- **Control de vencimientos** — clasificación automática: buen estado, por vencer (≤7 días), vencidos.
+- **Control de vencimientos** — clasificación automática: buen estado, por vencer (≤7 días), vencidos. Fuente de verdad única compartida entre alertas y dashboard.
+- **Productos sin vencimiento** — marcá un producto como "no vence" (limpieza, bazar, etc.) y queda fuera del control de fechas, pero sigue contando para stock e inventario.
+- **Categorías editables por empresa** — cada empresa gestiona su propio catálogo de categorías (crear, renombrar, eliminar con reasignación automática de productos). Arranca con 5 por defecto.
+- **Tamaño/gramaje del producto** — campo aparte que distingue presentaciones (ej. Oreo 118g vs 354g); se autocompleta al escanear.
+- **Foto por producto** — imagen automática desde Open Food Facts al escanear, o subida propia a Cloudinary desde la edición. Placeholder con inicial y color si no hay foto.
 - **Exportación a Excel** — inventario, acciones urgentes, top 10 en riesgo con EAN y valor en riesgo.
-- **Escáner EAN con autocompletado** — escanea el código de barras y autocompleta nombre y categoría via Open Food Facts + UPC Item DB.
+- **Escáner EAN con autocompletado** — escanea el código de barras y autocompleta nombre, categoría, tamaño/gramaje e imagen del producto via Open Food Facts + UPC Item DB.
 - **Importación masiva** — carga de productos desde CSV/Excel.
 - **Alertas diarias por correo + push** — admin recibe top 10 tiendas en riesgo; jefe recibe el parte de su tienda. Ambos reciben notificaciones push en el celular.
 - **Notificaciones push (PWA)** — Firebase Cloud Messaging. Botón de activación en el sidebar.
 - **Reportes históricos** — captura automática diaria con visualización por período.
-- **i18n** — 6 idiomas: Español, English, Português, 中文简体, 中文繁體, 日本語.
+- **i18n** — Español e English activos (con Português, 中文简体, 中文繁體 y 日本語 ya traducidos y listos para reactivar).
 - **Panel superadmin** — métricas globales, lista de empresas, activar/desactivar/eliminar con doble confirmación. Acceso exclusivo por email de fundador.
 - **Sistema de planes** — Free/Starter($9)/Pro($29)/Business($79). Integración con Lemon Squeezy lista para activar. Modal de upgrade automático al llegar al límite.
 - **Cierre automático por inactividad** — 10 minutos sin actividad, incluso desde background (visibilitychange).
@@ -144,7 +148,7 @@ cd stockalert-backend
 npm test
 ```
 
-**Backend: 132 tests en 11 suites** — cobertura completa:
+**Backend: 147 tests en 12 suites** — cobertura completa:
 
 | Suite | Tests | Cubre |
 |-------|-------|-------|
@@ -152,6 +156,7 @@ npm test
 | aislamiento.test.js | 8 | IDOR entre empresas |
 | auth.test.js | 13 | Registro, login, verificación email |
 | clasificar.test.js | 9 | Lógica de alertas |
+| clasificarVencimiento.test.js | 8 | Regla vencido/porVencer (fuente única) |
 | integracion.test.js | 17 | Snapshots, push, superadmin, lemon, recuperación |
 | integracion2.test.js | 15 | Bulk delete + IDOR, headers de seguridad, respuestas sin password |
 | recursos.test.js | 21 | Links, sucursales, productos, movimientos |
