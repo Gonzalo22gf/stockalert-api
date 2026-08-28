@@ -42,7 +42,7 @@ const { validarLimiteSucursales } = require("../middleware/validarPlan");
  *             type: object
  *             required: [zona, numero]
  *             properties:
- *               zona: { type: number, example: 12 }
+ *               zona: { type: string, example: "Palermo" }
  *               numero: { type: number, example: 402 }
  *               direccion: { type: string, example: "Av. Corrientes 1234" }
  *               empresa: { type: string, example: "Carrefour" }
@@ -88,7 +88,7 @@ router.get("/resumen", protegerRuta, obtenerResumenSucursales);
  *             type: object
  *             required: [zona, numero]
  *             properties:
- *               zona: { type: number }
+ *               zona: { type: string, example: "Palermo" }
  *               numero: { type: number }
  *               direccion: { type: string }
  *     responses:

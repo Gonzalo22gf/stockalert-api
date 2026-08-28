@@ -45,15 +45,19 @@ const { protegerRuta } = require("../middleware/auth");
  *         application/json:
  *           schema:
  *             type: object
- *             required: [nombre, categoria, precio, stock, vencimiento]
+ *             required: [nombre, categoria, precio, stock]
  *             properties:
  *               nombre: { type: string, example: "Leche entera 1L" }
- *               categoria: { type: string, enum: ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"], example: "Lácteos" }
+ *               categoria: { type: string, description: "Categoria de la empresa (editable, viene de /api/categorias)", example: "Lácteos" }
  *               precio: { type: number, example: 1200 }
  *               stock: { type: number, example: 24 }
  *               lote: { type: string, example: "L-2026-01" }
- *               vencimiento: { type: string, format: date, example: "2026-08-15" }
+ *               vence: { type: boolean, default: true, description: "false = producto sin vencimiento (no exige fecha)" }
+ *               vencimiento: { type: string, format: date, description: "Requerido solo si vence=true", example: "2026-08-15" }
+ *               tamano: { type: string, description: "Gramaje/medida, ej 118 g", example: "1 L" }
  *               codigoBarras: { type: string, example: "7791234567890" }
+ *               imagen: { type: string, description: "URL de foto propia (Cloudinary)" }
+ *               imagenAuto: { type: string, description: "URL de foto de Open Food Facts" }
  *               sucursal: { type: string, description: "Solo admin: ID de la sucursal destino" }
  *     responses:
  *       201: { description: "Producto creado" }
