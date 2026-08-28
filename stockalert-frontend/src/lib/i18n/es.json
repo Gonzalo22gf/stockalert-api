@@ -101,7 +101,8 @@
     "agotado": "Agotado",
     "stockCritico": "Stock crítico",
     "stockBajo": "Stock bajo",
-    "excel": "Excel"
+    "excel": "Excel",
+    "enRiesgo": "En riesgo"
   },
   "productos": {
     "titulo": "Productos",
@@ -422,7 +423,8 @@
     "masPorVencerSub": "Productos próximos a vencer por sucursal",
     "prodVencidos": "Productos vencidos",
     "vencidosSemana": "{{cantidad}} productos vencidos esa semana",
-    "analisisInventario": "Análisis del inventario"
+    "analisisInventario": "Análisis del inventario",
+    "noVence": "No vence"
   },
   "estados": {
     "stockCritico": "Stock crítico",

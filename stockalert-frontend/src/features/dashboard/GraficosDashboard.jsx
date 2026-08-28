@@ -51,9 +51,9 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
   const hoy = new Date();
 
   // Estado de productos
-  let enBuenEstado = 0, porVencer = 0, vencidos = 0;
+  let enBuenEstado = 0, porVencer = 0, vencidos = 0, noVence = 0;
   productos.forEach((p) => {
-    if (p.vence === false) { enBuenEstado++; return; }
+    if (p.vence === false) { noVence++; return; }
     const dias = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
     if (dias < 0) vencidos++;
     else if (dias <= 7) porVencer++;
@@ -75,10 +75,10 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
 
   // Dona de estado
   const datosEstado = {
-    labels: [t("productos.buenEstado"), t("productos.porVencer"), t("productos.vencido")],
+    labels: [t("productos.buenEstado"), t("productos.porVencer"), t("productos.vencido"), t("dash.noVence")],
     datasets: [{
-      data: [enBuenEstado, porVencer, vencidos],
-      backgroundColor: ["#10b981", "#f59e0b", "#ef4444"],
+      data: [enBuenEstado, porVencer, vencidos, noVence],
+      backgroundColor: ["#10b981", "#f59e0b", "#ef4444", "#6b7280"],
       borderColor: "#13151c",
       borderWidth: 3,
       hoverOffset: 6

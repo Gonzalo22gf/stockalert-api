@@ -18,9 +18,13 @@ function calcularRiesgo(producto, t) {
   if (stock <= 0) { puntaje += 50; motivos.push({ texto: t("panelRiesgo.agotado"), color: "#b91c1c", pts: 50 }); }
   else if (stock <= 5) { puntaje += 40; motivos.push({ texto: t("panelRiesgo.stockCritico"), color: "#a855f7", pts: 40 }); }
   else if (stock <= 10) { puntaje += 25; motivos.push({ texto: t("panelRiesgo.stockBajo"), color: "#f97316", pts: 25 }); }
-  const valor = stock * Number(producto.precio || 0);
-  puntaje += Math.min(valor / 10000, 50);
-  const motivoPrincipal = motivos.sort((a, b) => b.pts - a.pts)[0] || { texto: "En riesgo", color: "#64748b" };
+  // El valor en dinero es un modificador: solo suma si YA hay un riesgo real (vencimiento o stock).
+  // Un producto sano (no vence o stock ok) no debe entrar a la lista solo por valer plata.
+  if (motivos.length > 0) {
+    const valor = stock * Number(producto.precio || 0);
+    puntaje += Math.min(valor / 10000, 50);
+  }
+  const motivoPrincipal = motivos.sort((a, b) => b.pts - a.pts)[0] || { texto: t("panelRiesgo.enRiesgo"), color: "#64748b" };
   return { puntaje, motivoPrincipal };
 }
 

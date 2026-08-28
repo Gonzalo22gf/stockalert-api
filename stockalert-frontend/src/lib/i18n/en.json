@@ -101,7 +101,8 @@
     "agotado": "Out of stock",
     "stockCritico": "Critical stock",
     "stockBajo": "Low stock",
-    "excel": "Excel"
+    "excel": "Excel",
+    "enRiesgo": "At risk"
   },
   "productos": {
     "titulo": "Products",
@@ -422,7 +423,8 @@
     "masPorVencerSub": "Products about to expire by branch",
     "prodVencidos": "Expired products",
     "vencidosSemana": "{{cantidad}} expired products that week",
-    "analisisInventario": "Inventory analysis"
+    "analisisInventario": "Inventory analysis",
+    "noVence": "Doesn't expire"
   },
   "estados": {
     "stockCritico": "Critical stock",

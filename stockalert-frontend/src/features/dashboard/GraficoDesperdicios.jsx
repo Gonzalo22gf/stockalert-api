@@ -51,18 +51,18 @@ export default function GraficoDesperdicios() {
     }
   };
 
-  const totalVencidos = semanas.reduce((acc, s) => acc + s.cantidadVencida, 0);
+  const picoMaximo = semanas.reduce((max, s) => Math.max(max, s.cantidadVencida), 0);
 
   return (
     <div className="rounded-2xl border border-slate-800 bg-white/[0.02] p-5">
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-white">Desperdicios ultimos 30 dias</h3>
-          <p className="text-xs text-slate-500">Productos vencidos por semana</p>
+          <p className="text-xs text-slate-500">Pico de vencidos por semana</p>
         </div>
         <div className="text-right">
-          <p className="text-lg font-bold text-red-400">{totalVencidos}</p>
-          <p className="text-xs text-slate-500">total vencidos</p>
+          <p className="text-lg font-bold text-red-400">{picoMaximo}</p>
+          <p className="text-xs text-slate-500">pico maximo</p>
         </div>
       </div>
       <Bar data={data} options={options} />

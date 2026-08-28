@@ -5,13 +5,16 @@ function agruparPorSemana(snapshots) {
   const semanas = {};
   snapshots.forEach((s) => {
     const fecha = new Date(s.fecha);
-    // Obtener el lunes de la semana
+    // Lunes de la semana (getDay: 0=domingo). El domingo retrocede 6 dias, no avanza al lunes siguiente.
+    const dia = fecha.getDay();
+    const desplazamiento = dia === 0 ? -6 : 1 - dia;
     const lunes = new Date(fecha);
-    lunes.setDate(fecha.getDate() - fecha.getDay() + 1);
+    lunes.setDate(fecha.getDate() + desplazamiento);
     const clave = lunes.toISOString().split("T")[0];
-    if (!semanas[clave]) semanas[clave] = { semana: clave, valorVencido: 0, cantidadVencida: 0 };
-    semanas[clave].valorVencido += s.totales?.valorInventario || 0;
-    semanas[clave].cantidadVencida += s.totales?.vencidos || 0;
+    const vencidos = s.totales?.vencidos || 0;
+    if (!semanas[clave]) semanas[clave] = { semana: clave, cantidadVencida: 0 };
+    // Un snapshot por dia: sumar contaria el mismo producto varios dias. Tomamos el pico semanal.
+    semanas[clave].cantidadVencida = Math.max(semanas[clave].cantidadVencida, vencidos);
   });
   return Object.values(semanas).sort((a, b) => a.semana.localeCompare(b.semana));
 }
