@@ -9,10 +9,10 @@ import {
   LinearScale,
   BarElement
 } from "chart.js";
+import { useDatosGraficos } from "./useDatosGraficos";
+import { PALETA, opcionesBarrasH, opcionesDona, opcionesDonaRiesgo, crearTextoCentral } from "./chartConfig";
 
 ChartJS.register(ArcElement, Tooltip, Legend, CategoryScale, LinearScale, BarElement);
-
-const PALETA = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4", "#ec4899"];
 
 function Tarjeta({ titulo, subtitulo, children, className = "" }) {
   return (
@@ -26,20 +26,10 @@ function Tarjeta({ titulo, subtitulo, children, className = "" }) {
   );
 }
 
-const tooltipEstilo = {
-  backgroundColor: "#1a1d26",
-  titleColor: "#f1f3f8",
-  bodyColor: "#cbd1e0",
-  borderColor: "#2a2e3a",
-  borderWidth: 1,
-  padding: 10,
-  cornerRadius: 8,
-  displayColors: true,
-  boxPadding: 4
-};
-
 export default function GraficosDashboard({ productos, resumenSucursales }) {
   const { t } = useTranslation();
+  const datos = useDatosGraficos(productos, resumenSucursales);
+
   if (!productos || productos.length === 0) {
     return (
       <div className="rounded-2xl border border-dashed border-border bg-panel/50 px-6 py-14 text-center">
@@ -48,32 +38,12 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
     );
   }
 
-  const hoy = new Date();
+  const {
+    total, enBuenEstado, porVencer, vencidos, noVence,
+    porCategoria, stockPorCategoria, valorPorCategoria, categorias,
+    hayResumen, topVencidos, topPorVencer, topRiesgo, topStockBajo
+  } = datos;
 
-  // Estado de productos
-  let enBuenEstado = 0, porVencer = 0, vencidos = 0, noVence = 0;
-  productos.forEach((p) => {
-    if (p.vence === false) { noVence++; return; }
-    const dias = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
-    if (dias < 0) vencidos++;
-    else if (dias <= 7) porVencer++;
-    else enBuenEstado++;
-  });
-  const total = productos.length;
-
-  // Por categoría
-  const porCategoria = {};
-  const stockPorCategoria = {};
-  const valorPorCategoria = {};
-  productos.forEach((p) => {
-    porCategoria[p.categoria] = (porCategoria[p.categoria] || 0) + 1;
-    stockPorCategoria[p.categoria] = (stockPorCategoria[p.categoria] || 0) + Number(p.stock || 0);
-    valorPorCategoria[p.categoria] = (valorPorCategoria[p.categoria] || 0) + Number(p.stock || 0) * Number(p.precio || 0);
-  });
-
-  const categorias = Object.keys(porCategoria);
-
-  // Dona de estado
   const datosEstado = {
     labels: [t("productos.buenEstado"), t("productos.porVencer"), t("productos.vencido"), t("dash.noVence")],
     datasets: [{
@@ -84,122 +54,6 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
       hoverOffset: 6
     }]
   };
-
-  const opcionesDona = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: "70%",
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: { color: "#cbd1e0", font: { size: 12, family: "Inter" }, padding: 14, usePointStyle: true, pointStyle: "circle" }
-      },
-      tooltip: {
-        ...tooltipEstilo,
-        callbacks: {
-          label: (ctx) => {
-            const pct = total > 0 ? ((ctx.raw / total) * 100).toFixed(0) : 0;
-            return " " + ctx.label + ": " + ctx.raw + " (" + pct + "%)";
-          }
-        }
-      }
-    }
-  };
-
-  const textoCentral = {
-    id: "textoCentral",
-    afterDraw(chart) {
-      const { ctx, chartArea } = chart;
-      if (!chartArea) return;
-      const x = (chartArea.left + chartArea.right) / 2;
-      const y = (chartArea.top + chartArea.bottom) / 2;
-      ctx.save();
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "800 26px Inter, sans-serif";
-      ctx.fillText(String(total), x, y - 8);
-      ctx.fillStyle = "#8b90a0";
-      ctx.font = "500 11px Inter, sans-serif";
-      ctx.fillText("productos", x, y + 14);
-      ctx.restore();
-    }
-  };
-
-  function barrasH(data, colorIdx) {
-    return {
-      labels: categorias,
-      datasets: [{
-        data: categorias.map((c) => data[c]),
-        backgroundColor: PALETA[colorIdx],
-        borderRadius: 6,
-        barThickness: 18
-      }]
-    };
-  }
-
-  // Barras horizontales para rankings (labels y valores explícitos)
-  function barrasRanking(labels, valores, color) {
-    return {
-      labels,
-      datasets: [{
-        data: valores,
-        backgroundColor: color,
-        borderRadius: 6,
-        barThickness: 16
-      }]
-    };
-  }
-
-  function opcionesBarrasH(formato) {
-    return {
-      indexAxis: "y",
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          ...tooltipEstilo,
-          callbacks: {
-            label: (ctx) => formato ? " " + formato(ctx.raw) : " " + ctx.raw
-          }
-        }
-      },
-      scales: {
-        x: { ticks: { color: "#6b7280", font: { size: 10 } }, grid: { color: "#1c1f29" }, border: { display: false } },
-        y: { ticks: { color: "#cbd1e0", font: { size: 11, family: "Inter" } }, grid: { display: false }, border: { display: false } }
-      }
-    };
-  }
-
-  const fmtMoneda = (v) => "$ " + Number(v).toLocaleString("es-AR");
-
-  // ===== DATOS PARA GRÁFICOS POR TIENDA (#7, #8, #10) =====
-  const hayResumen = resumenSucursales && resumenSucursales.length > 0;
-
-  // #7: Top 10 tiendas con más vencidos
-  const topVencidos = hayResumen
-    ? [...resumenSucursales].filter((r) => r.vencidos > 0).sort((a, b) => b.vencidos - a.vencidos).slice(0, 10)
-    : [];
-
-  // #8: Top 10 tiendas con más por vencer
-  const topPorVencer = hayResumen
-    ? [...resumenSucursales].filter((r) => r.porVencer > 0).sort((a, b) => b.porVencer - a.porVencer).slice(0, 10)
-    : [];
-
-  // #10: Top 10 tiendas con más riesgo (vencidos + por vencer + stock crítico)
-  const topRiesgo = hayResumen
-    ? [...resumenSucursales]
-        .map((r) => ({ nombre: r.sucursal.nombre, riesgo: r.vencidos + r.porVencer + r.stockCritico }))
-        .filter((r) => r.riesgo > 0)
-        .sort((a, b) => b.riesgo - a.riesgo)
-        .slice(0, 10)
-    : [];
-
-  // #9: Top 10 productos con stock más bajo (por producto, siempre disponible)
-  const topStockBajo = [...productos]
-    .sort((a, b) => Number(a.stock || 0) - Number(b.stock || 0))
-    .slice(0, 10);
 
   const datosDonaRiesgo = {
     labels: topRiesgo.map((r) => r.nombre),
@@ -212,21 +66,33 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
     }]
   };
 
-  const opcionesDonaRiesgo = {
-    responsive: true,
-    maintainAspectRatio: false,
-    cutout: "60%",
-    plugins: {
-      legend: {
-        position: "bottom",
-        labels: { color: "#cbd1e0", font: { size: 11, family: "Inter" }, padding: 10, usePointStyle: true, pointStyle: "circle" }
-      },
-      tooltip: {
-        ...tooltipEstilo,
-        callbacks: { label: (ctx) => " " + ctx.label + ": " + ctx.raw + " ítems en riesgo" }
-      }
-    }
-  };
+  // Construye el dataset de una barra horizontal por categoria (cantidad, valor o stock).
+  function barrasH(data, colorIdx) {
+    return {
+      labels: categorias,
+      datasets: [{
+        data: categorias.map((c) => data[c]),
+        backgroundColor: PALETA[colorIdx],
+        borderRadius: 6,
+        barThickness: 18
+      }]
+    };
+  }
+
+  // Construye el dataset de un ranking (labels y valores explicitos).
+  function barrasRanking(labels, valores, color) {
+    return {
+      labels,
+      datasets: [{
+        data: valores,
+        backgroundColor: color,
+        borderRadius: 6,
+        barThickness: 16
+      }]
+    };
+  }
+
+  const fmtMoneda = (v) => "$ " + Number(v).toLocaleString("es-AR");
 
   return (
     <div className="space-y-3.5">
@@ -236,7 +102,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
         <Tarjeta titulo={t("dash.estadoGeneral")} subtitulo={t("dash.estadoGeneralSub")}>
           <div className="h-64">
-            <Doughnut data={datosEstado} options={opcionesDona} plugins={[textoCentral]} />
+            <Doughnut data={datosEstado} options={opcionesDona(total)} plugins={[crearTextoCentral(total, "productos")]} />
           </div>
         </Tarjeta>
 
@@ -262,7 +128,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
         </Tarjeta>
       </div>
 
-      {/* Fila 3: #9 productos stock bajo + #10 dona tiendas en riesgo */}
+      {/* Fila 3: productos stock bajo + dona tiendas en riesgo */}
       <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
         <Tarjeta titulo={t("dash.menorStock")} subtitulo={t("dash.menorStockSub")}>
           <div className="h-64">
@@ -276,7 +142,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
         {hayResumen && topRiesgo.length > 0 ? (
           <Tarjeta titulo={t("dashboard.riesgoTitulo")} subtitulo={t("dashboard.riesgoSubtitulo")}>
             <div className="h-64">
-              <Doughnut data={datosDonaRiesgo} options={opcionesDonaRiesgo} />
+              <Doughnut data={datosDonaRiesgo} options={opcionesDonaRiesgo("ítems en riesgo")} />
             </div>
           </Tarjeta>
         ) : (
@@ -288,7 +154,7 @@ export default function GraficosDashboard({ productos, resumenSucursales }) {
         )}
       </div>
 
-      {/* Fila 4: #7 tiendas más vencidos + #8 tiendas más por vencer (solo con todas las sucursales) */}
+      {/* Fila 4: tiendas más vencidos + tiendas más por vencer */}
       {hayResumen && (
         <div className="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
           <Tarjeta titulo={t("dash.masVencidos")} subtitulo={t("dash.masVencidosSub")}>
