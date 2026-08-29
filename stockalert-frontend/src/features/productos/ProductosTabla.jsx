@@ -120,12 +120,6 @@ export default function ProductosTabla({ productos, esAdmin, onEditar, onElimina
         <table className="w-full text-sm">
           <thead className="bg-slate-900 text-left text-xs uppercase text-slate-500">
             <tr>
-              <Th campo="nombre">{t("productos.nombre")}</Th>
-              <Th campo="categoria">{t("productos.categoria")}</Th>
-              {esAdmin && <Th campo="sucursal">{t("productos.sucursal")}</Th>}
-              <Th campo="stock" className="text-center">{t("productos.stock")}</Th>
-              <Th campo="precio" className="text-right">{t("productos.precio")}</Th>
-              <Th campo="vencimiento">{t("productos.vencimiento")}</Th>
               <th className="px-4 py-3 w-10">
                 <input
                   type="checkbox"
@@ -134,6 +128,12 @@ export default function ProductosTabla({ productos, esAdmin, onEditar, onElimina
                   onChange={() => onToggleTodos && onToggleTodos(productos.map((p) => p._id))}
                 />
               </th>
+              <Th campo="nombre">{t("productos.nombre")}</Th>
+              <Th campo="categoria">{t("productos.categoria")}</Th>
+              {esAdmin && <Th campo="sucursal">{t("productos.sucursal")}</Th>}
+              <Th campo="stock" className="text-center">{t("productos.stock")}</Th>
+              <Th campo="precio" className="text-right">{t("productos.precio")}</Th>
+              <Th campo="vencimiento">{t("productos.vencimiento")}</Th>
               <th className="px-4 py-3">Estado</th>
               <th className="px-4 py-3 text-right">Acciones</th>
             </tr>
