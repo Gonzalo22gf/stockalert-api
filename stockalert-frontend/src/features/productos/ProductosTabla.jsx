@@ -153,9 +153,11 @@ export default function ProductosTabla({ productos, esAdmin, onEditar, onElimina
                     />
                   </td>
                   <td className="px-4 py-2.5 font-semibold text-white">
-                    {p.nombre}
-                    {p.tamano && <span className="ml-1.5 text-xs font-normal text-slate-500">{p.tamano}</span>}
-                    {p.lote && <span className="ml-2 text-[10px] text-slate-600">Lote {p.lote}</span>}
+                    <div className="flex max-w-[220px] items-baseline gap-1.5">
+                      <span className="truncate" title={p.nombre}>{p.nombre}</span>
+                      {p.tamano && <span className="shrink-0 text-xs font-normal text-slate-500">{p.tamano}</span>}
+                      {p.lote && <span className="shrink-0 text-[10px] text-slate-600">Lote {p.lote}</span>}
+                    </div>
                   </td>
                   <td className="px-4 py-2.5 text-slate-400">{p.categoria}</td>
                   {esAdmin && <td className="px-4 py-2.5 text-slate-400">{p.sucursal?.nombre || "—"}</td>}
