@@ -38,6 +38,13 @@ function formatearFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
 }
 
+// Escala el tamano de letra del nombre segun su largo, para que nombres largos no desarmen la card.
+function claseTamanoNombre(nombre) {
+  const largo = (nombre || "").length;
+  if (largo <= 22) return "text-base";
+  if (largo <= 40) return "text-sm";
+  return "text-xs";
+}
 export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }) {
   const { t } = useTranslation();
   const estado = obtenerEstado(producto.vencimiento, producto.vence);
@@ -48,8 +55,10 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
         <div className="flex min-w-0 items-center gap-2.5">
           <ImagenProducto producto={producto} />
           <div className="min-w-0">
-          <span className="font-semibold text-white">{producto.nombre}</span>
-          {producto.tamano && <span className="ml-1.5 text-xs font-medium text-slate-500">{producto.tamano}</span>}
+            <p className={`font-semibold leading-tight text-white line-clamp-2 ${claseTamanoNombre(producto.nombre)}`}>
+              {producto.nombre}
+              {producto.tamano && <span className="ml-1.5 text-xs font-medium text-slate-500">{producto.tamano}</span>}
+            </p>
           </div>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-1">
