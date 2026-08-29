@@ -4,10 +4,11 @@ import { useTranslation } from "react-i18next";
 import { useAuthStore } from "../features/auth/authStore";
 import SelectorIdioma from "./SelectorIdioma";
 import { usePush } from "../hooks/usePush";
+import { useTema } from "../hooks/useTema";
 import { Bell, BellOff } from "lucide-react";
 import {
   LayoutDashboard, Package, Activity, Store, Tag, Users, TrendingUp, Link, KeyRound, ShieldCheck, CreditCard,
-  ChevronRight, ChevronLeft, LogOut, BoxesIcon
+  ChevronRight, ChevronLeft, LogOut, BoxesIcon, Sun, Moon
 } from "lucide-react";
 
 function ItemNav({ to, Icono, label, soloAdmin, esAdmin, onNavegar, colapsado }) {
@@ -41,6 +42,7 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
   const cerrarSesion = useAuthStore((s) => s.cerrarSesion);
   const esAdmin = usuario?.rol === "admin";
   const { activado, cargando, activar, desactivar } = usePush();
+  const { tema, alternar } = useTema();
   const esFundador = ["gef.22@hotmail.com"].includes(usuario?.email?.toLowerCase());
   const anchoSidebar = colapsado ? "md:w-[72px]" : "md:w-[248px]";
 
@@ -78,6 +80,13 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
               <p className="text-[10px] font-medium tracking-wide text-slate-600">v5.0 · {t("nav.inventario")}</p>
             </div>
           )}
+          <button
+            onClick={alternar}
+            title={tema === "oscuro" ? "Modo claro" : "Modo oscuro"}
+            className={`shrink-0 rounded-lg p-1.5 text-slate-500 transition-colors hover:bg-panel hover:text-white ${colapsado ? "hidden" : ""}`}
+          >
+            {tema === "oscuro" ? <Sun size={17} strokeWidth={1.8} /> : <Moon size={17} strokeWidth={1.8} />}
+          </button>
           <button
             onClick={onAlternarColapso}
             title={colapsado ? t("nav.expandir") : t("nav.colapsar")}

@@ -12,10 +12,11 @@ export default {
           500: "#ff7a1a",
           600: "#e8620a"
         },
-        base: "#0a0b0f",
-        panel: "#13151c",
-        "panel-hover": "#1a1d26",
-        "border-soft": "#1c1f29"
+        base: "var(--bg-base)",
+        panel: "var(--bg-panel)",
+        "panel-hover": "var(--bg-panel-hover)",
+        "border-soft": "var(--border-soft)",
+        border: "var(--border)"
       },
       keyframes: {
         rise: {

@@ -10,6 +10,15 @@
   --border: #232733;
 }
 
+/* Modo claro (fondo cremita, calido, que no cansa la vista) */
+html.light {
+  --bg-base: #f5f1e8;
+  --bg-panel: #fffdf7;
+  --bg-panel-hover: #efe9dc;
+  --border-soft: #e6ddcb;
+  --border: #d8cdb5;
+}
+
 html {
   font-family: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   letter-spacing: -0.011em;
@@ -45,3 +54,51 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   filter: invert(0.7);
   cursor: pointer;
 }
+/* ===== OVERRIDES MODO CLARO ===== */
+/* Los componentes tienen colores oscuros hardcodeados (text-white, text-slate-XXX,
+   bg-slate-XXX). En modo claro los remapeamos a equivalentes legibles sobre cremita,
+   manteniendo la jerarquia visual. Se hace en un solo lugar para no tocar cada componente. */
+
+/* Textos: de claros (sobre oscuro) a oscuros (sobre cremita) */
+html.light .text-white { color: #1c1917 !important; }
+html.light .text-slate-300 { color: #292524 !important; }
+html.light .text-slate-400 { color: #57534e !important; }
+html.light .text-slate-500 { color: #6b6560 !important; }
+html.light .text-slate-600 { color: #78716c !important; }
+
+/* Fondos hardcodeados de slate → tonos cremita/claros */
+html.light .bg-slate-800 { background-color: #efe9dc !important; }
+html.light .bg-slate-900 { background-color: #f0ebe0 !important; }
+html.light .bg-slate-950 { background-color: #f5f1e8 !important; }
+html.light .bg-slate-950\/50 { background-color: rgba(245, 241, 232, 0.5) !important; }
+html.light .bg-slate-900\/50 { background-color: rgba(240, 235, 224, 0.5) !important; }
+
+/* Bordes slate → bordes suaves claros */
+html.light .border-slate-700 { border-color: #d8cdb5 !important; }
+html.light .border-slate-800 { border-color: #e6ddcb !important; }
+html.light .border-slate-600 { border-color: #c9bda3 !important; }
+
+/* Campos de formulario en claro (sobreescriben el fondo oscuro forzado de arriba) */
+html.light select,
+html.light input[type="date"],
+html.light input[type="number"],
+html.light input[type="text"],
+html.light input[type="email"],
+html.light input[type="password"] {
+  background-color: #fffdf7;
+  color: #1c1917;
+}
+html.light option {
+  background-color: #fffdf7;
+  color: #1c1917;
+}
+
+/* Icono del calendario: en claro no lo invertimos (se ve bien tal cual) */
+html.light input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+}
+
+/* Scrollbar en claro */
+html.light ::-webkit-scrollbar-track { background: #f5f1e8; }
+html.light ::-webkit-scrollbar-thumb { background: #d8cdb5; }
+html.light ::-webkit-scrollbar-thumb:hover { background: #c9bda3; }
