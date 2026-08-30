@@ -1,6 +1,6 @@
 {
   "nav": {
-    "dashboard": "Dashboard",
+    "dashboard": "Panel de control",
     "productos": "Productos",
     "movimientos": "Movimientos",
     "sucursales": "Sucursales",
@@ -61,7 +61,7 @@
     "error": "Error"
   },
   "dashboard": {
-    "titulo": "Dashboard",
+    "titulo": "Panel de control",
     "subtitulo": "Resumen general del inventario",
     "verSucursal": "Ver sucursal",
     "todasSucursales": "Todas las sucursales",
@@ -77,7 +77,7 @@
     "bajoUmbral": "bajo umbral",
     "valorInventario": "Valor inventario",
     "totalEnStock": "total en stock",
-    "noCargar": "No se pudo cargar el dashboard.",
+    "noCargar": "No se pudo cargar el panel de control.",
     "riesgoTitulo": "⚠️ 10 tiendas con más riesgo",
     "riesgoSubtitulo": "Vencidos + por vencer + stock crítico",
     "riesgoMensaje1": "Este gráfico compara todas las tiendas.",
@@ -484,7 +484,7 @@
     "fSoporteEmail": "Soporte por email",
     "fHasta10Suc": "Hasta 10 sucursales",
     "fProdIlimitados": "Productos ilimitados",
-    "fDashMulti": "Dashboard multi-sucursal",
+    "fDashMulti": "Panel multi-sucursal",
     "fRankings": "Rankings de riesgo",
     "fUsuariosRoles": "Usuarios con roles",
     "fSoportePrioritario": "Soporte prioritario",
