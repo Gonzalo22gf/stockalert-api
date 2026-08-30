@@ -148,3 +148,30 @@ html.light .border-border-soft { border-color: #ece4d3 !important; }
 html.light .bg-slate-700 { background-color: #e6ddcb !important; }
 html.light .bg-slate-700\/60 { background-color: rgba(230, 221, 203, 0.6) !important; }
 html.light .bg-panel-hover { background-color: #efe9dc !important; }
+
+/* ===== OVERRIDES MODO CLARO — cards KPI de Superadmin y badges de plan ===== */
+/* Usan bg-*-500/10 y text-*-300 (tenues sobre oscuro); sobre cremita casi no se ven.
+   Subimos opacidad de fondo y oscurecemos el texto para que resalten. */
+
+/* Textos -300 (variantes claras que faltaban) → tonos oscuros legibles */
+html.light .text-indigo-300 { color: #4338ca !important; }
+html.light .text-emerald-300 { color: #047857 !important; }
+html.light .text-amber-300 { color: #b45309 !important; }
+html.light .text-cyan-300 { color: #0e7490 !important; }
+html.light .text-blue-300 { color: #1d4ed8 !important; }
+
+/* Fondos /10 de las KPI cards de Superadmin → mas cuerpo en claro */
+html.light .bg-indigo-500\/10 { background-color: rgba(79, 70, 229, 0.14) !important; }
+html.light .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.14) !important; }
+html.light .bg-amber-500\/10 { background-color: rgba(180, 83, 9, 0.14) !important; }
+html.light .bg-cyan-500\/10 { background-color: rgba(14, 116, 144, 0.14) !important; }
+
+/* Bordes /20 de las KPI cards → un poco mas marcados en claro */
+html.light .border-indigo-400\/20 { border-color: rgba(79, 70, 229, 0.35) !important; }
+html.light .border-emerald-400\/20 { border-color: rgba(5, 150, 105, 0.35) !important; }
+html.light .border-amber-400\/20 { border-color: rgba(180, 83, 9, 0.35) !important; }
+html.light .border-cyan-400\/20 { border-color: rgba(14, 116, 144, 0.35) !important; }
+
+/* Badges de plan (BadgePlan) → fondos /15 con mas cuerpo */
+html.light .bg-indigo-500\/15 { background-color: rgba(79, 70, 229, 0.16) !important; }
+html.light .bg-blue-500\/15 { background-color: rgba(29, 78, 216, 0.16) !important; }
