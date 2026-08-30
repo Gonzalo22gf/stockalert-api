@@ -8,7 +8,7 @@ const empresaSchema = new mongoose.Schema(
     nombre: { type: String, required: true, trim: true },
     codigoAcceso: { type: String, unique: true, sparse: true },
     activa: { type: Boolean, default: true },
-    plan: { type: String, enum: PLANES, default: "business" },
+    plan: { type: String, enum: PLANES, default: "free" },
     trialExpira: { type: Date, default: null }
   },
   { timestamps: true }

@@ -38,7 +38,10 @@ const UsuarioService = {
     if (modo === "crear") {
       if (!nombreEmpresa?.trim()) throw new ValidationError("El nombre de la empresa es obligatorio");
       const Empresa = require("../models/Empresa");
-      empresa = await Empresa.create({ nombre: nombreEmpresa.trim(), codigoAcceso: generarCodigoAcceso(nombreEmpresa.trim()) });
+      const { TRIAL_DIAS } = require("../config/planes");
+      // Empresa nueva arranca con trial Pro por TRIAL_DIAS dias; al vencer se trata como free.
+      const trialExpira = new Date(Date.now() + TRIAL_DIAS * 24 * 60 * 60 * 1000);
+      empresa = await Empresa.create({ nombre: nombreEmpresa.trim(), codigoAcceso: generarCodigoAcceso(nombreEmpresa.trim()), plan: "pro", trialExpira });
       sucursal = await SucursalRepository.create({ zona: "1", numero: 1, direccion: "", empresa: empresa._id });
       const Categoria = require("../models/Categoria");
       const categoriasDefault = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];

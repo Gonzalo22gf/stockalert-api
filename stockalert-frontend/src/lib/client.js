@@ -18,6 +18,8 @@ async function request(path, options = {}) {
   if (!respuesta.ok) {
     // Si el backend devuelve un codigo de limite de plan, lanzar PlanError
     if (data.codigo && ["LIMITE_PRODUCTOS","LIMITE_SUCURSALES","LIMITE_USUARIOS","TRIAL_EXPIRADO"].includes(data.codigo)) {
+      // Dispara el modal de upgrade automaticamente (lo escucha Layout), sin depender de cada hook.
+      if (typeof window !== "undefined") window.dispatchEvent(new CustomEvent("plan-error", { detail: { codigo: data.codigo } }));
       throw new PlanError(data.mensaje, data.codigo);
     }
     const err = new Error(data.mensaje || "Error en la solicitud");
