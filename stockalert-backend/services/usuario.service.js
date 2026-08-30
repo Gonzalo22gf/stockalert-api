@@ -83,7 +83,7 @@ const UsuarioService = {
   login: async ({ email, password }) => {
     const emailNormalizado = email.toLowerCase().trim();
     const usuario = await UsuarioRepository.findByEmailConRelaciones(emailNormalizado);
-    if (!usuario) throw new UnauthorizedError("Credenciales incorrectas");
+    if (!usuario) throw new UnauthorizedError("Usuario o clave incorrectos");
     if (usuario.bloqueadoHasta && usuario.bloqueadoHasta > new Date()) {
       const min = Math.ceil((usuario.bloqueadoHasta - new Date()) / 60000);
       throw new ForbiddenError("Cuenta bloqueada temporalmente. Intenta de nuevo en " + min + " minuto(s).");
@@ -104,7 +104,7 @@ const UsuarioService = {
       }
       await UsuarioRepository.save(usuario);
       logger.warn({ evento: "intento_fallido", email: usuario.email, intentos: usuario.intentosFallidos }, "Intento de login fallido");
-      throw new UnauthorizedError("Credenciales incorrectas");
+      throw new UnauthorizedError("Usuario o clave incorrectos");
     }
     usuario.intentosFallidos = 0;
     usuario.bloqueadoHasta = null;

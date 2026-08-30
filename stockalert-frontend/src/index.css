@@ -12,9 +12,9 @@
 
 /* Modo claro (fondo cremita, calido, que no cansa la vista) */
 html.light {
-  --bg-base: #f5f1e8;
-  --bg-panel: #fffdf7;
-  --bg-panel-hover: #efe9dc;
+  --bg-base: #e8e0d0;
+  --bg-panel: #f7f2e8;
+  --bg-panel-hover: #eee7d8;
   --border-soft: #e6ddcb;
   --border: #d8cdb5;
 }
