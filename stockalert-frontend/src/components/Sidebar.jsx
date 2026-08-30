@@ -102,24 +102,39 @@ export default function Sidebar({ abierto, colapsado, onCerrar, onAlternarColaps
             className="pointer-events-none absolute -left-[14px] w-[3px] rounded-r bg-brand transition-all duration-300 ease-out"
             style={{ top: indicador.top, height: indicador.alto, opacity: indicador.visible ? 1 : 0 }}
           />
+
+          {/* PRINCIPAL — el dia a dia (todos los roles) */}
           {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.principal")}</p>}
           <ItemNav to="/" Icono={LayoutDashboard} label={t("nav.dashboard")} onNavegar={onCerrar} colapsado={colapsado} />
-          <ItemNav to="/productos" Icono={Package} label={t("nav.productos")} esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-          {esFundador && <ItemNav to="/superadmin" Icono={ShieldCheck} label={t("nav.superadmin")} onNavegar={onCerrar} colapsado={colapsado} />}
+          <ItemNav to="/productos" Icono={Package} label={t("nav.productos")} onNavegar={onCerrar} colapsado={colapsado} />
+          <ItemNav to="/movimientos" Icono={Activity} label={t("nav.movimientos")} onNavegar={onCerrar} colapsado={colapsado} />
+
+          {/* ANALISIS — ver informacion (solo admin) */}
           {esAdmin && (
             <>
               {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.analisis")}</p>}
-              <ItemNav to="/movimientos" Icono={Activity} label={t("nav.movimientos")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/sucursales" Icono={Store} label={t("nav.sucursales")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/categorias" Icono={Tag} label={t("nav.categorias")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/usuarios" Icono={Users} label={t("nav.usuarios")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
               <ItemNav to="/reportes" Icono={TrendingUp} label={t("nav.reportes")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
-              <ItemNav to="/links" Icono={Link} label={t("nav.links")} onNavegar={onCerrar} colapsado={colapsado} />
-              {esAdmin && <ItemNav to="/planes" Icono={CreditCard} label={t("nav.planes")} onNavegar={onCerrar} colapsado={colapsado} />}
+            </>
+          )}
+
+          {/* GESTION — configurar el negocio (Links lo ve todos; el resto solo admin) */}
+          {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.gestion")}</p>}
+          {esAdmin && <ItemNav to="/sucursales" Icono={Store} label={t("nav.sucursales")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />}
+          {esAdmin && <ItemNav to="/categorias" Icono={Tag} label={t("nav.categorias")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />}
+          {esAdmin && <ItemNav to="/usuarios" Icono={Users} label={t("nav.usuarios")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />}
+          <ItemNav to="/links" Icono={Link} label={t("nav.links")} onNavegar={onCerrar} colapsado={colapsado} />
+
+          {/* CUENTA — administrativo / personal (solo admin; Superadmin solo fundador) */}
+          {esAdmin && (
+            <>
+              {!colapsado && <p className="px-2.5 pb-1.5 pt-3.5 text-[10px] font-semibold uppercase tracking-wider text-slate-600">{t("nav.cuenta")}</p>}
               <ItemNav to="/codigo-acceso" Icono={KeyRound} label={t("nav.codigoAcceso")} soloAdmin esAdmin={esAdmin} onNavegar={onCerrar} colapsado={colapsado} />
+              <ItemNav to="/planes" Icono={CreditCard} label={t("nav.planes")} onNavegar={onCerrar} colapsado={colapsado} />
+              {esFundador && <ItemNav to="/superadmin" Icono={ShieldCheck} label={t("nav.superadmin")} onNavegar={onCerrar} colapsado={colapsado} />}
             </>
           )}
         </nav>
+
 
         <div className="mt-2">
           <button

@@ -18,7 +18,9 @@
     "notifOn": "Enable notifications",
     "notifOff": "Disable notifications",
     "categorias": "Categories",
-    "inventario": "Inventory"
+    "inventario": "Inventory",
+    "gestion": "Management",
+    "cuenta": "Account"
   },
   "topbar": {
     "accesosRapidos": "Quick access",
