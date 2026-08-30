@@ -14,6 +14,15 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
   const { data: empresa } = usePerfilEmpresa();
 
   const fecha = new Date().toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+  // Esfera indicadora del plan: color segun el plan actual de la empresa.
+  const planActual = empresa?.plan || usuario?.empresa?.plan || null;
+  const PLAN_INFO = {
+    starter: { color: "#0ea5e9", nombre: "Starter" },
+    pro: { color: "#ff7a1a", nombre: "Pro" },
+    business: { color: "#a855f7", nombre: "Business" }
+  };
+  const infoPlan = PLAN_INFO[planActual] || { color: "#9ca3af", nombre: t("planes.trialFree") };
   const nombreSucursal = esAdmin ? t("productos.todasSucursales") : usuario?.sucursal?.nombre || t("topbar.miSucursal");
 
   const accesos = [
@@ -102,6 +111,14 @@ export default function Topbar({ titulo, subtitulo, onToggleSidebar }) {
         )}
 
         <div className={chipClase}><Home size={12} />{nombreSucursal}</div>
+        <button
+          onClick={() => navigate("/planes")}
+          title={t("planes.tuPlan") + ": " + infoPlan.nombre}
+          className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-border transition-transform hover:scale-110"
+          aria-label={t("planes.tuPlan") + ": " + infoPlan.nombre}
+        >
+          <span className="h-3 w-3 rounded-full" style={{ backgroundColor: infoPlan.color }} />
+        </button>
         <div className={chipClase}><Calendar size={12} />{fecha}</div>
       </div>
     </header>

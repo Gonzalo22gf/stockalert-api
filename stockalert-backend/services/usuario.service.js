@@ -111,7 +111,7 @@ const UsuarioService = {
     await UsuarioRepository.save(usuario);
     return {
       _id: usuario._id, nombre: usuario.nombre, email: usuario.email, rol: usuario.rol,
-      empresa: usuario.empresa ? { _id: usuario.empresa._id, nombre: usuario.empresa.nombre } : null,
+      empresa: usuario.empresa ? { _id: usuario.empresa._id, nombre: usuario.empresa.nombre, plan: usuario.empresa.plan } : null,
       sucursal: usuario.sucursal,
       token: generarToken(usuario._id, usuario.empresa?._id || null, usuario.passwordVersion || 0)
     };

@@ -50,6 +50,7 @@ export default function PlanesPage() {
   const { t } = useTranslation();
   const { irACheckout, cargando } = usePlanes();
   const usuario = useAuthStore((s) => s.usuario);
+  const planActual = usuario?.empresa?.plan || null;
   const [searchParams] = useSearchParams();
   useEffect(() => {
     if (searchParams.get("success") === "true") {
@@ -88,13 +89,19 @@ export default function PlanesPage() {
             <ul className="space-y-2 flex-1">
               {plan.features.map((f) => <li key={f} className="flex items-center gap-2 text-sm text-slate-300"><span className={plan.check}>✓</span>{t(f)}</li>)}
             </ul>
-            <button
-              onClick={() => irACheckout(plan.id)}
-              disabled={cargando === plan.id}
-              className={"w-full rounded-xl py-3 text-sm font-semibold transition-colors disabled:opacity-60 " + plan.boton}
-            >
-              {cargando === plan.id ? t("planes.redirigiendo") : t("planes.suscribirme")}
-            </button>
+            {plan.id === planActual ? (
+              <button disabled className="w-full rounded-xl py-3 text-sm font-semibold border border-current opacity-70 cursor-default ">
+                {t("planes.planActual")}
+              </button>
+            ) : (
+              <button
+                onClick={() => irACheckout(plan.id)}
+                disabled={cargando === plan.id}
+                className={"w-full rounded-xl py-3 text-sm font-semibold transition-colors disabled:opacity-60 " + plan.boton}
+              >
+                {cargando === plan.id ? t("planes.redirigiendo") : t("planes.suscribirme")}
+              </button>
+            )}
           </div>
         ))}
       </div>

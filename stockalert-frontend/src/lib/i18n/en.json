@@ -492,7 +492,10 @@
     "fUsuariosIlimitados": "Unlimited users",
     "fReportesAvanzados": "Advanced reports",
     "fSoporteWhatsapp": "WhatsApp support",
-    "fOnboarding": "Guided onboarding"
+    "fOnboarding": "Guided onboarding",
+    "planActual": "Current plan",
+    "tuPlan": "Your plan",
+    "trialFree": "Trial / Free"
   },
   "sucursal": {
     "zonaNumeroObligatorios": "Zone and number are required.",
