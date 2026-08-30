@@ -29,13 +29,16 @@ StockAlert permite a cualquier negocio gestionar el stock y las fechas de vencim
 - **Reportes históricos** — captura automática diaria con visualización por período.
 - **i18n** — Español e English activos (con Português, 中文简体, 中文繁體 y 日本語 ya traducidos y listos para reactivar).
 - **Panel superadmin** — métricas globales, lista de empresas, activar/desactivar/eliminar con doble confirmación. Acceso exclusivo por email de fundador.
-- **Sistema de planes** — Free/Starter($9)/Pro($29)/Business($79). Integración con Lemon Squeezy lista para activar. Modal de upgrade automático al llegar al límite.
+- **Sistema de planes con trial** — Free/Starter($9)/Pro($29)/Business($79). Empresa nueva arranca con 10 días de prueba del plan Pro; al vencer sin pagar se bloquea la creación de productos/sucursales/usuarios (los datos se conservan). Integración con Lemon Squeezy lista para activar. Modal de upgrade automático al llegar al límite o al vencer el trial.
+- **Plan actual visible** — esfera de color en la barra superior indica el plan vigente (tooltip + acceso directo a Planes); en la página de Planes se marca el plan actual y se ofrece mejorar.
 - **Cierre automático por inactividad** — 10 minutos sin actividad, incluso desde background (visibilitychange).
 - **Seguridad en capas** — JWT con passwordVersion, verificación de email, sanitización de inputs, Zod en todos los endpoints, HPP, CSP estricto, rate limiting, Helmet, sanitización NoSQL, CORS restringido, bloqueo por intentos fallidos, contraseñas con mayúscula + número + carácter especial.
 - **Recuperación de contraseña** — token de un solo uso con expiración de 24hs, rate limit de 5 requests por IP cada 15 minutos.
 - **Filtro por rango de fecha de vencimiento** — filtrá productos que vencen entre dos fechas específicas, integrado en la barra de filtros existente.
 - **Bulk delete** — seleccioná múltiples productos con checkboxes y eliminá todos de una. Incluye validación IDOR y movimiento de baja automático por cada producto.
 - **Dashboard de desperdicios** — gráfico de barras semanal con productos vencidos en los últimos 30 días. Solo visible para admins. Usa datos de snapshots existentes.
+- **Modo claro / oscuro** — switch de tema en el sidebar con fondo cremita cálido; la preferencia se guarda y persiste entre sesiones.
+- **Menú por secciones y permisos por rol** — sidebar organizado en Principal / Análisis / Gestión / Cuenta. Guards de ruta en el front: un jefe que intente entrar a una sección de admin ve una pantalla de "sin acceso" limpia (el backend además protege los datos).
 - **PWA instalable** — Android, iPhone (iOS 16.4+) y desktop.
 - **Monitoreo** — Uptime Robot, Sentry, PostHog, Cloudflare.
 
@@ -115,12 +118,12 @@ stockalert-frontend/src/
 
 | Plan | Precio | Productos | Sucursales | Usuarios |
 |------|--------|-----------|------------|----------|
-| Free (trial 15 días) | $0 | 30 | 1 | 3 |
-| Starter | $9/mes | 50 | 1 | 5 |
-| Pro | $29/mes | Ilimitados | 10 | 20 |
+| Free | $0 | 30 | 1 | 3 |
+| Starter | $9/mes | 100 | 1 | 5 |
+| Pro | $29/mes | 500 | 3 | 20 |
 | Business | $79/mes | Ilimitados | Ilimitadas | Ilimitados |
 
-Pagos via **Lemon Squeezy** (acepta tarjetas de cualquier país). Integración completa lista para activar con `LEMON_HABILITADO=true` + `PLANES_HABILITADOS=true` en Render.
+Toda empresa nueva arranca con **10 días de prueba del plan Pro**; al vencer sin pagar se bloquea la creación (los datos se conservan). Pagos via **Lemon Squeezy** (acepta tarjetas de cualquier país). Integración completa lista para activar con `LEMON_HABILITADO=true` + `PLANES_HABILITADOS=true` en Render.
 
 ---
 
@@ -148,7 +151,7 @@ cd stockalert-backend
 npm test
 ```
 
-**Backend: 147 tests en 12 suites** — cobertura completa:
+**Backend: 158 tests en 13 suites** — cobertura completa:
 
 | Suite | Tests | Cubre |
 |-------|-------|-------|
@@ -161,16 +164,19 @@ npm test
 | integracion2.test.js | 15 | Bulk delete + IDOR, headers de seguridad, respuestas sin password |
 | recursos.test.js | 21 | Links, sucursales, productos, movimientos |
 | seguridad.test.js | 7 | Bloqueo, recuperación, cron |
+| seguridad-acceso.test.js | 11 | Escalada de rol y manipulación de plan/suscripción |
 | usuarios-admin.test.js | 11 | Roles, desactivar, eliminar |
 | validacion.test.js | 14 | Inputs Zod en todos los endpoints |
 | validarPassword.test.js | 8 | Reglas de contraseña |
 
-**Frontend: 32 tests con Vitest** — lógica de productos:
+**Frontend: 39 tests con Vitest** — lógica de productos y hooks:
 
 | Suite | Tests | Cubre |
 |-------|-------|-------|
 | productos.utils.test.js | 23 | Filtrado, orden y rango de fechas de vencimiento |
 | useFiltradorProductos.test.js | 9 | Selección múltiple (checkboxes del bulk delete) |
+| useBulkDelete.test.jsx | 4 | Borrado múltiple: llama API, invalida caches, maneja error |
+| useInactividad.test.jsx | 3 | Timer de cierre por inactividad |
 
 ---
 
