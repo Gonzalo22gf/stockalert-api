@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Swal from "sweetalert2";
 import { usePlanes } from "./usePlanes";
 import { useAuthStore } from "../auth/authStore";
+import { obtenerPerfilEmpresa } from "../empresa/empresa.api";
 
 // Cada plan tiene su color de acento para que las opciones se distingan y llamen la atencion.
 // Las clases se escriben completas (no interpoladas) para que Tailwind las detecte en el build.
@@ -50,14 +51,24 @@ export default function PlanesPage() {
   const { t } = useTranslation();
   const { irACheckout, cargando } = usePlanes();
   const usuario = useAuthStore((s) => s.usuario);
+  const actualizarPlan = useAuthStore((s) => s.actualizarPlan);
   const planActual = usuario?.empresa?.plan || null;
   const [searchParams] = useSearchParams();
   useEffect(() => {
-    if (searchParams.get("success") === "true") {
-      Swal.fire({ icon: "success", title: t("planes.pagoExitoso"), text: t("planes.pagoActivado"), confirmButtonText: t("planes.recargar") })
-        .then(() => window.location.replace("/"));
-    }
-  }, [searchParams, t]);
+    if (searchParams.get("success") !== "true") return;
+    // Tras pagar: traer el plan fresco del backend y actualizar la sesion (el webhook ya
+    // escribio el plan; asi la UI lo refleja sin necesidad de re-loguear).
+    (async () => {
+      try {
+        const empresa = await obtenerPerfilEmpresa();
+        if (empresa?.plan) actualizarPlan(empresa.plan);
+      } catch {
+        // si falla, el plan igual esta en el backend; se vera al proximo login
+      }
+      await Swal.fire({ icon: "success", title: t("planes.pagoExitoso"), text: t("planes.pagoActivado"), confirmButtonText: t("planes.recargar") });
+      window.location.replace("/");
+    })();
+  }, [searchParams, t, actualizarPlan]);
   if (usuario?.rol !== "admin") {
     return (
       <div className="flex h-full items-center justify-center">

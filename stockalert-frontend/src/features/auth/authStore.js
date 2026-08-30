@@ -20,6 +20,13 @@ export const useAuthStore = create((set) => ({
     localStorage.setItem("usuarioStockAlert", JSON.stringify(usuario));
     set({ token: data.token, usuario });
   },
+  // Actualiza solo el plan de la empresa en la sesion guardada (ej. tras pagar, sin re-loguear).
+  actualizarPlan: (plan) => set((state) => {
+    if (!state.usuario?.empresa) return {};
+    const usuario = { ...state.usuario, empresa: { ...state.usuario.empresa, plan } };
+    localStorage.setItem("usuarioStockAlert", JSON.stringify(usuario));
+    return { usuario };
+  }),
   cerrarSesion: () => {
     localStorage.removeItem("tokenStockAlert");
     localStorage.removeItem("usuarioStockAlert");
