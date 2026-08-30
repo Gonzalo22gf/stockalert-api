@@ -28,7 +28,7 @@ export default function FiltrosProductos({
   filtros, setFiltro, limpiar, hayFiltrosActivos,
   categorias, productosFiltrados,
   vista, onCambiarVista,
-  onImportar, inputImportarRef,
+  onImportar, onAbrirImportar, inputImportarRef,
   seleccionados, onEliminarSeleccionados
 }) {
   const { t } = useTranslation();
@@ -74,7 +74,7 @@ export default function FiltrosProductos({
           <Boton variante="success" tamano="sm" onClick={() => exportarProductosExcel(productosFiltrados)} disabled={!productosFiltrados?.length}>
             Excel
           </Boton>
-          <Boton variante="secondary" tamano="sm" onClick={onImportar}>
+          <Boton variante="secondary" tamano="sm" onClick={onAbrirImportar}>
             Importar
           </Boton>
           {hayFiltrosActivos && (

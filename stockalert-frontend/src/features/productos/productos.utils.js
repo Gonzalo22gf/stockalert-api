@@ -49,3 +49,21 @@ export function ordenarProductos(productos, orden) {
   };
   return criterios[orden] ? copia.sort(criterios[orden]) : copia;
 }
+
+
+// Formatea un monto en pesos. Para montos chicos usa el formato normal ($1.234).
+// Para montos grandes usa formato compacto para que no desborde: M (millon),
+// MMM (mil millones), B (billon = millon de millones, como se usa en Argentina).
+export function formatearMonto(valor) {
+  const n = Number(valor) || 0;
+  const signo = n < 0 ? "-" : "";
+  const abs = Math.abs(n);
+  const fmt = (x, suf) => {
+    const s = x.toLocaleString("es-AR", { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+    return signo + "$" + s + suf;
+  };
+  if (abs >= 1e12) return fmt(abs / 1e12, " B");
+  if (abs >= 1e9) return fmt(abs / 1e9, " MMM");
+  if (abs >= 1e6) return fmt(abs / 1e6, " M");
+  return signo + "$" + abs.toLocaleString("es-AR");
+}

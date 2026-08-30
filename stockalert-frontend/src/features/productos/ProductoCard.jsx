@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { formatearMonto } from "./productos.utils";
 
 const COLORES = ["bg-brand/20 text-brand-400", "bg-emerald-500/20 text-emerald-400", "bg-sky-500/20 text-sky-400", "bg-purple-500/20 text-purple-400", "bg-amber-500/20 text-amber-400", "bg-rose-500/20 text-rose-400"];
 function colorPorNombre(nombre) {
@@ -38,12 +39,14 @@ function formatearFecha(fecha) {
   return new Date(fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "2-digit", year: "numeric", timeZone: "UTC" });
 }
 
-// Escala el tamano de letra del nombre segun su largo, para que nombres largos no desarmen la card.
-function claseTamanoNombre(nombre) {
+// Calcula el tamano de letra del nombre de forma gradual segun su largo.
+// Hasta 18 caracteres va a tamano pleno (16px); a partir de ahi baja de a poco
+// (0.18px por caracter) con un piso de 11px, asi nunca queda ilegible ni desarma la card.
+function tamanoNombrePx(nombre) {
   const largo = (nombre || "").length;
-  if (largo <= 22) return "text-base";
-  if (largo <= 40) return "text-sm";
-  return "text-xs";
+  const BASE = 16, DESDE = 18, POR_CHAR = 0.18, MIN = 11;
+  if (largo <= DESDE) return BASE;
+  return Math.max(MIN, BASE - (largo - DESDE) * POR_CHAR);
 }
 export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }) {
   const { t } = useTranslation();
@@ -55,7 +58,7 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
         <div className="flex min-w-0 items-center gap-2.5">
           <ImagenProducto producto={producto} />
           <div className="min-w-0">
-            <p className={`font-semibold leading-tight text-white line-clamp-2 ${claseTamanoNombre(producto.nombre)}`}>
+            <p className="font-semibold leading-tight text-white line-clamp-2" style={{ fontSize: tamanoNombrePx(producto.nombre) + "px" }}>
               {producto.nombre}
               {producto.tamano && <span className="ml-1.5 text-xs font-medium text-slate-500">{producto.tamano}</span>}
             </p>
@@ -81,7 +84,7 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
           <p className="text-[10px] uppercase tracking-wide text-slate-600">Stock</p>
         </div>
         <div className="border-x border-border-soft">
-          <p className="text-base font-bold text-white">${Number(producto.precio).toLocaleString("es-AR")}</p>
+          <p className="font-bold text-white" style={{ fontSize: (formatearMonto(producto.precio).length > 9 ? 13 : 16) + "px" }}>{formatearMonto(producto.precio)}</p>
           <p className="text-[10px] uppercase tracking-wide text-slate-600">Precio</p>
         </div>
         <div>

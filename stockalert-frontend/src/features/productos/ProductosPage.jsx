@@ -111,6 +111,7 @@ export default function ProductosPage() {
         productosFiltrados={resultado}
         vista={vista}
         onCambiarVista={cambiarVista}
+        onAbrirImportar={abrirSelector}
         onImportar={manejarArchivo}
         inputImportarRef={inputRef}
         seleccionados={seleccionados}

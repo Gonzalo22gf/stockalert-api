@@ -90,7 +90,7 @@ export default function DashboardPage() {
             <KpiCard etiqueta={t("dashboard.porVencer")} valor={totales.porVencer} color="amber" descripcion={t("dashboard.proximos7dias")} delay={0.08} />
             <KpiCard etiqueta={t("dashboard.vencidos")} valor={totales.vencidos} color="red" descripcion={t("dashboard.requierenAccion")} delay={0.12} />
             <KpiCard etiqueta={t("dashboard.stockCritico")} valor={totales.stockCritico} color="purple" descripcion={t("dashboard.bajoUmbral")} delay={0.16} />
-            <KpiCard etiqueta={t("dashboard.valorInventario")} valor={totales.valorInventario} prefijo="$ " color="emerald" descripcion={t("dashboard.totalEnStock")} delay={0.2} />
+            <KpiCard etiqueta={t("dashboard.valorInventario")} valor={totales.valorInventario} esMonto color="emerald" descripcion={t("dashboard.totalEnStock")} delay={0.2} />
           </div>
         </div>
       )}

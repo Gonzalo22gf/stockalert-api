@@ -102,3 +102,49 @@ html.light input[type="date"]::-webkit-calendar-picker-indicator {
 html.light ::-webkit-scrollbar-track { background: #f5f1e8; }
 html.light ::-webkit-scrollbar-thumb { background: #d8cdb5; }
 html.light ::-webkit-scrollbar-thumb:hover { background: #c9bda3; }
+
+/* ===== OVERRIDES MODO CLARO — colores de estado ===== */
+/* Los text-XXX-400/300 son tonos claros pensados para brillar sobre fondo oscuro.
+   Sobre cremita quedan lavados. En claro los mapeamos a tonos 600/700 que
+   contrastan bien, y subimos la opacidad de los fondos translucidos. */
+
+/* Verdes (emerald + green): estados "buen estado", "activo", planes business */
+html.light .text-emerald-400,
+html.light .text-emerald-300 { color: #047857 !important; }
+html.light .text-green-400 { color: #15803d !important; }
+html.light .bg-emerald-400 { background-color: #059669 !important; }
+html.light .bg-green-400 { background-color: #16a34a !important; }
+html.light .bg-emerald-500\/20 { background-color: rgba(5, 150, 105, 0.16) !important; }
+html.light .bg-emerald-500\/15 { background-color: rgba(5, 150, 105, 0.14) !important; }
+html.light .bg-emerald-500\/10 { background-color: rgba(5, 150, 105, 0.12) !important; }
+html.light .bg-green-500\/15 { background-color: rgba(22, 163, 74, 0.14) !important; }
+html.light .bg-green-500\/25 { background-color: rgba(22, 163, 74, 0.22) !important; }
+
+/* Ambar: por vencer, stock bajo */
+html.light .text-amber-400 { color: #b45309 !important; }
+html.light .bg-amber-500\/15 { background-color: rgba(180, 83, 9, 0.14) !important; }
+html.light .bg-amber-500\/25 { background-color: rgba(180, 83, 9, 0.2) !important; }
+
+/* Rojo: vencido, agotado, eliminar */
+html.light .text-red-400 { color: #b91c1c !important; }
+html.light .bg-red-500\/15 { background-color: rgba(185, 28, 28, 0.12) !important; }
+html.light .bg-red-500\/10 { background-color: rgba(185, 28, 28, 0.1) !important; }
+html.light .bg-red-500\/20 { background-color: rgba(185, 28, 28, 0.14) !important; }
+
+/* Otros tonos de las iniciales de producto y badges */
+html.light .text-sky-400 { color: #0369a1 !important; }
+html.light .text-purple-400 { color: #7e22ce !important; }
+html.light .text-rose-400 { color: #be123c !important; }
+html.light .text-brand-400 { color: #c2410c !important; }
+
+/* Marca (naranja) translucido de fondo: subir un toque en claro */
+html.light .bg-brand\/10 { background-color: rgba(255, 122, 26, 0.12) !important; }
+html.light .bg-brand\/20 { background-color: rgba(255, 122, 26, 0.16) !important; }
+
+/* Bordes que quedaban muy marcados en el dashboard: suavizar el border-soft */
+html.light .border-border-soft { border-color: #ece4d3 !important; }
+
+/* Badges con fondo slate-700 (ej. rol jefe): en claro necesitan fondo claro */
+html.light .bg-slate-700 { background-color: #e6ddcb !important; }
+html.light .bg-slate-700\/60 { background-color: rgba(230, 221, 203, 0.6) !important; }
+html.light .bg-panel-hover { background-color: #efe9dc !important; }

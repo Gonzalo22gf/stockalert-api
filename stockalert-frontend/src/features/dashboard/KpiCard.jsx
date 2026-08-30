@@ -1,4 +1,5 @@
 import { useCountUp } from "../../hooks/useCountUp";
+import { formatearMonto } from "../productos/productos.utils";
 
 const COLORES = {
   indigo: "#6366f1",
@@ -9,9 +10,9 @@ const COLORES = {
   cyan: "#06b6d4"
 };
 
-export default function KpiCard({ etiqueta, valor, descripcion, color = "indigo", prefijo = "", delay = 0, esNumero = true }) {
+export default function KpiCard({ etiqueta, valor, descripcion, color = "indigo", prefijo = "", delay = 0, esNumero = true, esMonto = false }) {
   const valorNumerico = esNumero ? useCountUp(valor) : 0;
-  const mostrar = esNumero ? prefijo + Math.round(valorNumerico).toLocaleString("es-AR") : valor;
+  const mostrar = esMonto ? formatearMonto(valorNumerico) : (esNumero ? prefijo + Math.round(valorNumerico).toLocaleString("es-AR") : valor);
 
   return (
     <div
@@ -22,7 +23,7 @@ export default function KpiCard({ etiqueta, valor, descripcion, color = "indigo"
         <span className="h-[7px] w-[7px] rounded-full" style={{ backgroundColor: COLORES[color] }} />
         <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-600">{etiqueta}</p>
       </div>
-      <p className="text-[28px] font-extrabold tracking-tight text-white">{mostrar}</p>
+      <p className="font-extrabold tracking-tight text-white" style={{ fontSize: (String(mostrar).length > 12 ? 20 : String(mostrar).length > 9 ? 24 : 28) + "px" }}>{mostrar}</p>
       {descripcion && <p className="mt-1 text-[11.5px] text-slate-600">{descripcion}</p>}
     </div>
   );
