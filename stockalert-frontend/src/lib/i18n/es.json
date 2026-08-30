@@ -585,5 +585,9 @@
     "reasignarObligatorio": "Elegí una categoría destino",
     "sinDestinoTitulo": "No hay otra categoría",
     "sinDestinoTexto": "Necesitás al menos otra categoría para poder reasignar los productos."
+  },
+  "acceso": {
+    "titulo": "Sin acceso",
+    "detalle": "No tenés permiso para ver esta sección. Contactá al administrador."
   }
 }

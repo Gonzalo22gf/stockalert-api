@@ -585,5 +585,9 @@
     "reasignarObligatorio": "Choose a target category",
     "sinDestinoTitulo": "No other category",
     "sinDestinoTexto": "You need at least one other category to reassign the products."
+  },
+  "acceso": {
+    "titulo": "No access",
+    "detalle": "You do not have permission to view this section. Contact your administrator."
   }
 }
