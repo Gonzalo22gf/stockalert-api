@@ -4,6 +4,17 @@
 
 export const PALETA = ["#6366f1", "#10b981", "#f59e0b", "#ef4444", "#a855f7", "#06b6d4", "#ec4899"];
 
+// Chart.js dibuja en canvas y NO toma los overrides CSS de modo claro, asi que los colores
+// de texto se eligen aca segun el tema (mira la clase light del <html>).
+function esClaro() {
+  return typeof document !== "undefined" && document.documentElement.classList.contains("light");
+}
+function colores() {
+  return esClaro()
+    ? { textoFuerte: "#1c1917", textoSuave: "#57534e", grid: "#e6ddcb", centro: "#1c1917", centroSub: "#78716c" }
+    : { textoFuerte: "#cbd1e0", textoSuave: "#6b7280", grid: "#1c1f29", centro: "#ffffff", centroSub: "#8b90a0" };
+}
+
 export const tooltipEstilo = {
   backgroundColor: "#1a1d26",
   titleColor: "#f1f3f8",
@@ -19,6 +30,7 @@ export const tooltipEstilo = {
 // Opciones para las barras horizontales (rankings y categorias).
 // formato: funcion opcional para formatear el valor en el tooltip (ej. moneda).
 export function opcionesBarrasH(formato) {
+  const c = colores();
   return {
     indexAxis: "y",
     responsive: true,
@@ -33,14 +45,15 @@ export function opcionesBarrasH(formato) {
       }
     },
     scales: {
-      x: { ticks: { color: "#6b7280", font: { size: 10 } }, grid: { color: "#1c1f29" }, border: { display: false } },
-      y: { ticks: { color: "#cbd1e0", font: { size: 11, family: "Inter" } }, grid: { display: false }, border: { display: false } }
+      x: { ticks: { color: c.textoSuave, font: { size: 10 } }, grid: { color: c.grid }, border: { display: false } },
+      y: { ticks: { color: c.textoFuerte, font: { size: 11, family: "Inter" } }, grid: { display: false }, border: { display: false } }
     }
   };
 }
 
 // Opciones de la dona de estado. total: cantidad de productos (para el %).
 export function opcionesDona(total) {
+  const c = colores();
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -48,7 +61,7 @@ export function opcionesDona(total) {
     plugins: {
       legend: {
         position: "bottom",
-        labels: { color: "#cbd1e0", font: { size: 12, family: "Inter" }, padding: 14, usePointStyle: true, pointStyle: "circle" }
+        labels: { color: c.textoFuerte, font: { size: 12, family: "Inter" }, padding: 14, usePointStyle: true, pointStyle: "circle" }
       },
       tooltip: {
         ...tooltipEstilo,
@@ -65,6 +78,7 @@ export function opcionesDona(total) {
 
 // Opciones de la dona de tiendas en riesgo. sufijo: texto tras el numero en el tooltip.
 export function opcionesDonaRiesgo(sufijo) {
+  const c = colores();
   return {
     responsive: true,
     maintainAspectRatio: false,
@@ -72,7 +86,7 @@ export function opcionesDonaRiesgo(sufijo) {
     plugins: {
       legend: {
         position: "bottom",
-        labels: { color: "#cbd1e0", font: { size: 11, family: "Inter" }, padding: 10, usePointStyle: true, pointStyle: "circle" }
+        labels: { color: c.textoFuerte, font: { size: 11, family: "Inter" }, padding: 10, usePointStyle: true, pointStyle: "circle" }
       },
       tooltip: {
         ...tooltipEstilo,
@@ -83,21 +97,28 @@ export function opcionesDonaRiesgo(sufijo) {
 }
 
 // Plugin que dibuja un numero grande + subtitulo en el centro de la dona de estado.
+// Formatea el numero del centro de la dona en compacto para que entre siempre (1000 -> 1k, 50000 -> 50k).
+function numeroCompacto(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(n % 1000000 === 0 ? 0 : 1) + "M";
+  if (n >= 1000) return (n / 1000).toFixed(n % 1000 === 0 ? 0 : 1) + "k";
+  return String(n);
+}
 export function crearTextoCentral(total, subtitulo) {
   return {
     id: "textoCentral",
     afterDraw(chart) {
       const { ctx, chartArea } = chart;
       if (!chartArea) return;
+      const c = colores();
       const x = (chartArea.left + chartArea.right) / 2;
       const y = (chartArea.top + chartArea.bottom) / 2;
       ctx.save();
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
-      ctx.fillStyle = "#ffffff";
+      ctx.fillStyle = c.centro;
       ctx.font = "800 26px Inter, sans-serif";
-      ctx.fillText(String(total), x, y - 8);
-      ctx.fillStyle = "#8b90a0";
+      ctx.fillText(numeroCompacto(Number(total) || 0), x, y - 8);
+      ctx.fillStyle = c.centroSub;
       ctx.font = "500 11px Inter, sans-serif";
       ctx.fillText(subtitulo, x, y + 14);
       ctx.restore();

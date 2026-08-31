@@ -58,6 +58,9 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
         <div className="flex min-w-0 items-center gap-2.5">
           <ImagenProducto producto={producto} />
           <div className="min-w-0">
+            {producto.codigoBarras && (
+              <p className="font-mono text-[10px] font-medium tracking-wide text-slate-500">EAN {producto.codigoBarras}</p>
+            )}
             <p className="font-semibold leading-tight text-white line-clamp-2" style={{ fontSize: tamanoNombrePx(producto.nombre) + "px" }}>
               {producto.nombre}
               {producto.tamano && <span className="ml-1.5 text-xs font-medium text-slate-500">{producto.tamano}</span>}
@@ -68,11 +71,6 @@ export default function ProductoCard({ producto, esAdmin, onEditar, onEliminar }
           {esAdmin && producto.sucursal?.nombre && (
             <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[10px] font-semibold text-brand-400">
               {producto.sucursal.nombre}
-            </span>
-          )}
-          {producto.codigoBarras && (
-            <span className="text-[10px] font-medium tracking-wide text-slate-500">
-              EAN {producto.codigoBarras}
             </span>
           )}
         </div>
