@@ -39,6 +39,45 @@ const { listarLinks, crearLink, editarLink, borrarLink } = require("../controlle
  */
 router.get("/", protegerRuta, listarLinks);
 router.post("/", protegerRuta, validar(linkSchema), crearLink);
+/**
+ * @swagger
+ * /api/links/{id}:
+ *   put:
+ *     summary: Editar un link frecuente (solo admin)
+ *     tags: [Links]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [nombre, url]
+ *             properties:
+ *               nombre: { type: string, example: "Sistema de turnos" }
+ *               url: { type: string, example: "https://ejemplo.com" }
+ *     responses:
+ *       200: { description: "Link actualizado" }
+ *       400: { description: "Datos invalidos" }
+ *       404: { description: "Link no encontrado" }
+ *   delete:
+ *     summary: Borrar un link frecuente (solo admin)
+ *     tags: [Links]
+ *     security: [{ bearerAuth: [] }]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200: { description: "Link borrado" }
+ *       404: { description: "Link no encontrado" }
+ */
 router.put("/:id", protegerRuta, validar(linkSchema), editarLink);
 router.delete("/:id", protegerRuta, borrarLink);
 

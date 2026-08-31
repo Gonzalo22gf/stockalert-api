@@ -96,6 +96,22 @@ router.post("/login", validar(loginSchema), limiteAuth, loginUsuario);
  *       200: { description: "Datos del usuario autenticado" }
  *       401: { description: "Token faltante o inválido" }
  */
+/**
+ * @swagger
+ * /api/usuarios/verificar-email:
+ *   get:
+ *     summary: Verificar el email de un usuario con el token del link de activacion
+ *     tags: [Usuarios]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema: { type: string }
+ *         description: Token de verificacion enviado por correo al registrarse
+ *     responses:
+ *       200: { description: "Email verificado, la cuenta queda activa" }
+ *       400: { description: "Token invalido o expirado" }
+ */
 router.get("/verificar-email", verificarEmail);
 router.get("/perfil", protegerRuta, obtenerPerfil);
 
