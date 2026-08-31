@@ -81,3 +81,4 @@ const SucursalService = {
 };
 
 module.exports = SucursalService;
+module.exports.calcularMetricas = calcularMetricas;
