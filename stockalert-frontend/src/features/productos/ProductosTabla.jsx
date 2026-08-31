@@ -153,7 +153,7 @@ export default function ProductosTabla({ productos, esAdmin, onEditar, onElimina
                     />
                   </td>
                   <td className="px-4 py-2.5 font-semibold text-white">
-                    <div className="flex max-w-[220px] items-baseline gap-1.5">
+                    <div className="flex max-w-[360px] items-baseline gap-1.5">
                       <span className="truncate" title={p.nombre}>{p.nombre}</span>
                       {p.tamano && <span className="shrink-0 text-xs font-normal text-slate-500">{p.tamano}</span>}
                       {p.lote && <span className="shrink-0 text-[10px] text-slate-600">Lote {p.lote}</span>}
