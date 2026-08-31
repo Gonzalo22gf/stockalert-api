@@ -2,16 +2,14 @@ const SucursalRepository = require("../repositories/sucursal.repository");
 const ProductoRepository = require("../repositories/producto.repository");
 const Producto = require("../models/Producto");
 const { NotFoundError, ValidationError } = require("../utils/errors/AppError");
+const { estaVencido, estaPorVencer } = require("../utils/clasificarVencimiento");
 
 function calcularMetricas(productos) {
   const hoy = new Date();
   return {
     totalProductos: productos.length,
-    vencidos: productos.filter((p) => new Date(p.vencimiento) < hoy).length,
-    porVencer: productos.filter((p) => {
-      const diff = Math.ceil((new Date(p.vencimiento) - hoy) / (1000 * 60 * 60 * 24));
-      return diff >= 0 && diff <= 7;
-    }).length,
+    vencidos: productos.filter((p) => estaVencido(p, hoy)).length,
+    porVencer: productos.filter((p) => estaPorVencer(p, 7, hoy)).length,
     stockCritico: productos.filter((p) => p.stock > 0 && p.stock <= 5).length,
     agotados: productos.filter((p) => p.stock === 0).length,
     valorInventario: productos.reduce((t, p) => t + p.stock * p.precio, 0)
