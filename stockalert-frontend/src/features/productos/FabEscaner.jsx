@@ -5,6 +5,7 @@ import Swal from "sweetalert2";
 import { useAuthStore } from "../auth/authStore";
 import { useCrearProducto, useProductos } from "./useProductos";
 import { buscarProductoPorEAN } from "./useOpenFoodFacts";
+import { subirImagen } from "../../lib/cloudinary";
 import { useSucursales } from "../sucursales/useSucursales";
 import { useScanner } from "./useScanner";
 
@@ -30,6 +31,8 @@ export default function FabEscaner() {
   const [stock, setStock] = useState("");
   const [tamano, setTamano] = useState("");
   const [imagenAuto, setImagenAuto] = useState("");
+  const [imagen, setImagen] = useState("");
+  const [subiendo, setSubiendo] = useState(false);
   const [vencimiento, setVencimiento] = useState("");
   const [vence, setVence] = useState(true);
   const [buscandoEAN, setBuscandoEAN] = useState(false);
@@ -50,6 +53,7 @@ export default function FabEscaner() {
     setStock("");
     setTamano("");
     setImagenAuto("");
+    setImagen("");
     setVencimiento("");
     setVence(true);
   }
@@ -82,6 +86,21 @@ export default function FabEscaner() {
     }
   }
 
+  async function manejarSubirFoto(e) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setSubiendo(true);
+    try {
+      const url = await subirImagen(file);
+      setImagen(url);
+    } catch (error) {
+      Swal.fire({ icon: "error", title: "Error", text: error.message });
+    } finally {
+      setSubiendo(false);
+    }
+  }
+
   async function guardarYSeguir(e) {
     e.preventDefault();
 
@@ -105,6 +124,7 @@ export default function FabEscaner() {
         codigoBarras: eanDetectado,
         tamano,
         imagenAuto,
+        imagen,
         ...(vence
           ? { vencimiento, lotes: [{ numero: lote, stock: Number(stock), vencimiento }] }
           : { lotes: [] }),
@@ -170,6 +190,20 @@ export default function FabEscaner() {
                 <p className="text-xs text-slate-400">
                   EAN: <span className="font-mono text-brand">{eanDetectado || "sin código"}</span>
                 </p>
+                <div className="flex items-center gap-3">
+                  {(imagen || imagenAuto) && (
+                    <img src={imagen || imagenAuto} alt="" className="h-14 w-14 shrink-0 rounded-lg object-cover" />
+                  )}
+                  <label className="cursor-pointer rounded-lg border border-brand/40 bg-brand/10 px-3 py-2 text-xs font-semibold text-brand-400 hover:bg-brand/20">
+                    {subiendo ? t("form.subiendoFoto") : t("form.subirFoto")}
+                    <input type="file" accept="image/*" className="hidden" disabled={subiendo} onChange={manejarSubirFoto} />
+                  </label>
+                  {imagen && (
+                    <button type="button" onClick={() => setImagen("")} className="text-xs font-medium text-slate-400 hover:text-red-400">
+                      {t("form.quitarFoto")}
+                    </button>
+                  )}
+                </div>
 
                 <input className={inputClase} placeholder="Nombre del producto" value={nombre} onChange={(e) => setNombre(e.target.value)} />
                 <select className={inputClase} value={categoria} onChange={(e) => setCategoria(e.target.value)}>
