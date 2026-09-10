@@ -29,8 +29,6 @@ const PushService = {
       webpush: { fcmOptions: { link: "https://app.mistockalert.com" } }
     }));
     const resultado = await messaging.sendEach(mensajes);
-    console.log("[push] enviados:", resultado.successCount, "fallidos:", resultado.failureCount);
-    resultado.responses.forEach((rr, i) => { if (!rr.success) console.error("[push] FALLO token", i, "->", rr.error?.code, rr.error?.message); });
     // Limpiar tokens invalidos
     const tokensInvalidos = resultado.responses
       .map((r, i) => (!r.success ? suscripciones[i].token : null))
@@ -52,8 +50,6 @@ const PushService = {
       webpush: { fcmOptions: { link: "https://app.mistockalert.com" } }
     }));
     const resultado = await messaging.sendEach(mensajes);
-    console.log("[push] enviados:", resultado.successCount, "fallidos:", resultado.failureCount);
-    resultado.responses.forEach((rr, i) => { if (!rr.success) console.error("[push] FALLO token", i, "->", rr.error?.code, rr.error?.message); });
     const tokensInvalidos = resultado.responses
       .map((r, i) => (!r.success ? suscripciones[i].token : null))
       .filter(Boolean);

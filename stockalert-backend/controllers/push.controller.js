@@ -17,12 +17,4 @@ const desuscribir = async (req, res, next) => {
   } catch (e) { next(e); }
 };
 
-// TEMPORAL (debug push): manda un push de prueba al propio usuario
-const prueba = async (req, res, next) => {
-  try {
-    const result = await PushService.notificarUsuario(req.usuario._id, "Prueba StockAlert", "Si ves esto, el push funciona 🎉");
-    res.json(result);
-  } catch (e) { next(e); }
-};
-
-module.exports = { suscribir, desuscribir, prueba };
+module.exports = { suscribir, desuscribir };
