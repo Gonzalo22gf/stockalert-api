@@ -74,10 +74,10 @@ async function notificarJefe(jefe, datosSucursal) {
     });
     const r = datosSucursal.resumen;
     const hayProblemas = r.vencidos.length + r.porVencer.length + r.stockCritico.length > 0;
-    if (hayProblemas) {
-      const msg = r.vencidos.length + " vencidos, " + r.porVencer.length + " por vencer, " + r.stockCritico.length + " stock critico";
-      await PushService.notificarUsuario(jefe._id, "StockAlert - Parte de tu tienda", msg).catch(() => {});
-    }
+    const msg = hayProblemas
+      ? r.vencidos.length + " vencidos, " + r.porVencer.length + " por vencer, " + r.stockCritico.length + " stock critico"
+      : "Tu tienda esta al dia \uD83D\uDC4D";
+    await PushService.notificarUsuario(jefe._id, "StockAlert - Parte de tu tienda", msg).catch(() => {});
     return { ok: true };
   } catch (e) {
     logger.error("Fallo notificacion a jefe " + jefe.email + ":", e.message);
