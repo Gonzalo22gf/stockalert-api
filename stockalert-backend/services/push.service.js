@@ -1,5 +1,5 @@
 const admin = require("../config/firebase");
-console.log("[push] admin es:", admin === null ? "NULL" : typeof admin, "| tiene messaging:", admin && typeof admin.messaging);
+console.log("[push] admin keys:", admin ? Object.keys(admin).join(",") : "NULL", "| apps:", admin && admin.apps ? JSON.stringify(admin.apps.length) : "no-apps");
 const Suscripcion = require("../models/Suscripcion");
 
 const PushService = {
