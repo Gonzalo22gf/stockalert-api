@@ -3,7 +3,7 @@ const router = express.Router();
 const { protegerRuta } = require("../middleware/auth");
 const validar = require("../middleware/validar");
 const { pushTokenSchema } = require("../validators/index");
-const { suscribir, desuscribir } = require("../controllers/push.controller");
+const { suscribir, desuscribir, prueba } = require("../controllers/push.controller");
 
 /**
  * @swagger
@@ -30,6 +30,8 @@ const { suscribir, desuscribir } = require("../controllers/push.controller");
  *       401: { description: "No autenticado" }
  */
 router.post("/suscribir", protegerRuta, validar(pushTokenSchema), suscribir);
+// TEMPORAL (debug push): disparar un push de prueba al propio usuario
+router.post("/prueba", protegerRuta, prueba);
 /**
  * @swagger
  * /api/push/desuscribir:
