@@ -1,27 +1,36 @@
-// firebase-admin v14 usa API modular: initializeApp/cert vienen de "firebase-admin/app"
-// y getMessaging de "firebase-admin/messaging". La API vieja (admin.messaging()) ya no existe.
+// firebase-admin v14: API modular. La credencial se lee desde FIREBASE_CREDENTIALS_B64
+// (el JSON completo de la cuenta de servicio codificado en Base64 — robusto, sin problemas de \n).
+// Si no existe esa variable, cae al metodo viejo por campos sueltos.
 const { initializeApp, cert, getApps } = require("firebase-admin/app");
 const { getMessaging } = require("firebase-admin/messaging");
 
 let messaging = null;
 try {
-  if (!process.env.FIREBASE_PROJECT_ID) {
-    console.error("[firebase] FALTA FIREBASE_PROJECT_ID - no se inicializa");
-  } else if (getApps().length === 0) {
-    const pk = process.env.FIREBASE_PRIVATE_KEY || "";
-    console.log("[firebase] project:", process.env.FIREBASE_PROJECT_ID);
-    console.log("[firebase] client_email presente:", !!process.env.FIREBASE_CLIENT_EMAIL);
-    console.log("[firebase] private_key largo:", pk.length, "| BEGIN:", pk.includes("BEGIN PRIVATE KEY"), "| \\n literal:", pk.includes("\\n"));
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: pk.replace(/\\n/g, "\n")
-      })
+  let credencial = null;
+
+  if (process.env.FIREBASE_CREDENTIALS_B64) {
+    // Metodo robusto: JSON completo en Base64
+    const json = Buffer.from(process.env.FIREBASE_CREDENTIALS_B64, "base64").toString("utf8");
+    const cuenta = JSON.parse(json);
+    credencial = cert(cuenta);
+    console.log("[firebase] credencial desde Base64 OK - project:", cuenta.project_id);
+  } else if (process.env.FIREBASE_PROJECT_ID) {
+    // Metodo viejo: campos sueltos (fallback)
+    const pk = (process.env.FIREBASE_PRIVATE_KEY || "").replace(/\\n/g, "\n");
+    console.log("[firebase] credencial desde campos sueltos - BEGIN:", pk.includes("BEGIN PRIVATE KEY"));
+    credencial = cert({
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+      privateKey: pk
     });
+  } else {
+    console.error("[firebase] FALTAN credenciales - no se inicializa");
+  }
+
+  if (credencial && getApps().length === 0) {
+    initializeApp({ credential: credencial });
     console.log("[firebase] initializeApp OK - apps:", getApps().length);
   }
-  // Si ya habia una app inicializada (o recien la creamos), obtenemos messaging.
   if (getApps().length > 0) {
     messaging = getMessaging();
   }
@@ -30,5 +39,4 @@ try {
   messaging = null;
 }
 
-// Exporta el objeto messaging (o null si fallo). push.service.js lo usa directo.
 module.exports = messaging;
