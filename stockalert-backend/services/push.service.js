@@ -1,5 +1,4 @@
-const admin = require("../config/firebase");
-console.log("[push] admin keys:", admin ? Object.keys(admin).join(",") : "NULL", "| apps:", admin && admin.apps ? JSON.stringify(admin.apps.length) : "no-apps");
+const messaging = require("../config/firebase");
 const Suscripcion = require("../models/Suscripcion");
 
 const PushService = {
@@ -29,7 +28,7 @@ const PushService = {
       data: datos,
       webpush: { fcmOptions: { link: "https://app.mistockalert.com" } }
     }));
-    const resultado = await admin.messaging().sendEach(mensajes);
+    const resultado = await messaging.sendEach(mensajes);
     console.log("[push] enviados:", resultado.successCount, "fallidos:", resultado.failureCount);
     resultado.responses.forEach((rr, i) => { if (!rr.success) console.error("[push] FALLO token", i, "->", rr.error?.code, rr.error?.message); });
     // Limpiar tokens invalidos
@@ -52,7 +51,7 @@ const PushService = {
       data: datos,
       webpush: { fcmOptions: { link: "https://app.mistockalert.com" } }
     }));
-    const resultado = await admin.messaging().sendEach(mensajes);
+    const resultado = await messaging.sendEach(mensajes);
     console.log("[push] enviados:", resultado.successCount, "fallidos:", resultado.failureCount);
     resultado.responses.forEach((rr, i) => { if (!rr.success) console.error("[push] FALLO token", i, "->", rr.error?.code, rr.error?.message); });
     const tokensInvalidos = resultado.responses
