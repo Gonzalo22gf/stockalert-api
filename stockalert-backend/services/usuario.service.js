@@ -15,9 +15,17 @@ function sanitizarNombre(nombre) {
   return nombre.trim().replace(/[<>"'%;()&+]/g, "").substring(0, 80);
 }
 
-function generarCodigoAcceso(nombreEmpresa) {
+// Genera un codigo de acceso unico: prefijo del nombre + numero random,
+// reintentando hasta encontrar uno que no exista en la base (evita choques por el indice unico).
+async function generarCodigoAcceso(nombreEmpresa, Empresa) {
   const prefijo = nombreEmpresa.toUpperCase().replace(/[^A-Z]/g, "").substring(0, 4).padEnd(4, "X");
-  return prefijo + "-" + Math.floor(1000 + Math.random() * 9000);
+  for (let intento = 0; intento < 20; intento++) {
+    const codigo = prefijo + "-" + Math.floor(1000 + Math.random() * 9000);
+    const existe = await Empresa.findOne({ codigoAcceso: codigo }).select("_id").lean();
+    if (!existe) return codigo;
+  }
+  // Fallback ultra-improbable: sufijo con timestamp para garantizar unicidad
+  return prefijo + "-" + Date.now().toString().slice(-6);
 }
 
 function generarToken(id, empresa, pwv) {
@@ -41,7 +49,7 @@ const UsuarioService = {
       const { TRIAL_DIAS } = require("../config/planes");
       // Empresa nueva arranca con trial Pro por TRIAL_DIAS dias; al vencer se trata como free.
       const trialExpira = new Date(Date.now() + TRIAL_DIAS * 24 * 60 * 60 * 1000);
-      empresa = await Empresa.create({ nombre: nombreEmpresa.trim(), codigoAcceso: generarCodigoAcceso(nombreEmpresa.trim()), plan: "pro", trialExpira });
+      empresa = await Empresa.create({ nombre: nombreEmpresa.trim(), codigoAcceso: await generarCodigoAcceso(nombreEmpresa.trim(), Empresa), plan: "pro", trialExpira });
       sucursal = await SucursalRepository.create({ zona: "1", numero: 1, direccion: "", empresa: empresa._id });
       const Categoria = require("../models/Categoria");
       const categoriasDefault = ["Lácteos", "Bebidas", "Almacén", "Limpieza", "Congelados"];
